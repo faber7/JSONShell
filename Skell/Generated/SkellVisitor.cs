@@ -30,8 +30,25 @@ using IToken = Antlr4.Runtime.IToken;
 /// </summary>
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.8")]
-[System.CLSCompliant(false)]
 public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.program"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitProgram([NotNull] SkellParser.ProgramContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStatement([NotNull] SkellParser.StatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.statementBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStatementBlock([NotNull] SkellParser.StatementBlockContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.expression"/>.
 	/// </summary>
@@ -39,29 +56,29 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpression([NotNull] SkellParser.ExpressionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.equality"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.eqExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEquality([NotNull] SkellParser.EqualityContext context);
+	Result VisitEqExpr([NotNull] SkellParser.EqExprContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.comparison"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.relExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitComparison([NotNull] SkellParser.ComparisonContext context);
+	Result VisitRelExpr([NotNull] SkellParser.RelExprContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.addition"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.addExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitAddition([NotNull] SkellParser.AdditionContext context);
+	Result VisitAddExpr([NotNull] SkellParser.AddExprContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.multiplication"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.mulExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitMultiplication([NotNull] SkellParser.MultiplicationContext context);
+	Result VisitMulExpr([NotNull] SkellParser.MulExprContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.unary"/>.
 	/// </summary>
@@ -74,5 +91,47 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitPrimary([NotNull] SkellParser.PrimaryContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.term"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTerm([NotNull] SkellParser.TermContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.value"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitValue([NotNull] SkellParser.ValueContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.bool"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBool([NotNull] SkellParser.BoolContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArray([NotNull] SkellParser.ArrayContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.pair"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPair([NotNull] SkellParser.PairContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.object"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitObject([NotNull] SkellParser.ObjectContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.typeSpecifier"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTypeSpecifier([NotNull] SkellParser.TypeSpecifierContext context);
 }
 } // namespace Generated

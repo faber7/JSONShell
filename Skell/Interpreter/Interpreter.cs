@@ -17,7 +17,7 @@ namespace Interpreter
             ITokenStream tokenStream = new CommonTokenStream(lexer);
             parser = new SkellParser(tokenStream);
             parser.BuildParseTree = true;
-            IParseTree tree = parser.expression(); // Since expression is our start rule
+            IParseTree tree = parser.program(); // Since program is our start rule
             Console.WriteLine(tree.ToStringTree(parser));
         }
     }
