@@ -48,12 +48,15 @@ namespace Skell
 
         public static void runPrompt()
         {
-            Console.WriteLine("Press Ctrl+C to exit the prompt.");
+            Console.WriteLine("Press Ctrl+D to exit the prompt.");
 
-            while (true) {
+            string input;
+            Console.Write("> ");
+            while ((input = Console.In.ReadLine()) != null) {
+                interpreter.interprete(input);
                 Console.Write("> ");
-                interpreter.interprete(Console.In.ReadLine());
             }
+            exit(0);
         }
     }
 }
