@@ -4,12 +4,22 @@ namespace Skell
 {
     public class SkellLogger
     {
-        public static void InitializeConsoleLogger()
+        static string outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}";
+        
+        public static void InitializeConsoleLogger(bool Debug, bool Verbose)
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+            var config = new LoggerConfiguration();
+            if (!Debug && !Verbose) {
+                config = config.MinimumLevel.Information();
+            } else if (Debug) {
+                config = config.MinimumLevel.Debug();
+            } else if (Verbose) {
+                config = config.MinimumLevel.Verbose();
+            }
+            
+            Log.Logger = config
                 .WriteTo.Console(
-                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}"
+                    outputTemplate: outputTemplate
                 )
                 .CreateLogger();
         }

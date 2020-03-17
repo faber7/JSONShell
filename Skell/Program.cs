@@ -1,32 +1,53 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using Serilog;
 using Interpreter;
+using CommandLine;
 
 namespace Skell
 {
+    class Options
+    {
+        [Option(
+            SetName = "LogLevel",
+            Default = false,
+            HelpText = "Log extra details necessary for debugging"
+        )]
+        public bool Debug { get; set; }
+
+        [Option(
+            SetName = "LogLevel",
+            Default = false,
+            HelpText = "Log everything"
+        )]
+        public bool Verbose { get; set; }
+
+        [Option(
+            Required = false,
+            HelpText = "Input file to be interpreted"
+        )]
+        public string InputFile { get; set; }
+    }
     class Program
     {
         private static ILogger logger;
         private static SkellInterpreter interpreter;
         static void Main(string[] args)
         {
-            SkellLogger.InitializeConsoleLogger();
-            logger = Log.ForContext<Program>();
-            if (args.Length > 1) {
-                logger.Information($"Incorrect number of arguments : {args.Length}");
-                exit(127);
-            } else {
-                interpreter = new SkellInterpreter();
-                if (args.Length == 1) {
-                    logger.Information($"Running interpreter on {args[0]}");
-                    runFile(args[0]);
-                } else {
-                    logger.Information("No arguments specified, running in interpreter mode");
-                    runPrompt();
-                }
-            }
+            CommandLine.Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(RunWithOptions)
+                .WithNotParsed(e => {
+                    if (e.First() is CommandLine.VersionRequestedError ||
+                        e.First() is CommandLine.HelpRequestedError) {
+                            return;
+                    }
+                    foreach(var i in e) {
+                        Console.WriteLine("Error: " + i);
+                    }
+                    throw new ArgumentException("Invalid Argument(s).");
+                });
         }
 
         static void exit(int exitCode)
@@ -38,6 +59,22 @@ namespace Skell
             }
             SkellLogger.TerminateConsoleLogger();
             Environment.Exit(exitCode);
+        }
+
+        static void RunWithOptions(Options options)
+        {
+            SkellLogger.InitializeConsoleLogger(options.Debug, options.Verbose);
+            logger = Log.ForContext<Program>();
+
+            interpreter = new SkellInterpreter();
+            
+            if (options.InputFile == null) {
+                logger.Information("No arguments specified, running in interpreter mode");
+                runPrompt();
+            } else {
+                logger.Information($"Running interpreter on {options.InputFile}");
+                runFile(options.InputFile);
+            }
         }
 
         public static void runFile(String path)

@@ -25,7 +25,7 @@ namespace Interpreter
             parser = new SkellParser(tokenStream);
             parser.BuildParseTree = true;
             IParseTree tree = parser.program(); // Since program is our start rule
-            logger.Information($"Parse tree:\n{tree.ToStringTree(parser)}");
+            logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
         }
     }
 }
