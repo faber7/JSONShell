@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Serilog;
-using Interpreter;
+using Skell.Interpreter;
 using CommandLine;
 
 namespace Skell

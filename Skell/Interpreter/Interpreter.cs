@@ -3,17 +3,19 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Serilog;
 
-namespace Interpreter
+namespace Skell.Interpreter
 {
     class SkellInterpreter
     {
         private static ILogger logger;
         ITokenSource lexer;
         SkellParser parser;
+        SkellVisitor visitor;
 
         public SkellInterpreter()
         {
             logger = Log.ForContext<SkellInterpreter>();
+            visitor = new SkellVisitor();
         }
 
         public void interprete(string src)
@@ -26,6 +28,8 @@ namespace Interpreter
             parser.BuildParseTree = true;
             IParseTree tree = parser.program(); // Since program is our start rule
             logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
+
+            visitor.Visit(tree);
         }
     }
 }
