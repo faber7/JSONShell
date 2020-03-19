@@ -7,8 +7,8 @@ statement : expression ;
 statementBlock : LCURL statement* RCURL ;
 
 expression : eqExpr ;
-eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)* ;
-relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)* ;
+eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
+relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
 addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
 mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
 unary : (OP_NOT | OP_SUB) unary
