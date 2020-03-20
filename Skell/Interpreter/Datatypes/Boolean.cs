@@ -22,6 +22,6 @@ namespace Skell.Data
 
         public static Boolean operator |(Boolean a, Boolean b) => new Boolean(a.value | b.value);
 
-        public override string ToString() => value.ToString();
+        public override string ToString() => value.ToString().ToLower();
     }
 }
