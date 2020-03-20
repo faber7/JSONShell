@@ -68,7 +68,7 @@ namespace Skell.Interpreter
                     return (Skell.Data.Number) result > (Skell.Data.Number) next;
                 } else if (op.Type == SkellLexer.OP_GE) {
                     return (Skell.Data.Number) result >= (Skell.Data.Number) next;
-                } else if (op.Type == SkellLexer.OP_GT) {
+                } else if (op.Type == SkellLexer.OP_LT) {
                     return (Skell.Data.Number) result < (Skell.Data.Number) next;
                 } else {
                     return (Skell.Data.Number) result <= (Skell.Data.Number) next;
