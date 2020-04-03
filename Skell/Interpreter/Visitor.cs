@@ -22,7 +22,11 @@ namespace Skell.Interpreter
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
-                logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()}");
+                if (lastResult is Skell.Data.Array) {
+                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()} and length {((Skell.Data.Array)lastResult).Length}");
+                } else {
+                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()}");
+                }
                 System.Console.WriteLine(lastResult);
             }
             return lastResult;
@@ -216,7 +220,12 @@ namespace Skell.Interpreter
         /// </remarks>
         override public Skell.Data.SkellData VisitArray(SkellParser.ArrayContext context)
         {
-            throw new System.NotImplementedException();
+            SkellParser.ValueContext[] values = context.value();
+            Skell.Data.SkellData[] contents = new Skell.Data.SkellData[values.Length];
+            for (int i = 0; i < values.Length; i++) {
+                contents[i] = VisitValue(values[i]);
+            }
+            return new Skell.Data.Array(contents);
         }
 
         /// <remarks>
