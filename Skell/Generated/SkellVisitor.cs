@@ -50,6 +50,30 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatementBlock([NotNull] SkellParser.StatementBlockContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.control"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitControl([NotNull] SkellParser.ControlContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.ifControl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIfControl([NotNull] SkellParser.IfControlContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.ifThenControl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIfThenControl([NotNull] SkellParser.IfThenControlContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.ifThenElseControl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIfThenElseControl([NotNull] SkellParser.IfThenElseControlContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

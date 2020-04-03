@@ -2,9 +2,14 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : expression ;
+statement : expression | control;
 
 statementBlock : LCURL statement* RCURL ;
+
+control : ifControl ;
+ifControl : ifThenControl | ifThenElseControl ;
+ifThenControl : KW_IF expression KW_THEN statementBlock ;
+ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
 
 expression : eqExpr ;
 eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
