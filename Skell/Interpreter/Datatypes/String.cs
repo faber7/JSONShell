@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Skell.Data
 {
     class String : SkellData
@@ -11,7 +13,11 @@ namespace Skell.Data
 
         public override string ToString()
         {
-            return contents;
+            StringBuilder s = new StringBuilder();
+            s.Append("\"");
+            s.Append(contents);
+            s.Append("\"");
+            return s.ToString();
         }
     }
 }
