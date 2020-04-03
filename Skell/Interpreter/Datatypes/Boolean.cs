@@ -16,6 +16,10 @@ namespace Skell.Data
             }
         }
 
+        public bool isTrue => value == true;
+        
+        public bool isFalse => value == false;
+
         public static Boolean operator !(Boolean a) => new Boolean(!a.value);
 
         public static Boolean operator &(Boolean a, Boolean b) => new Boolean(a.value & b.value);
