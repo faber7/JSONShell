@@ -22,9 +22,16 @@ namespace Skell.Interpreter
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
-                if (lastResult is Skell.Data.Array) {
+                if (lastResult is Skell.Data.Array)
+                {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()} and length {((Skell.Data.Array)lastResult).Length}");
-                } else {
+                } 
+                else if (lastResult is Skell.Data.Object)
+                {
+                    logger.Debug($"Result: \n{((Skell.Data.Object)lastResult).ToString()}\n of type {lastResult.GetType().ToString()}");
+                }
+                else
+                {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()}");
                 }
                 System.Console.WriteLine(lastResult);
@@ -202,10 +209,7 @@ namespace Skell.Interpreter
                 return VisitArray(context.array());
             }
             if (context.STRING() != null) {
-                string contents = context.STRING().GetText();
-                contents = contents.Remove(0,1);
-                contents = contents.Remove(contents.Length - 1,1);
-                return new Skell.Data.String(contents);
+                return Utility.GetString(context.STRING());
             }
             if (context.NUMBER() != null) {
                 return new Skell.Data.Number(context.NUMBER().GetText());
@@ -232,15 +236,39 @@ namespace Skell.Interpreter
         /// object : LCURL pair (SYM_COMMA pair)* RCURL
         ///        | LCURL RCURL
         ///        ;
+        /// pair : STRING SYM_COLON value ;
         /// </remarks>
         override public Skell.Data.SkellData VisitObject(SkellParser.ObjectContext context)
         {
-            throw new System.NotImplementedException();
+            Skell.Data.String[] keys = new Skell.Data.String[context.pair().Length];
+            Skell.Data.SkellData[] values = new Skell.Data.SkellData[context.pair().Length];
+
+            for (int i = 0; i < context.pair().Length; i++) {
+                var pair = context.pair(i);
+                keys[i] = Utility.GetString(pair.STRING());
+                values[i] = VisitValue(pair.value());
+            }
+
+            return new Skell.Data.Object(keys, values);
         }
     }
 
     static class Utility
     {
+        /// <summary>
+        /// Returns a Skell.Data.String for a STRING token
+        /// </summary>
+        /// <remark>
+        /// STRING : SYM_QUOTE (ESC | SAFECODEPOINT)* SYM_QUOTE ;
+        /// </remark>
+        public static Skell.Data.String GetString(Antlr4.Runtime.Tree.ITerminalNode context)
+        {
+            string contents = context.GetText();
+            contents = contents.Remove(0,1);
+            contents = contents.Remove(contents.Length - 1,1);
+            return new Skell.Data.String(contents);
+        }
+
         /// <summary>
         /// Returns the left sibling of the parse tree node.
         /// </summary>
