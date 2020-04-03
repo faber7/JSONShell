@@ -1,10 +1,17 @@
 using Generated;
+using Serilog;
 
 namespace Skell.Interpreter
 {
     class SkellVisitor : SkellBaseVisitor<Skell.Data.SkellData>
     {
         Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
+        private static ILogger logger;
+
+        public SkellVisitor()
+        {
+            logger = Log.ForContext<SkellVisitor>();
+        }
 
         /// <remarks>
         /// program : statement+ ;
@@ -13,7 +20,9 @@ namespace Skell.Interpreter
         {
             Skell.Data.SkellData lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
+                logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
+                logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()}");
                 System.Console.WriteLine(lastResult);
             }
             return lastResult;
