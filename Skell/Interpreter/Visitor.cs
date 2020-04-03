@@ -40,11 +40,31 @@ namespace Skell.Interpreter
         }
 
         /// <remarks>
-        /// statement : expression ;
+        /// statement : expression | control;
         /// </remarks>
         override public Skell.Data.SkellData VisitStatement(SkellParser.StatementContext context)
         {
-            return Visit(context.expression());
+            if (context.expression() != null)
+            {
+                return VisitExpression(context.expression());
+            }
+            else
+            {
+                return VisitControl(context.control());
+            }
+        }
+
+        /// <remarks>
+        /// statementBlock : LCURL statement* RCURL ;
+        /// </remarks>
+        override public Skell.Data.SkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
+        {
+            Skell.Data.SkellData lastResult = defaultReturnValue;
+            for (int i = 0; i < context.statement().Length; i++)
+            {
+                lastResult = VisitStatement(context.statement(i));
+            }
+            return lastResult;
         }
 
         /// <remarks>
@@ -151,6 +171,68 @@ namespace Skell.Interpreter
                 i++;
             }
             return result;
+        }
+
+        /// <remarks>
+        /// control : ifControl ;
+        /// </remarks>
+        override public Skell.Data.SkellData VisitControl(SkellParser.ControlContext context)
+        {
+            return VisitIfControl(context.ifControl());
+        }
+
+        /// <remarks>
+        /// ifControl : ifThenControl | ifThenElseControl ;
+        /// </remarks>
+        override public Skell.Data.SkellData VisitIfControl(SkellParser.IfControlContext context)
+        {
+            if (context.ifThenControl() != null)
+            {
+                return VisitIfThenControl(context.ifThenControl());
+            }
+            else
+            {
+                return VisitIfThenElseControl(context.ifThenElseControl());
+            }
+        }
+
+        /// <remarks>
+        /// ifThenControl : KW_IF expression KW_THEN statementBlock ;
+        /// </remarks>
+        override public Skell.Data.SkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
+        {
+            Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
+            if (!(cont.isTrue))
+            {
+                return new Skell.Data.Boolean(false);
+            }
+            return VisitStatementBlock(context.statementBlock());
+        }
+
+        /// <remarks>
+        /// ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
+        /// </remarks>
+        override public Skell.Data.SkellData VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
+        {
+            // Evaluate the expression separately
+            // Do not use VisitIfThenControl as the statementBlock in the
+            // ifThenControl can return a false value
+            Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
+            if (cont.isTrue)
+            {
+                return VisitStatementBlock(context.ifThenControl().statementBlock());
+            }
+            else
+            {
+                if (context.statementBlock() != null)
+                {
+                    return VisitStatementBlock(context.statementBlock());
+                }
+                else
+                {
+                    return VisitIfControl(context.ifControl());
+                }
+            }
         }
 
         /// <remarks>
@@ -267,6 +349,19 @@ namespace Skell.Interpreter
             contents = contents.Remove(0,1);
             contents = contents.Remove(contents.Length - 1,1);
             return new Skell.Data.String(contents);
+        }
+
+        /// <summary>
+        /// Evaluates an expression and returns a Skell.Data.Boolean
+        /// </summary>
+        public static Skell.Data.Boolean EvaluateExpr(SkellVisitor parser, SkellParser.ExpressionContext context)
+        {
+            var expressionResult = parser.VisitExpression(context);
+            if (!(expressionResult is Skell.Data.Boolean))
+            {
+                throw new System.NotImplementedException();
+            }
+            return (Skell.Data.Boolean) expressionResult;
         }
 
         /// <summary>
