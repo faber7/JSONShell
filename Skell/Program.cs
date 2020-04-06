@@ -67,7 +67,7 @@ namespace Skell
             logger = Log.ForContext<Program>();
 
             interpreter = new SkellInterpreter();
-            
+
             if (options.InputFile == null) {
                 logger.Information("No arguments specified, running in interpreter mode");
                 runPrompt();

@@ -25,7 +25,7 @@ namespace Skell.Interpreter
                 if (lastResult is Skell.Data.Array arr)
                 {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
-                } 
+                }
                 else if (lastResult is Skell.Data.Object obj)
                 {
                     logger.Debug($"Result: \n{obj}\n of type {lastResult.GetType()}");
@@ -171,7 +171,7 @@ namespace Skell.Interpreter
                 if (!(next is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.unary(i)).Payload;                
+                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.unary(i)).Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
                     result = (Skell.Data.Number) result / (Skell.Data.Number) next;
                 } else {
@@ -307,7 +307,7 @@ namespace Skell.Interpreter
                 return VisitValue(context.value());
             }
         }
-        
+
         /// <summary>
         /// value : object | array | STRING | NUMBER | bool ;
         /// </summary>
@@ -402,8 +402,8 @@ namespace Skell.Interpreter
         {
             int index = GetNodeIndex(context);
 
-            return index > 0 && index < context.Parent.ChildCount 
-                ? context.Parent.GetChild(index - 1) 
+            return index > 0 && index < context.Parent.ChildCount
+                ? context.Parent.GetChild(index - 1)
                 : null;
         }
 
@@ -417,7 +417,7 @@ namespace Skell.Interpreter
             int index = GetNodeIndex(context);
 
             return index >= 0 && index < context.Parent.ChildCount - 1
-                ? context.Parent.GetChild(index + 1) 
+                ? context.Parent.GetChild(index + 1)
                 : null;
         }
 

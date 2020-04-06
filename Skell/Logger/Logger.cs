@@ -5,7 +5,7 @@ namespace Skell
     public static class SkellLogger
     {
         private const string outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}";
-        
+
         public static void InitializeConsoleLogger(bool Debug, bool Verbose)
         {
             var config = new LoggerConfiguration();
@@ -16,7 +16,7 @@ namespace Skell
             } else if (Verbose) {
                 config = config.MinimumLevel.Verbose();
             }
-            
+
             Log.Logger = config
                 .WriteTo.Console(
                     outputTemplate: outputTemplate

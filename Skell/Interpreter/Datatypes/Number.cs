@@ -43,7 +43,7 @@ namespace Skell.Data
             }
         }
 
-        public static Number operator -(Number a) => a.isInt ? 
+        public static Number operator -(Number a) => a.isInt ?
             new Number(-a.integerValue) : new Number(-a.decimalValue);
         public static Number operator -(Number a, Number b)
         {
@@ -111,7 +111,7 @@ namespace Skell.Data
                 return a.decimalValue >= b.decimalValue;
             }
         }
-        
+
         public static bool operator <(Number a, Number b)
         {
             if (a.isInt && b.isInt) {
@@ -136,7 +136,7 @@ namespace Skell.Data
                 return a.decimalValue <= b.decimalValue;
             }
         }
-        
+
         public static bool operator ==(Number a, Number b)
         {
             return a.Equals(b);

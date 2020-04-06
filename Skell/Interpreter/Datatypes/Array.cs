@@ -36,7 +36,7 @@ namespace Skell.Data
             throw new System.NotImplementedException();
         }
 
-        public override string ToString() 
+        public override string ToString()
         {
             StringBuilder s = new StringBuilder();
 
