@@ -28,8 +28,8 @@ namespace Skell.Interpreter
                 if (lastResult is Skell.Types.Array arr) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
                 } else if (lastResult is Skell.Types.Object obj) {
-                    logger.Debug($"Result: \n{obj}\n of type {lastResult.GetType()}");
-                } else {
+                    logger.Debug($"Result is an object:\n {obj}");
+                } else if (!(lastResult is Skell.Types.Null)) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
             }
@@ -65,18 +65,10 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : varDecl ;
+        /// declaration : typeName IDENTIFIER 
+        ///             | typeName IDENTIFIER OP_ASSGN expression;
         /// </summary>
         override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
-        {
-            return VisitVarDecl(context.varDecl());
-        }
-
-        /// <summary>
-        /// varDecl : typeName IDENTIFIER
-        ///         | typeName IDENTIFIER OP_ASSGN expression;
-        /// </summary>
-        override public Skell.Types.ISkellType VisitVarDecl(SkellParser.VarDeclContext context)
         {
             var typeToken = Utility.GetTypeNameToken(context.typeName());
             Skell.Types.ISkellType data = null;
