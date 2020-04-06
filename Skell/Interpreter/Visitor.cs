@@ -22,17 +22,17 @@ namespace Skell.Interpreter
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
-                if (lastResult is Skell.Data.Array)
+                if (lastResult is Skell.Data.Array arr)
                 {
-                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()} and length {((Skell.Data.Array)lastResult).Length}");
+                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
                 } 
-                else if (lastResult is Skell.Data.Object)
+                else if (lastResult is Skell.Data.Object obj)
                 {
-                    logger.Debug($"Result: \n{((Skell.Data.Object)lastResult).ToString()}\n of type {lastResult.GetType().ToString()}");
+                    logger.Debug($"Result: \n{obj}\n of type {lastResult.GetType()}");
                 }
                 else
                 {
-                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType().ToString()}");
+                    logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
                 System.Console.WriteLine(lastResult);
             }
@@ -85,11 +85,11 @@ namespace Skell.Interpreter
             if (context.relExpr(1) != null) {
                 Skell.Data.SkellData next = VisitRelExpr(context.relExpr(1));
                 var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.relExpr(1)).Payload;
+                bool ret = result.Equals(next);
                 if (op.Type == SkellLexer.OP_NE) {
-                    return new Skell.Data.Boolean(!(result.Equals(next)));
-                } else {
-                    return new Skell.Data.Boolean(result.Equals(next));
+                    ret = !ret;
                 }
+                return new Skell.Data.Boolean(ret);
             }
             return result;
         }
@@ -104,14 +104,23 @@ namespace Skell.Interpreter
             if (context.addExpr(1) != null) {
                 Skell.Data.SkellData next = VisitAddExpr(context.addExpr(1));
                 var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.addExpr(1)).Payload;
-                if (op.Type == SkellLexer.OP_GT) {
-                    return (Skell.Data.Number) result > (Skell.Data.Number) next;
-                } else if (op.Type == SkellLexer.OP_GE) {
-                    return (Skell.Data.Number) result >= (Skell.Data.Number) next;
-                } else if (op.Type == SkellLexer.OP_LT) {
-                    return (Skell.Data.Number) result < (Skell.Data.Number) next;
-                } else {
-                    return (Skell.Data.Number) result <= (Skell.Data.Number) next;
+                if (result is Skell.Data.Number r && next is Skell.Data.Number n) {
+                    bool ret = false;
+                    switch (op.Type) {
+                        case SkellLexer.OP_GE:
+                            ret = r >= n;
+                        break;
+                        case SkellLexer.OP_GT:
+                            ret = r > n;
+                        break;
+                        case SkellLexer.OP_LE:
+                            ret = r < n;
+                        break;
+                        case SkellLexer.OP_LT:
+                            ret = r <= n;
+                        break;
+                    }
+                    return new Skell.Data.Boolean(ret);
                 }
             }
             return result;
@@ -202,7 +211,7 @@ namespace Skell.Interpreter
         override public Skell.Data.SkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
-            if (!(cont.isTrue))
+            if (!cont.value)
             {
                 return new Skell.Data.Boolean(false);
             }
@@ -218,7 +227,7 @@ namespace Skell.Interpreter
             // Do not use VisitIfThenControl as the statementBlock in the
             // ifThenControl can return a false value
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
-            if (cont.isTrue)
+            if (cont.value)
             {
                 return VisitStatementBlock(context.ifThenControl().statementBlock());
             }
@@ -275,20 +284,27 @@ namespace Skell.Interpreter
         /// </remarks>
         override public Skell.Data.SkellData VisitTerm(SkellParser.TermContext context)
         {
-            if (context.IDENTIFIER() != null) {
-                // handle identifier
-                throw new System.NotImplementedException();
-            } else if (context.value() != null) {
-                return VisitValue(context.value());
-            } else {
-                var t = VisitTerm(context.term());
+            if (context.term() != null) {
+                Skell.Data.SkellData term = VisitTerm(context.term());
+                Skell.Data.SkellData index;
                 if (context.STRING() != null) {
-                    throw new System.NotImplementedException();
+                    index = Utility.GetString(context.STRING());
                 } else if (context.NUMBER() != null) {
-                    throw new System.NotImplementedException();
+                    index = new Skell.Data.Number(context.NUMBER().GetText());
                 } else {
                     throw new System.NotImplementedException();
                 }
+                if (term is Skell.Data.Object obj) {
+                    return obj.GetMember(index);
+                } else if (term is Skell.Data.Array arr) {
+                    return arr.GetMember(index);
+                } else {
+                    throw new System.NotImplementedException();
+                }
+            } else if (context.IDENTIFIER() != null) {
+                throw new System.NotImplementedException();
+            } else {
+                return VisitValue(context.value());
             }
         }
         
