@@ -23,7 +23,10 @@ primary : term
         | LPAREN expression RPAREN
         ;
 
-term : value | IDENTIFIER ;
+term : value
+     | IDENTIFIER
+     | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+     ;
 
 value : object | array | STRING | NUMBER | bool ;
 bool : KW_TRUE | KW_FALSE ;
