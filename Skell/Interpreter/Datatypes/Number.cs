@@ -34,9 +34,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return new Number(a.integerValue + b.integerValue);
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return new Number(a.integerValue + b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return new Number(a.decimalValue + b.integerValue);
             } else {
                 return new Number(a.decimalValue + b.decimalValue);
@@ -49,9 +49,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return new Number(a.integerValue - b.integerValue);
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return new Number(a.integerValue - b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return new Number(a.decimalValue - b.integerValue);
             } else {
                 return new Number(a.decimalValue - b.decimalValue);
@@ -62,9 +62,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return new Number(a.integerValue * b.integerValue);
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return new Number(a.integerValue * b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return new Number(a.decimalValue * b.integerValue);
             } else {
                 return new Number(a.decimalValue * b.decimalValue);
@@ -78,9 +78,9 @@ namespace Skell.Data
                 } else {
                     return new Number(decimal.Divide(a.integerValue, b.integerValue));
                 }
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return new Number(a.integerValue / b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return new Number(a.decimalValue / b.integerValue);
             } else {
                 return new Number(a.decimalValue / b.decimalValue);
@@ -91,9 +91,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return a.integerValue > b.integerValue;
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return a.integerValue > b.decimalValue;
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return a.decimalValue > b.integerValue;
             } else {
                 return a.decimalValue > b.decimalValue;
@@ -103,9 +103,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return a.integerValue >= b.integerValue;
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return a.integerValue >= b.decimalValue;
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return a.decimalValue >= b.integerValue;
             } else {
                 return a.decimalValue >= b.decimalValue;
@@ -116,9 +116,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return a.integerValue < b.integerValue;
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return a.integerValue < b.decimalValue;
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return a.decimalValue < b.integerValue;
             } else {
                 return a.decimalValue < b.decimalValue;
@@ -128,9 +128,9 @@ namespace Skell.Data
         {
             if (a.isInt && b.isInt) {
                 return a.integerValue <= b.integerValue;
-            } else if (a.isInt && !(b.isInt)) {
+            } else if (a.isInt && !b.isInt) {
                 return a.integerValue <= b.decimalValue;
-            } else if (!(a.isInt) && b.isInt) {
+            } else if (!a.isInt && b.isInt) {
                 return a.decimalValue <= b.integerValue;
             } else {
                 return a.decimalValue <= b.decimalValue;
@@ -154,7 +154,7 @@ namespace Skell.Data
             if (obj is Number n) {
                 if (isInt && n.isInt) {
                     return integerValue == n.integerValue;
-                } else if (!isInt && !(n.isInt)) {
+                } else if (!isInt && !n.isInt) {
                     return decimalValue == n.decimalValue;
                 } else if (!isInt && n.isInt) {
                     return decimalValue == n.integerValue;
