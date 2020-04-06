@@ -8,6 +8,11 @@ namespace Skell.Data
     {
         private readonly Dictionary<String, ISkellData> dict;
 
+        public Object()
+        {
+            dict = new Dictionary<String, ISkellData>();
+        }
+
         public Object(String[] k, ISkellData[] v)
         {
             if (k.Length != v.Length) {

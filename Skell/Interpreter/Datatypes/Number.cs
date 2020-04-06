@@ -6,6 +6,12 @@ namespace Skell.Data
         public readonly int integerValue;
         public readonly decimal decimalValue;
 
+        public Number()
+        {
+            isInt = true;
+            integerValue = 0;
+        }
+
         public Number(int value)
         {
             isInt = true;

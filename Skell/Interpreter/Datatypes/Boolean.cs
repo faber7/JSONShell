@@ -4,6 +4,11 @@ namespace Skell.Data
     {
         public readonly bool value;
 
+        public Boolean()
+        {
+            value = false;
+        }
+
         public Boolean(bool val)
         {
             value = val;

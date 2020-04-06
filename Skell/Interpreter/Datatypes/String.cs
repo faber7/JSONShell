@@ -6,6 +6,11 @@ namespace Skell.Data
     {
         public readonly string contents;
 
+        public String()
+        {
+            contents = "";
+        }
+
         public String(string token)
         {
             contents = token;
