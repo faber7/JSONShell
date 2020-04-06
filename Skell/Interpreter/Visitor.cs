@@ -39,7 +39,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// statement : declaration EOL | expression EOL | control ;
+        /// statement : EOL | declaration EOL | expression EOL | control ;
         /// </summary>
         override public Skell.Types.ISkellType VisitStatement(SkellParser.StatementContext context)
         {
@@ -47,8 +47,10 @@ namespace Skell.Interpreter
                 return VisitExpression(context.expression());
             } else if (context.control() != null) {
                 return VisitControl(context.control());
-            } else {
+            } else if (context.declaration() != null) {
                 return VisitDeclaration(context.declaration());
+            } else {
+                return defaultReturnValue;
             }
         }
 
