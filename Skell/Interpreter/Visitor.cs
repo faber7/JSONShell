@@ -268,15 +268,28 @@ namespace Skell.Interpreter
         }
 
         /// <remarks>
-        /// term : value | IDENTIFIER ;
+        /// term : value
+        ///      | IDENTIFIER
+        ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+        ///      ;
         /// </remarks>
         override public Skell.Data.SkellData VisitTerm(SkellParser.TermContext context)
         {
             if (context.IDENTIFIER() != null) {
                 // handle identifier
                 throw new System.NotImplementedException();
+            } else if (context.value() != null) {
+                return VisitValue(context.value());
+            } else {
+                var t = VisitTerm(context.term());
+                if (context.STRING() != null) {
+                    throw new System.NotImplementedException();
+                } else if (context.NUMBER() != null) {
+                    throw new System.NotImplementedException();
+                } else {
+                    throw new System.NotImplementedException();
+                }
             }
-            return VisitValue(context.value());
         }
         
         /// <remarks>
