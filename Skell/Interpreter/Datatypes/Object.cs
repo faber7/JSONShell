@@ -4,17 +4,17 @@ using System.Collections.Generic;
 
 namespace Skell.Data
 {
-    public class Object : SkellIndexableData
+    public class Object : ISkellIndexableData
     {
-        private readonly Dictionary<String, SkellData> dict;
+        private readonly Dictionary<String, ISkellData> dict;
 
-        public Object(String[] k, SkellData[] v)
+        public Object(String[] k, ISkellData[] v)
         {
             if (k.Length != v.Length)
             {
                 throw new System.NotImplementedException();
             }
-            dict = new Dictionary<String, SkellData>();
+            dict = new Dictionary<String, ISkellData>();
             for (int i = 0; i < k.Length; i++) {
                 dict.Add(k[i], v[i]);
             }
@@ -22,7 +22,7 @@ namespace Skell.Data
 
         public int Count() => dict.Count;
 
-        public SkellData GetMember(SkellData index)
+        public ISkellData GetMember(ISkellData index)
         {
             if (index is String s && dict.ContainsKey(s)) {
                 return dict[s];

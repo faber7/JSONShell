@@ -5,18 +5,18 @@ using System.Text;
 
 namespace Skell.Data
 {
-    public class Array : SkellIndexableData, IEnumerator, IEnumerable
+    public class Array : ISkellIndexableData, IEnumerator, IEnumerable
     {
-        private readonly List<SkellData> contents;
+        private readonly List<ISkellData> contents;
 
         public Array()
         {
-            contents = new List<SkellData>();
+            contents = new List<ISkellData>();
         }
 
-        public Array(SkellData[] values)
+        public Array(ISkellData[] values)
         {
-            contents = new List<SkellData>();
+            contents = new List<ISkellData>();
             foreach (var value in values) {
                 contents.Add(value);
             }
@@ -24,7 +24,7 @@ namespace Skell.Data
 
         public int Count() => contents.Count;
 
-        public SkellData GetMember(SkellData index)
+        public ISkellData GetMember(ISkellData index)
         {
             if (index is Number i && i.isInt) {
                 if (i.integerValue < contents.Count) {

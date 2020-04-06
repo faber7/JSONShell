@@ -1,6 +1,6 @@
 namespace Skell.Data
 {
-    public class Boolean : SkellData
+    public class Boolean : ISkellData
     {
         public readonly bool value;
 

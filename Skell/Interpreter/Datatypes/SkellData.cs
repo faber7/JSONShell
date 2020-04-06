@@ -1,16 +1,16 @@
 namespace Skell.Data
 {
     // Base type for all datatypes in Skell
-    public interface SkellData
+    public interface ISkellData
     {
         
     }
 
     // Base type for any datatype that has member access support
-    public interface SkellIndexableData : SkellData
+    public interface ISkellIndexableData : ISkellData
     {
         int Count();
 
-        SkellData GetMember(SkellData index);
+        ISkellData GetMember(ISkellData index);
     }
 }

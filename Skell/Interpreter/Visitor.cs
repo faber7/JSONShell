@@ -3,7 +3,7 @@ using Serilog;
 
 namespace Skell.Interpreter
 {
-    class SkellVisitor : SkellBaseVisitor<Skell.Data.SkellData>
+    class SkellVisitor : SkellBaseVisitor<Skell.Data.ISkellData>
     {
         Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
         private static ILogger logger;
@@ -16,9 +16,9 @@ namespace Skell.Interpreter
         /// <summary>
         /// program : statement+ ;
         /// </summary>
-        override public Skell.Data.SkellData VisitProgram(SkellParser.ProgramContext context)
+        override public Skell.Data.ISkellData VisitProgram(SkellParser.ProgramContext context)
         {
-            Skell.Data.SkellData lastResult = defaultReturnValue;
+            Skell.Data.ISkellData lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
@@ -42,7 +42,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// statement : expression | control;
         /// </summary>
-        override public Skell.Data.SkellData VisitStatement(SkellParser.StatementContext context)
+        override public Skell.Data.ISkellData VisitStatement(SkellParser.StatementContext context)
         {
             if (context.expression() != null)
             {
@@ -57,9 +57,9 @@ namespace Skell.Interpreter
         /// <summary>
         /// statementBlock : LCURL statement* RCURL ;
         /// </summary>
-        override public Skell.Data.SkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
+        override public Skell.Data.ISkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
-            Skell.Data.SkellData lastResult = defaultReturnValue;
+            Skell.Data.ISkellData lastResult = defaultReturnValue;
             for (int i = 0; i < context.statement().Length; i++)
             {
                 lastResult = VisitStatement(context.statement(i));
@@ -70,7 +70,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// expression : eqExpr ;
         /// </summary>
-        override public Skell.Data.SkellData VisitExpression(SkellParser.ExpressionContext context)
+        override public Skell.Data.ISkellData VisitExpression(SkellParser.ExpressionContext context)
         {
             return Visit(context.eqExpr());
         }
@@ -78,12 +78,12 @@ namespace Skell.Interpreter
         /// <summary>
         /// eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
         /// </summary>
-        override public Skell.Data.SkellData VisitEqExpr(SkellParser.EqExprContext context)
+        override public Skell.Data.ISkellData VisitEqExpr(SkellParser.EqExprContext context)
         {
-            Skell.Data.SkellData result = VisitRelExpr(context.relExpr(0));
+            Skell.Data.ISkellData result = VisitRelExpr(context.relExpr(0));
 
             if (context.relExpr(1) != null) {
-                Skell.Data.SkellData next = VisitRelExpr(context.relExpr(1));
+                Skell.Data.ISkellData next = VisitRelExpr(context.relExpr(1));
                 var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.relExpr(1)).Payload;
                 bool ret = result.Equals(next);
                 if (op.Type == SkellLexer.OP_NE) {
@@ -97,12 +97,12 @@ namespace Skell.Interpreter
         /// <summary>
         /// relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
         /// </summary>
-        override public Skell.Data.SkellData VisitRelExpr(SkellParser.RelExprContext context)
+        override public Skell.Data.ISkellData VisitRelExpr(SkellParser.RelExprContext context)
         {
-            Skell.Data.SkellData result = VisitAddExpr(context.addExpr(0));
+            Skell.Data.ISkellData result = VisitAddExpr(context.addExpr(0));
 
             if (context.addExpr(1) != null) {
-                Skell.Data.SkellData next = VisitAddExpr(context.addExpr(1));
+                Skell.Data.ISkellData next = VisitAddExpr(context.addExpr(1));
                 var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.addExpr(1)).Payload;
                 if (result is Skell.Data.Number r && next is Skell.Data.Number n) {
                     bool ret = false;
@@ -129,17 +129,17 @@ namespace Skell.Interpreter
         /// <summary>
         /// addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
         /// </summary>
-        override public Skell.Data.SkellData VisitAddExpr(SkellParser.AddExprContext context)
+        override public Skell.Data.ISkellData VisitAddExpr(SkellParser.AddExprContext context)
         {
             int i = 0;
-            Skell.Data.SkellData result = VisitMulExpr(context.mulExpr(i));
+            Skell.Data.ISkellData result = VisitMulExpr(context.mulExpr(i));
 
             i++;
             while (context.mulExpr(i) != null) {
                 if (!(result is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
-                Skell.Data.SkellData next = VisitMulExpr(context.mulExpr(i));
+                Skell.Data.ISkellData next = VisitMulExpr(context.mulExpr(i));
                 if (!(next is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
@@ -157,17 +157,17 @@ namespace Skell.Interpreter
         /// <summary>
         /// mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
         /// </summary>
-        override public Skell.Data.SkellData VisitMulExpr(SkellParser.MulExprContext context)
+        override public Skell.Data.ISkellData VisitMulExpr(SkellParser.MulExprContext context)
         {
             int i = 0;
-            Skell.Data.SkellData result = VisitUnary(context.unary(i));
+            Skell.Data.ISkellData result = VisitUnary(context.unary(i));
 
             i++;
             while (context.unary(i) != null) {
                 if (!(result is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
-                Skell.Data.SkellData next = VisitUnary(context.unary(i));
+                Skell.Data.ISkellData next = VisitUnary(context.unary(i));
                 if (!(next is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
@@ -185,7 +185,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// control : ifControl ;
         /// </summary>
-        override public Skell.Data.SkellData VisitControl(SkellParser.ControlContext context)
+        override public Skell.Data.ISkellData VisitControl(SkellParser.ControlContext context)
         {
             return VisitIfControl(context.ifControl());
         }
@@ -193,7 +193,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifControl : ifThenControl | ifThenElseControl ;
         /// </summary>
-        override public Skell.Data.SkellData VisitIfControl(SkellParser.IfControlContext context)
+        override public Skell.Data.ISkellData VisitIfControl(SkellParser.IfControlContext context)
         {
             if (context.ifThenControl() != null)
             {
@@ -208,7 +208,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifThenControl : KW_IF expression KW_THEN statementBlock ;
         /// </summary>
-        override public Skell.Data.SkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
+        override public Skell.Data.ISkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
             if (!cont.value)
@@ -221,7 +221,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
         /// </summary>
-        override public Skell.Data.SkellData VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
+        override public Skell.Data.ISkellData VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
         {
             // Evaluate the expression separately
             // Do not use VisitIfThenControl as the statementBlock in the
@@ -249,7 +249,7 @@ namespace Skell.Interpreter
         ///       | primary
         ///       ;
         /// </summary>
-        override public Skell.Data.SkellData VisitUnary(SkellParser.UnaryContext context)
+        override public Skell.Data.ISkellData VisitUnary(SkellParser.UnaryContext context)
         {
             if (context.unary() != null) {
                 var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.unary()).Payload;
@@ -268,7 +268,7 @@ namespace Skell.Interpreter
         ///         | LPAREN expression RPAREN
         ///         ;
         /// </summary>
-        override public Skell.Data.SkellData VisitPrimary(SkellParser.PrimaryContext context)
+        override public Skell.Data.ISkellData VisitPrimary(SkellParser.PrimaryContext context)
         {
             if (context.term() != null) {
                 return VisitTerm(context.term());
@@ -282,11 +282,11 @@ namespace Skell.Interpreter
         ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         ///      ;
         /// </summary>
-        override public Skell.Data.SkellData VisitTerm(SkellParser.TermContext context)
+        override public Skell.Data.ISkellData VisitTerm(SkellParser.TermContext context)
         {
             if (context.term() != null) {
-                Skell.Data.SkellData term = VisitTerm(context.term());
-                Skell.Data.SkellData index;
+                Skell.Data.ISkellData term = VisitTerm(context.term());
+                Skell.Data.ISkellData index;
                 if (context.STRING() != null) {
                     index = Utility.GetString(context.STRING());
                 } else if (context.NUMBER() != null) {
@@ -311,7 +311,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// value : object | array | STRING | NUMBER | bool ;
         /// </summary>
-        override public Skell.Data.SkellData VisitValue(SkellParser.ValueContext context)
+        override public Skell.Data.ISkellData VisitValue(SkellParser.ValueContext context)
         {
             if (context.@object() != null) {
                 return VisitObject(context.@object());
@@ -333,10 +333,10 @@ namespace Skell.Interpreter
         ///       | LSQR RSQR
         ///       ;
         /// </summary>
-        override public Skell.Data.SkellData VisitArray(SkellParser.ArrayContext context)
+        override public Skell.Data.ISkellData VisitArray(SkellParser.ArrayContext context)
         {
             SkellParser.ValueContext[] values = context.value();
-            Skell.Data.SkellData[] contents = new Skell.Data.SkellData[values.Length];
+            Skell.Data.ISkellData[] contents = new Skell.Data.ISkellData[values.Length];
             for (int i = 0; i < values.Length; i++) {
                 contents[i] = VisitValue(values[i]);
             }
@@ -349,10 +349,10 @@ namespace Skell.Interpreter
         ///        ;
         /// pair : STRING SYM_COLON value ;
         /// </summary>
-        override public Skell.Data.SkellData VisitObject(SkellParser.ObjectContext context)
+        override public Skell.Data.ISkellData VisitObject(SkellParser.ObjectContext context)
         {
             Skell.Data.String[] keys = new Skell.Data.String[context.pair().Length];
-            Skell.Data.SkellData[] values = new Skell.Data.SkellData[context.pair().Length];
+            Skell.Data.ISkellData[] values = new Skell.Data.ISkellData[context.pair().Length];
 
             for (int i = 0; i < context.pair().Length; i++) {
                 var pair = context.pair(i);

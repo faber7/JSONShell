@@ -1,6 +1,6 @@
 namespace Skell.Data
 {
-    public class Number : SkellData
+    public class Number : ISkellData
     {
         public readonly bool isInt;
         public readonly int integerValue;
