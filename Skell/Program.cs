@@ -80,7 +80,11 @@ namespace Skell
         public static void RunFile(String path)
         {
             byte[] input = File.ReadAllBytes(path);
-            interpreter.Interprete(Encoding.ASCII.GetString(input));
+            string inputStr = Encoding.ASCII.GetString(input);
+            if (inputStr.Last() != '\n') {
+                inputStr += '\n';
+            }
+            interpreter.Interprete(inputStr);
         }
 
         public static void RunPrompt()
@@ -91,7 +95,7 @@ namespace Skell
             Console.Write("> ");
             while ((input = Console.In.ReadLine()) != null) {
                 interpreter.Interprete(input + '\n');
-                Console.Write("> ");
+                Console.Write("\n> ");
             }
             Exit(0);
         }
