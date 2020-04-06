@@ -2,9 +2,9 @@ using Serilog;
 
 namespace Skell
 {
-    public class SkellLogger
+    public static class SkellLogger
     {
-        static string outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}";
+        private const string outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}";
         
         public static void InitializeConsoleLogger(bool Debug, bool Verbose)
         {
