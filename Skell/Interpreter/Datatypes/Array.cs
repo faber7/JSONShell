@@ -6,12 +6,10 @@ namespace Skell.Data
 {
     public class Array : SkellData, IEnumerator, IEnumerable
     {
-        public int Length;
         private SkellData[] contents;
 
         public Array(SkellData[] values)
         {
-            Length = values.Length;
             contents = values;
         }
 
@@ -20,10 +18,10 @@ namespace Skell.Data
             StringBuilder s = new StringBuilder();
 
             s.Append("[");
-            for (int i = 0; i < Length; i++)
+            for (int i = 0; i < contents.Length; i++)
             {
                 s.Append(contents[i].ToString());
-                if (i != Length - 1)
+                if (i != contents.Length - 1)
                 {
                     s.Append(", ");
                 }
@@ -46,7 +44,7 @@ namespace Skell.Data
         public bool MoveNext()
         {
             position++;
-            return (position < Length);
+            return (position < contents.Length);
         }
 
         public void Reset()
