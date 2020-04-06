@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Skell.Data
 {
-    class Object : SkellIndexableData
+    public class Object : SkellIndexableData
     {
         private readonly Dictionary<String, SkellData> dict;
 

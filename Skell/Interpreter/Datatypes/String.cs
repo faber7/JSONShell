@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Skell.Data
 {
-    class String : SkellData
+    public class String : SkellData
     {
         public readonly string contents;
 
