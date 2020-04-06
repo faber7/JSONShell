@@ -20,7 +20,7 @@ namespace Skell.Interpreter
 
         public void Interprete(string src)
         {
-            logger.Verbose($":\n{src}");
+            logger.Verbose($"Source:\n{src.Trim()}");
             ICharStream charStream = CharStreams.fromstring(src);
             lexer = new SkellLexer(charStream);
             ITokenStream tokenStream = new CommonTokenStream(lexer);
