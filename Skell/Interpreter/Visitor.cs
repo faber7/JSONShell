@@ -65,44 +65,19 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : typeName IDENTIFIER 
-        ///             | typeName IDENTIFIER OP_ASSGN expression;
+        /// declaration : KW_LET IDENTIFIER
+        ///             | KW_LET IDENTIFIER OP_ASSGN expression;
         /// </summary>
         override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
         {
-            var typeToken = Utility.GetTypeNameToken(context.typeName());
-            Skell.Types.ISkellType data = null;
-            switch(typeToken.Type) {
-                case SkellLexer.TYPE_OBJECT:
-                    data = new Skell.Types.Object();
-                break;
-                case SkellLexer.TYPE_ARRAY:
-                    data = new Skell.Types.Array();
-                break;
-                case SkellLexer.TYPE_NUMBER:
-                    data = new Skell.Types.Number();
-                break;
-                case SkellLexer.TYPE_STRING:
-                    data = new Skell.Types.String();
-                break;
-                case SkellLexer.TYPE_BOOL:
-                    data = new Skell.Types.Boolean();
-                break;
-                default:
-                // given type is null
-                throw new System.NotImplementedException();
-            }
-            if (context.expression() != null) {
-                var exp = VisitExpression(context.expression());
-                if (exp.GetType() != data.GetType()) {
-                    throw new System.NotImplementedException();
-                }
-                data = exp;
-            }
-
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
 
-            currentContext.Set(name, data);
+            if (context.OP_ASSGN() == null) {
+                currentContext.Set(name, new Skell.Types.Object());
+            } else if (context.expression() != null) {
+                var exp = VisitExpression(context.expression());
+                currentContext.Set(name, exp);
+            }
 
             return defaultReturnValue;
         }
@@ -404,17 +379,6 @@ namespace Skell.Interpreter
             contents = contents.Remove(0,1);
             contents = contents.Remove(contents.Length - 1,1);
             return new Skell.Types.String(contents);
-        }
-
-        /// <summary>
-        /// Returns the token for the typename
-        /// </summary>
-        /// <remark>
-        /// typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_NULL ;
-        /// </remark>
-        public static Antlr4.Runtime.IToken GetTypeNameToken(SkellParser.TypeNameContext context)
-        {
-            return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
 
         /// <summary>
