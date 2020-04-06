@@ -50,7 +50,7 @@ namespace Skell
                 });
         }
 
-        private static void exit(int exitCode)
+        private static void Exit(int exitCode)
         {
             if (exitCode == 0) {
                 logger.Information("Exiting normally...");
@@ -70,30 +70,30 @@ namespace Skell
 
             if (options.InputFile == null) {
                 logger.Information("No arguments specified, running in interpreter mode");
-                runPrompt();
+                RunPrompt();
             } else {
                 logger.Information($"Running interpreter on {options.InputFile}");
-                runFile(options.InputFile);
+                RunFile(options.InputFile);
             }
         }
 
-        public static void runFile(String path)
+        public static void RunFile(String path)
         {
             byte[] input = File.ReadAllBytes(path);
-            interpreter.interprete(Encoding.ASCII.GetString(input));
+            interpreter.Interprete(Encoding.ASCII.GetString(input));
         }
 
-        public static void runPrompt()
+        public static void RunPrompt()
         {
             Console.WriteLine("Press Ctrl+D to exit the prompt.");
 
             string input;
             Console.Write("> ");
             while ((input = Console.In.ReadLine()) != null) {
-                interpreter.interprete(input);
+                interpreter.Interprete(input);
                 Console.Write("> ");
             }
-            exit(0);
+            Exit(0);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Skell.Interpreter
 {
     internal class SkellVisitor : SkellBaseVisitor<Skell.Data.ISkellData>
     {
-        private Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
+        private readonly Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
         private static ILogger logger;
 
         public SkellVisitor()
@@ -84,7 +84,7 @@ namespace Skell.Interpreter
 
             if (context.relExpr(1) != null) {
                 Skell.Data.ISkellData next = VisitRelExpr(context.relExpr(1));
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.relExpr(1)).Payload;
+                var op = (Antlr4.Runtime.IToken) context.relExpr(1).GetLeftSibling().Payload;
                 bool ret = result.Equals(next);
                 if (op.Type == SkellLexer.OP_NE) {
                     ret = !ret;
@@ -103,7 +103,7 @@ namespace Skell.Interpreter
 
             if (context.addExpr(1) != null) {
                 Skell.Data.ISkellData next = VisitAddExpr(context.addExpr(1));
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.addExpr(1)).Payload;
+                var op = (Antlr4.Runtime.IToken) context.addExpr(1).GetLeftSibling().Payload;
                 if (result is Skell.Data.Number r && next is Skell.Data.Number n) {
                     bool ret = false;
                     switch (op.Type) {
@@ -143,7 +143,7 @@ namespace Skell.Interpreter
                 if (!(next is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.mulExpr(i)).Payload;
+                var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
                     result = (Skell.Data.Number) result - (Skell.Data.Number) next;
                 } else {
@@ -171,7 +171,7 @@ namespace Skell.Interpreter
                 if (!(next is Skell.Data.Number)) {
                     throw new System.NotImplementedException();
                 }
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.unary(i)).Payload;
+                var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
                     result = (Skell.Data.Number) result / (Skell.Data.Number) next;
                 } else {
@@ -252,7 +252,7 @@ namespace Skell.Interpreter
         override public Skell.Data.ISkellData VisitUnary(SkellParser.UnaryContext context)
         {
             if (context.unary() != null) {
-                var op = (Antlr4.Runtime.IToken) Utility.GetLeftSibling(context.unary()).Payload;
+                var op = (Antlr4.Runtime.IToken) context.unary().GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_NOT) {
                     Skell.Data.Boolean boolUnary = new Skell.Data.Boolean(VisitUnary(context.unary()).ToString());
                     return !boolUnary;

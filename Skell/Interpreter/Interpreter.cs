@@ -10,7 +10,7 @@ namespace Skell.Interpreter
         private static ILogger logger;
         private ITokenSource lexer;
         private SkellParser parser;
-        SkellVisitor visitor;
+        private readonly SkellVisitor visitor;
 
         public SkellInterpreter()
         {
@@ -18,14 +18,15 @@ namespace Skell.Interpreter
             visitor = new SkellVisitor();
         }
 
-        public void interprete(string src)
+        public void Interprete(string src)
         {
             logger.Verbose($":\n{src}");
             ICharStream charStream = CharStreams.fromstring(src);
             lexer = new SkellLexer(charStream);
             ITokenStream tokenStream = new CommonTokenStream(lexer);
-            parser = new SkellParser(tokenStream);
-            parser.BuildParseTree = true;
+            parser = new SkellParser(tokenStream) {
+                BuildParseTree = true
+            };
             IParseTree tree = parser.program(); // Since program is our start rule
             logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
 
