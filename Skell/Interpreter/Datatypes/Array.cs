@@ -1,16 +1,39 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Skell.Data
 {
-    public class Array : SkellData, IEnumerator, IEnumerable
+    public class Array : SkellIndexableData, IEnumerator, IEnumerable
     {
-        private SkellData[] contents;
+        private readonly List<SkellData> contents;
+
+        public Array()
+        {
+            contents = new List<SkellData>();
+        }
 
         public Array(SkellData[] values)
         {
-            contents = values;
+            contents = new List<SkellData>();
+            foreach (var value in values) {
+                contents.Add(value);
+            }
+        }
+
+        public int Count() => contents.Count;
+
+        public SkellData GetMember(SkellData index)
+        {
+            if (index is Number i && i.isInt) {
+                if (i.integerValue < contents.Count) {
+                    return contents[i.integerValue];
+                } else {
+                    throw new System.NotImplementedException();
+                }
+            }
+            throw new System.NotImplementedException();
         }
 
         public override string ToString() 
@@ -18,10 +41,10 @@ namespace Skell.Data
             StringBuilder s = new StringBuilder();
 
             s.Append("[");
-            for (int i = 0; i < contents.Length; i++)
+            for (int i = 0; i < contents.Count; i++)
             {
                 s.Append(contents[i].ToString());
-                if (i != contents.Length - 1)
+                if (i != contents.Count - 1)
                 {
                     s.Append(", ");
                 }
@@ -44,7 +67,7 @@ namespace Skell.Data
         public bool MoveNext()
         {
             position++;
-            return (position < contents.Length);
+            return position < contents.Count;
         }
 
         public void Reset()
