@@ -22,16 +22,11 @@ namespace Skell.Interpreter
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
-                if (lastResult is Skell.Data.Array arr)
-                {
+                if (lastResult is Skell.Data.Array arr) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
-                }
-                else if (lastResult is Skell.Data.Object obj)
-                {
+                } else if (lastResult is Skell.Data.Object obj) {
                     logger.Debug($"Result: \n{obj}\n of type {lastResult.GetType()}");
-                }
-                else
-                {
+                } else {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
                 System.Console.WriteLine(lastResult);
@@ -44,12 +39,9 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Data.ISkellData VisitStatement(SkellParser.StatementContext context)
         {
-            if (context.expression() != null)
-            {
+            if (context.expression() != null) {
                 return VisitExpression(context.expression());
-            }
-            else
-            {
+            } else {
                 return VisitControl(context.control());
             }
         }
@@ -60,8 +52,7 @@ namespace Skell.Interpreter
         override public Skell.Data.ISkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
             Skell.Data.ISkellData lastResult = defaultReturnValue;
-            for (int i = 0; i < context.statement().Length; i++)
-            {
+            for (int i = 0; i < context.statement().Length; i++) {
                 lastResult = VisitStatement(context.statement(i));
             }
             return lastResult;
@@ -195,12 +186,9 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Data.ISkellData VisitIfControl(SkellParser.IfControlContext context)
         {
-            if (context.ifThenControl() != null)
-            {
+            if (context.ifThenControl() != null) {
                 return VisitIfThenControl(context.ifThenControl());
-            }
-            else
-            {
+            } else {
                 return VisitIfThenElseControl(context.ifThenElseControl());
             }
         }
@@ -211,8 +199,7 @@ namespace Skell.Interpreter
         override public Skell.Data.ISkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
-            if (!cont.value)
-            {
+            if (!cont.value) {
                 return new Skell.Data.Boolean(false);
             }
             return VisitStatementBlock(context.statementBlock());
@@ -227,20 +214,12 @@ namespace Skell.Interpreter
             // Do not use VisitIfThenControl as the statementBlock in the
             // ifThenControl can return a false value
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
-            if (cont.value)
-            {
+            if (cont.value) {
                 return VisitStatementBlock(context.ifThenControl().statementBlock());
-            }
-            else
-            {
-                if (context.statementBlock() != null)
-                {
-                    return VisitStatementBlock(context.statementBlock());
-                }
-                else
-                {
-                    return VisitIfControl(context.ifControl());
-                }
+            } else if (context.statementBlock() != null) {
+                return VisitStatementBlock(context.statementBlock());
+            } else {
+                return VisitIfControl(context.ifControl());
             }
         }
 
@@ -386,8 +365,7 @@ namespace Skell.Interpreter
         public static Skell.Data.Boolean EvaluateExpr(SkellVisitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
-            if (!(expressionResult is Skell.Data.Boolean))
-            {
+            if (!(expressionResult is Skell.Data.Boolean)) {
                 throw new System.NotImplementedException();
             }
             return (Skell.Data.Boolean) expressionResult;

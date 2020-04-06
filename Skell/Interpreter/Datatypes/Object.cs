@@ -10,8 +10,7 @@ namespace Skell.Data
 
         public Object(String[] k, ISkellData[] v)
         {
-            if (k.Length != v.Length)
-            {
+            if (k.Length != v.Length) {
                 throw new System.NotImplementedException();
             }
             dict = new Dictionary<String, ISkellData>();
