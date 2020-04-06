@@ -2,7 +2,7 @@ namespace Skell.Data
 {
     public class Boolean : SkellData
     {
-        bool value;
+        public readonly bool value;
 
         public Boolean(bool val)
         {
@@ -16,9 +16,35 @@ namespace Skell.Data
             }
         }
 
-        public bool isTrue => value == true;
-        
-        public bool isFalse => value == false;
+        public static bool operator >(Boolean a, Boolean b)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public static bool operator >=(Boolean a, Boolean b)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public static bool operator <(Boolean a, Boolean b)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public static bool operator <=(Boolean a, Boolean b)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public static bool operator ==(Boolean a, Boolean b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Boolean a, Boolean b)
+        {
+            return !a.Equals(b);
+        }
 
         public static Boolean operator !(Boolean a) => new Boolean(!a.value);
 
@@ -27,5 +53,15 @@ namespace Skell.Data
         public static Boolean operator |(Boolean a, Boolean b) => new Boolean(a.value | b.value);
 
         public override string ToString() => value.ToString().ToLower();
+
+        public override int GetHashCode() => value.GetHashCode();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Boolean b) {
+                return value == b.value;
+            }
+            throw new System.NotImplementedException();
+        }
     }
 }
