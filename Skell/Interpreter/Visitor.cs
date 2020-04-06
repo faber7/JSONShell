@@ -7,10 +7,14 @@ namespace Skell.Interpreter
     {
         private readonly Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
         private static ILogger logger;
+        private static Context globalContext;
+        private Context currentContext;
 
         public SkellVisitor()
         {
             logger = Log.ForContext<SkellVisitor>();
+            globalContext = new Context();
+            currentContext = globalContext;
         }
 
         /// <summary>
@@ -69,12 +73,46 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// varDecl : typeSpecifier IDENTIFIER 
-        ///         | typeSpecifier IDENTIFIER OP_ASSGN expression;
+        /// varDecl : typeName IDENTIFIER
+        ///         | typeName IDENTIFIER OP_ASSGN expression;
         /// </summary>
         override public Skell.Data.ISkellData VisitVarDecl(SkellParser.VarDeclContext context)
         {
-            return Visit(context.eqExpr());
+            var typeToken = Utility.GetTypeNameToken(context.typeName());
+            Skell.Data.ISkellData data = null;
+            switch(typeToken.Type) {
+                case SkellLexer.TYPE_OBJECT:
+                    data = new Skell.Data.Object();
+                break;
+                case SkellLexer.TYPE_ARRAY:
+                    data = new Skell.Data.Array();
+                break;
+                case SkellLexer.TYPE_NUMBER:
+                    data = new Skell.Data.Number();
+                break;
+                case SkellLexer.TYPE_STRING:
+                    data = new Skell.Data.String();
+                break;
+                case SkellLexer.TYPE_BOOL:
+                    data = new Skell.Data.Boolean();
+                break;
+                default:
+                // given type is null
+                throw new System.NotImplementedException();
+            }
+            if (context.expression() != null) {
+                var exp = VisitExpression(context.expression());
+                if (exp.GetType() != data.GetType()) {
+                    throw new System.NotImplementedException();
+                }
+                data = exp;
+            }
+
+            string name = Utility.GetIdentifierName(context.IDENTIFIER());
+
+            currentContext.Set(name, data);
+
+            return defaultReturnValue;
         }
 
         /// <summary>
@@ -374,6 +412,28 @@ namespace Skell.Interpreter
             contents = contents.Remove(0,1);
             contents = contents.Remove(contents.Length - 1,1);
             return new Skell.Data.String(contents);
+        }
+
+        /// <summary>
+        /// Returns the token for the typename
+        /// </summary>
+        /// <remark>
+        /// typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_NULL ;
+        /// </remark>
+        public static Antlr4.Runtime.IToken GetTypeNameToken(SkellParser.TypeNameContext context)
+        {
+            return (Antlr4.Runtime.IToken) context.children[0].Payload;
+        }
+
+        /// <summary>
+        /// Returns the name of the identifier
+        /// </summary>
+        /// <remark>
+        /// IDENTIFIER: NONDIGIT (NONDIGIT | DIGIT)* ;
+        /// </remark>
+        public static string GetIdentifierName(Antlr4.Runtime.Tree.ITerminalNode context)
+        {
+            return context.GetText();
         }
 
         /// <summary>
