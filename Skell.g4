@@ -2,7 +2,7 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : declaration EOL | expression EOL | control ;
+statement : EOL | declaration EOL | expression EOL | control ;
 
 statementBlock : LCURL statement* RCURL ;
 
@@ -47,7 +47,7 @@ typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TY
 
 // Lexer Rules
 EOL: '\n' ;
-WS: [ \n\t\r]+ -> skip; // skip all the whitespace
+WS: [ \t\r]+ -> skip; // skip all the whitespace
 
 // Keywords
 TYPE_OBJECT : 'object' ;
