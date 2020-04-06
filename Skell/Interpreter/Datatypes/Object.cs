@@ -1,34 +1,31 @@
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Skell.Data
 {
     class Object : SkellIndexableData
     {
-        private readonly Skell.Data.String[] keys;
-        private readonly SkellData[] values;
+        private readonly Dictionary<String, SkellData> dict;
 
-        public Object(Skell.Data.String[] k, SkellData[] v)
+        public Object(String[] k, SkellData[] v)
         {
             if (k.Length != v.Length)
             {
                 throw new System.NotImplementedException();
             }
-            keys = k;
-            values = v;
+            dict = new Dictionary<String, SkellData>();
+            for (int i = 0; i < k.Length; i++) {
+                dict.Add(k[i], v[i]);
+            }
         }
 
-        public int Count() => keys.Length;
+        public int Count() => dict.Count;
 
         public SkellData GetMember(SkellData index)
         {
-            if (index is String s && keys.Contains(s)) {
-                int n = keys.Select((str, i) => new {i, str})
-                    .Where(t => t.str == s)
-                    .Select(t => t.i)
-                    .First();
-                
-                return values[n];
+            if (index is String s && dict.ContainsKey(s)) {
+                return dict[s];
             }
             throw new System.NotImplementedException();
         }
@@ -37,13 +34,12 @@ namespace Skell.Data
         {
             StringBuilder s = new StringBuilder();
             s.Append("{ ");
-            for (int i = 0; i < keys.Length; i++)
-            {
-                s.Append(keys[i]);
-                s.Append(" : ");
-                s.Append(values[i]);
-                if (i != keys.Length - 1)
-                {
+            for (int i = 0; i < dict.Count; i++) {
+                var item = dict.ElementAt(i);
+                var key = item.Key;
+                var value = item.Value;
+                s.Append(key).Append(" : ").Append(value);
+                if (i != dict.Count - 1) {
                     s.Append(", ");
                 }
             }
