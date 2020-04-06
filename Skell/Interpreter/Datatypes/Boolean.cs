@@ -48,10 +48,6 @@ namespace Skell.Data
 
         public static Boolean operator !(Boolean a) => new Boolean(!a.value);
 
-        public static Boolean operator &(Boolean a, Boolean b) => new Boolean(a.value & b.value);
-
-        public static Boolean operator |(Boolean a, Boolean b) => new Boolean(a.value | b.value);
-
         public override string ToString() => value.ToString().ToLower();
 
         public override int GetHashCode() => value.GetHashCode();
