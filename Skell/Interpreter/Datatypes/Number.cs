@@ -2,9 +2,9 @@ namespace Skell.Data
 {
     public class Number : SkellData
     {
-        bool isInt;
-        int integerValue;
-        decimal decimalValue;
+        public readonly bool isInt;
+        public readonly int integerValue;
+        public readonly decimal decimalValue;
 
         public Number(int value)
         {
@@ -87,79 +87,63 @@ namespace Skell.Data
             }
         }
 
-        public static Boolean operator >(Number a, Number b)
+        public static bool operator >(Number a, Number b)
         {
             if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue > b.integerValue);
+                return a.integerValue > b.integerValue;
             } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue > b.decimalValue);
+                return a.integerValue > b.decimalValue;
             } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue > b.integerValue);
+                return a.decimalValue > b.integerValue;
             } else {
-                return new Boolean(a.decimalValue > b.decimalValue);
+                return a.decimalValue > b.decimalValue;
             }
         }
-        public static Boolean operator >=(Number a, Number b)
+        public static bool operator >=(Number a, Number b)
         {
             if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue >= b.integerValue);
+                return a.integerValue >= b.integerValue;
             } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue >= b.decimalValue);
+                return a.integerValue >= b.decimalValue;
             } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue >= b.integerValue);
+                return a.decimalValue >= b.integerValue;
             } else {
-                return new Boolean(a.decimalValue >= b.decimalValue);
-            }
-        }
-        
-        public static Boolean operator <(Number a, Number b)
-        {
-            if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue < b.integerValue);
-            } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue < b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue < b.integerValue);
-            } else {
-                return new Boolean(a.decimalValue < b.decimalValue);
-            }
-        }
-        public static Boolean operator <=(Number a, Number b)
-        {
-            if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue <= b.integerValue);
-            } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue <= b.decimalValue);
-            } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue <= b.integerValue);
-            } else {
-                return new Boolean(a.decimalValue <= b.decimalValue);
+                return a.decimalValue >= b.decimalValue;
             }
         }
         
-        public static Boolean operator ==(Number a, Number b)
+        public static bool operator <(Number a, Number b)
         {
             if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue == b.integerValue);
+                return a.integerValue < b.integerValue;
             } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue == b.decimalValue);
+                return a.integerValue < b.decimalValue;
             } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue == b.integerValue);
+                return a.decimalValue < b.integerValue;
             } else {
-                return new Boolean(a.decimalValue == b.decimalValue);
+                return a.decimalValue < b.decimalValue;
             }
         }
-        public static Boolean operator !=(Number a, Number b)
+        public static bool operator <=(Number a, Number b)
         {
             if (a.isInt && b.isInt) {
-                return new Boolean(a.integerValue != b.integerValue);
+                return a.integerValue <= b.integerValue;
             } else if (a.isInt && !(b.isInt)) {
-                return new Boolean(a.integerValue != b.decimalValue);
+                return a.integerValue <= b.decimalValue;
             } else if (!(a.isInt) && b.isInt) {
-                return new Boolean(a.decimalValue != b.integerValue);
+                return a.decimalValue <= b.integerValue;
             } else {
-                return new Boolean(a.decimalValue != b.decimalValue);
+                return a.decimalValue <= b.decimalValue;
             }
+        }
+        
+        public static bool operator ==(Number a, Number b)
+        {
+            return a.Equals(b);
+        }
+        public static bool operator !=(Number a, Number b)
+        {
+            return !a.Equals(b);
         }
 
         public override string ToString() => isInt ? integerValue.ToString() : decimalValue.ToString();
@@ -167,8 +151,7 @@ namespace Skell.Data
         public override int GetHashCode() => isInt ? integerValue.GetHashCode() : decimalValue.GetHashCode();
 
         public override bool Equals(object obj) {
-            if (obj is Number) {
-                Number n = (Number) obj;
+            if (obj is Number n) {
                 if (isInt && n.isInt) {
                     return integerValue == n.integerValue;
                 } else if (!isInt && !(n.isInt)) {
