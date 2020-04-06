@@ -24,7 +24,6 @@ namespace Skell.Interpreter
         {
             Skell.Types.ISkellType lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
-                logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
                 if (lastResult is Skell.Types.Array arr) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
@@ -33,7 +32,6 @@ namespace Skell.Interpreter
                 } else {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
-                System.Console.WriteLine(lastResult);
             }
             return lastResult;
         }
