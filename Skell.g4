@@ -2,9 +2,13 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : expression EOL | control;
+statement : declaration EOL | expression EOL | control ;
 
 statementBlock : LCURL statement* RCURL ;
+
+declaration : varDecl ;
+varDecl : typeSpecifier IDENTIFIER 
+        | typeSpecifier IDENTIFIER OP_ASSGN expression;
 
 control : ifControl ;
 ifControl : ifThenControl | ifThenElseControl ;

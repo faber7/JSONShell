@@ -35,14 +35,16 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// statement : expression | control;
+        /// statement : declaration EOL | expression EOL | control ;
         /// </summary>
         override public Skell.Data.ISkellData VisitStatement(SkellParser.StatementContext context)
         {
             if (context.expression() != null) {
                 return VisitExpression(context.expression());
-            } else {
+            } else if (context.control() != null) {
                 return VisitControl(context.control());
+            } else {
+                return VisitDeclaration(context.declaration());
             }
         }
 
@@ -56,6 +58,23 @@ namespace Skell.Interpreter
                 lastResult = VisitStatement(context.statement(i));
             }
             return lastResult;
+        }
+
+        /// <summary>
+        /// declaration : varDecl ;
+        /// </summary>
+        override public Skell.Data.ISkellData VisitDeclaration(SkellParser.DeclarationContext context)
+        {
+            return VisitVarDecl(context.varDecl());
+        }
+
+        /// <summary>
+        /// varDecl : typeSpecifier IDENTIFIER 
+        ///         | typeSpecifier IDENTIFIER OP_ASSGN expression;
+        /// </summary>
+        override public Skell.Data.ISkellData VisitVarDecl(SkellParser.VarDeclContext context)
+        {
+            return Visit(context.eqExpr());
         }
 
         /// <summary>

@@ -50,6 +50,18 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatementBlock([NotNull] SkellParser.StatementBlockContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.declaration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDeclaration([NotNull] SkellParser.DeclarationContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.varDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVarDecl([NotNull] SkellParser.VarDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.control"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
