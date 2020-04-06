@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Text;
 
 namespace Skell.Data
@@ -51,6 +52,26 @@ namespace Skell.Data
         public void Reset()
         {
             position = 0;
+        }
+
+        public static bool operator ==(Skell.Data.Array a1, Skell.Data.Array a2)
+        {
+            return a1.Equals(a2);
+        }
+
+        public static bool operator !=(Skell.Data.Array a1, Skell.Data.Array a2)
+        {
+            return !a1.Equals(a2);
+        }
+
+        public override int GetHashCode() => contents.GetHashCode();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Skell.Data.Array arr) {
+                return contents.SequenceEqual(arr.contents);
+            }
+            return false;
         }
     }
 }
