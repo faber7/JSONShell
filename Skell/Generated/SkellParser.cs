@@ -36,27 +36,27 @@ public partial class SkellParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		EOL=1, WS=2, KW_OBJECT=3, KW_ARRAY=4, KW_NUMBER=5, KW_STRING=6, KW_BOOL=7, 
-		KW_NULL=8, KW_TRUE=9, KW_FALSE=10, KW_IF=11, KW_THEN=12, KW_ELSE=13, KW_FOR=14, 
-		KW_IN=15, KW_RETURN=16, LSQR=17, RSQR=18, LCURL=19, RCURL=20, LPAREN=21, 
-		RPAREN=22, SYM_PERIOD=23, SYM_COMMA=24, SYM_QUOTE=25, SYM_COLON=26, OP_ASSGN=27, 
-		OP_EQ=28, OP_NE=29, OP_LT=30, OP_LE=31, OP_GT=32, OP_GE=33, OP_NOT=34, 
-		OP_OR=35, OP_AND=36, OP_ADD=37, OP_SUB=38, OP_DIV=39, OP_MUL=40, OP_MOD=41, 
-		IDENTIFIER=42, STRING=43, NUMBER=44, NONDIGIT=45, DIGIT=46, NONZERO_DIGIT=47, 
-		ZERO=48, SIGN=49, INT=50, FRAC=51, EXP=52, HEX=53, UNICODE=54, ESC=55, 
-		SAFECODEPOINT=56;
+		EOL=1, WS=2, TYPE_OBJECT=3, TYPE_ARRAY=4, TYPE_NUMBER=5, TYPE_STRING=6, 
+		TYPE_BOOL=7, TYPE_NULL=8, KW_TRUE=9, KW_FALSE=10, KW_IF=11, KW_THEN=12, 
+		KW_ELSE=13, KW_FOR=14, KW_IN=15, KW_RETURN=16, LSQR=17, RSQR=18, LCURL=19, 
+		RCURL=20, LPAREN=21, RPAREN=22, SYM_PERIOD=23, SYM_COMMA=24, SYM_QUOTE=25, 
+		SYM_COLON=26, OP_ASSGN=27, OP_EQ=28, OP_NE=29, OP_LT=30, OP_LE=31, OP_GT=32, 
+		OP_GE=33, OP_NOT=34, OP_OR=35, OP_AND=36, OP_ADD=37, OP_SUB=38, OP_DIV=39, 
+		OP_MUL=40, OP_MOD=41, IDENTIFIER=42, STRING=43, NUMBER=44, NONDIGIT=45, 
+		DIGIT=46, NONZERO_DIGIT=47, ZERO=48, SIGN=49, INT=50, FRAC=51, EXP=52, 
+		HEX=53, UNICODE=54, ESC=55, SAFECODEPOINT=56;
 	public const int
 		RULE_program = 0, RULE_statement = 1, RULE_statementBlock = 2, RULE_declaration = 3, 
 		RULE_varDecl = 4, RULE_control = 5, RULE_ifControl = 6, RULE_ifThenControl = 7, 
 		RULE_ifThenElseControl = 8, RULE_expression = 9, RULE_eqExpr = 10, RULE_relExpr = 11, 
 		RULE_addExpr = 12, RULE_mulExpr = 13, RULE_unary = 14, RULE_primary = 15, 
 		RULE_term = 16, RULE_value = 17, RULE_bool = 18, RULE_array = 19, RULE_pair = 20, 
-		RULE_object = 21, RULE_typeSpecifier = 22;
+		RULE_object = 21, RULE_typeName = 22;
 	public static readonly string[] ruleNames = {
 		"program", "statement", "statementBlock", "declaration", "varDecl", "control", 
 		"ifControl", "ifThenControl", "ifThenElseControl", "expression", "eqExpr", 
 		"relExpr", "addExpr", "mulExpr", "unary", "primary", "term", "value", 
-		"bool", "array", "pair", "object", "typeSpecifier"
+		"bool", "array", "pair", "object", "typeName"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -68,8 +68,8 @@ public partial class SkellParser : Parser {
 		null, "'0'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "EOL", "WS", "KW_OBJECT", "KW_ARRAY", "KW_NUMBER", "KW_STRING", 
-		"KW_BOOL", "KW_NULL", "KW_TRUE", "KW_FALSE", "KW_IF", "KW_THEN", "KW_ELSE", 
+		null, "EOL", "WS", "TYPE_OBJECT", "TYPE_ARRAY", "TYPE_NUMBER", "TYPE_STRING", 
+		"TYPE_BOOL", "TYPE_NULL", "KW_TRUE", "KW_FALSE", "KW_IF", "KW_THEN", "KW_ELSE", 
 		"KW_FOR", "KW_IN", "KW_RETURN", "LSQR", "RSQR", "LCURL", "RCURL", "LPAREN", 
 		"RPAREN", "SYM_PERIOD", "SYM_COMMA", "SYM_QUOTE", "SYM_COLON", "OP_ASSGN", 
 		"OP_EQ", "OP_NE", "OP_LT", "OP_LE", "OP_GT", "OP_GE", "OP_NOT", "OP_OR", 
@@ -148,7 +148,7 @@ public partial class SkellParser : Parser {
 				State = 49;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KW_OBJECT) | (1L << KW_ARRAY) | (1L << KW_NUMBER) | (1L << KW_STRING) | (1L << KW_BOOL) | (1L << KW_NULL) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << LSQR) | (1L << LCURL) | (1L << LPAREN) | (1L << OP_NOT) | (1L << OP_SUB) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_NULL) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << LSQR) | (1L << LCURL) | (1L << LPAREN) | (1L << OP_NOT) | (1L << OP_SUB) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -193,12 +193,12 @@ public partial class SkellParser : Parser {
 			State = 58;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case KW_OBJECT:
-			case KW_ARRAY:
-			case KW_NUMBER:
-			case KW_STRING:
-			case KW_BOOL:
-			case KW_NULL:
+			case TYPE_OBJECT:
+			case TYPE_ARRAY:
+			case TYPE_NUMBER:
+			case TYPE_STRING:
+			case TYPE_BOOL:
+			case TYPE_NULL:
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 51; declaration();
@@ -275,7 +275,7 @@ public partial class SkellParser : Parser {
 			State = 64;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KW_OBJECT) | (1L << KW_ARRAY) | (1L << KW_NUMBER) | (1L << KW_STRING) | (1L << KW_BOOL) | (1L << KW_NULL) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << LSQR) | (1L << LCURL) | (1L << LPAREN) | (1L << OP_NOT) | (1L << OP_SUB) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_NULL) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << LSQR) | (1L << LCURL) | (1L << LPAREN) | (1L << OP_NOT) | (1L << OP_SUB) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER))) != 0)) {
 				{
 				{
 				State = 61; statement();
@@ -337,8 +337,8 @@ public partial class SkellParser : Parser {
 	}
 
 	public partial class VarDeclContext : ParserRuleContext {
-		public TypeSpecifierContext typeSpecifier() {
-			return GetRuleContext<TypeSpecifierContext>(0);
+		public TypeNameContext typeName() {
+			return GetRuleContext<TypeNameContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(SkellParser.IDENTIFIER, 0); }
 		public ITerminalNode OP_ASSGN() { return GetToken(SkellParser.OP_ASSGN, 0); }
@@ -368,14 +368,14 @@ public partial class SkellParser : Parser {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 71; typeSpecifier();
+				State = 71; typeName();
 				State = 72; Match(IDENTIFIER);
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 74; typeSpecifier();
+				State = 74; typeName();
 				State = 75; Match(IDENTIFIER);
 				State = 76; Match(OP_ASSGN);
 				State = 77; expression();
@@ -1455,36 +1455,36 @@ public partial class SkellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TypeSpecifierContext : ParserRuleContext {
-		public ITerminalNode KW_OBJECT() { return GetToken(SkellParser.KW_OBJECT, 0); }
-		public ITerminalNode KW_ARRAY() { return GetToken(SkellParser.KW_ARRAY, 0); }
-		public ITerminalNode KW_NUMBER() { return GetToken(SkellParser.KW_NUMBER, 0); }
-		public ITerminalNode KW_STRING() { return GetToken(SkellParser.KW_STRING, 0); }
-		public ITerminalNode KW_BOOL() { return GetToken(SkellParser.KW_BOOL, 0); }
-		public ITerminalNode KW_NULL() { return GetToken(SkellParser.KW_NULL, 0); }
-		public TypeSpecifierContext(ParserRuleContext parent, int invokingState)
+	public partial class TypeNameContext : ParserRuleContext {
+		public ITerminalNode TYPE_OBJECT() { return GetToken(SkellParser.TYPE_OBJECT, 0); }
+		public ITerminalNode TYPE_ARRAY() { return GetToken(SkellParser.TYPE_ARRAY, 0); }
+		public ITerminalNode TYPE_NUMBER() { return GetToken(SkellParser.TYPE_NUMBER, 0); }
+		public ITerminalNode TYPE_STRING() { return GetToken(SkellParser.TYPE_STRING, 0); }
+		public ITerminalNode TYPE_BOOL() { return GetToken(SkellParser.TYPE_BOOL, 0); }
+		public ITerminalNode TYPE_NULL() { return GetToken(SkellParser.TYPE_NULL, 0); }
+		public TypeNameContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_typeSpecifier; } }
+		public override int RuleIndex { get { return RULE_typeName; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISkellVisitor<TResult> typedVisitor = visitor as ISkellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitTypeSpecifier(this);
+			if (typedVisitor != null) return typedVisitor.VisitTypeName(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public TypeSpecifierContext typeSpecifier() {
-		TypeSpecifierContext _localctx = new TypeSpecifierContext(Context, State);
-		EnterRule(_localctx, 44, RULE_typeSpecifier);
+	public TypeNameContext typeName() {
+		TypeNameContext _localctx = new TypeNameContext(Context, State);
+		EnterRule(_localctx, 44, RULE_typeName);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 195;
 			_la = TokenStream.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KW_OBJECT) | (1L << KW_ARRAY) | (1L << KW_NUMBER) | (1L << KW_STRING) | (1L << KW_BOOL) | (1L << KW_NULL))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_NULL))) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
