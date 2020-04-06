@@ -5,7 +5,7 @@ namespace Skell.Interpreter
 {
     internal class SkellVisitor : SkellBaseVisitor<Skell.Types.ISkellType>
     {
-        private readonly Skell.Types.Boolean defaultReturnValue = new Skell.Types.Boolean(true);
+        private readonly Skell.Types.Null defaultReturnValue = new Skell.Types.Null();
         private static ILogger logger;
         private static Context globalContext;
         private Context currentContext;
