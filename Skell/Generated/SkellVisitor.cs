@@ -56,12 +56,6 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitDeclaration([NotNull] SkellParser.DeclarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.varDecl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVarDecl([NotNull] SkellParser.VarDeclContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.control"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -163,11 +157,5 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitObject([NotNull] SkellParser.ObjectContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.typeName"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitTypeName([NotNull] SkellParser.TypeNameContext context);
 }
 } // namespace Generated

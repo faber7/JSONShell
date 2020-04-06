@@ -6,9 +6,8 @@ statement : EOL | declaration EOL | expression EOL | control ;
 
 statementBlock : LCURL statement* RCURL ;
 
-declaration : varDecl ;
-varDecl : typeName IDENTIFIER 
-        | typeName IDENTIFIER OP_ASSGN expression;
+declaration : KW_LET IDENTIFIER
+            | KW_LET IDENTIFIER OP_ASSGN expression;
 
 control : ifControl ;
 ifControl : ifThenControl | ifThenElseControl ;
@@ -43,19 +42,13 @@ object : LCURL pair (SYM_COMMA pair)* RCURL
        ;
 
 // Datatypes
-typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_NULL ;
+typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
 
 // Lexer Rules
 EOL: '\n' ;
 WS: [ \t\r]+ -> skip; // skip all the whitespace
 
 // Keywords
-TYPE_OBJECT : 'object' ;
-TYPE_ARRAY : 'array' ;
-TYPE_NUMBER : 'number' ;
-TYPE_STRING : 'string' ;
-TYPE_BOOL : 'bool' ;
-TYPE_NULL : 'null' ;
 KW_TRUE : 'true' ;
 KW_FALSE : 'false' ;
 KW_IF : 'if' ;
@@ -64,6 +57,13 @@ KW_ELSE : 'else' ;
 KW_FOR : 'for' ;
 KW_IN : 'in' ;
 KW_RETURN : 'return' ;
+KW_LET : 'let' ;
+// Typenames
+TYPE_OBJECT : 'object' ;
+TYPE_ARRAY : 'array' ;
+TYPE_NUMBER : 'number' ;
+TYPE_STRING : 'string' ;
+TYPE_BOOL : 'bool' ;
 
 // Symbols and operators
 LSQR: '[' ;
