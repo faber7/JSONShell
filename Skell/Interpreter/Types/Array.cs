@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Skell.Data
+namespace Skell.Types
 {
-    public class Array : ISkellIndexableData, IEnumerator, IEnumerable
+    public class Array : ISkellIndexableType, IEnumerator, IEnumerable
     {
-        private readonly List<ISkellData> contents;
+        private readonly List<ISkellType> contents;
 
         public Array()
         {
-            contents = new List<ISkellData>();
+            contents = new List<ISkellType>();
         }
 
-        public Array(ISkellData[] values)
+        public Array(ISkellType[] values)
         {
-            contents = new List<ISkellData>();
+            contents = new List<ISkellType>();
             foreach (var value in values) {
                 contents.Add(value);
             }
@@ -24,7 +24,7 @@ namespace Skell.Data
 
         public int Count() => contents.Count;
 
-        public ISkellData GetMember(ISkellData index)
+        public ISkellType GetMember(ISkellType index)
         {
             if (index is Number i && i.isInt) {
                 if (i.integerValue < contents.Count) {
@@ -75,12 +75,12 @@ namespace Skell.Data
             position = 0;
         }
 
-        public static bool operator ==(Skell.Data.Array a1, Skell.Data.Array a2)
+        public static bool operator ==(Skell.Types.Array a1, Skell.Types.Array a2)
         {
             return a1.Equals(a2);
         }
 
-        public static bool operator !=(Skell.Data.Array a1, Skell.Data.Array a2)
+        public static bool operator !=(Skell.Types.Array a1, Skell.Types.Array a2)
         {
             return !a1.Equals(a2);
         }
@@ -89,7 +89,7 @@ namespace Skell.Data
 
         public override bool Equals(object obj)
         {
-            if (obj is Skell.Data.Array arr) {
+            if (obj is Skell.Types.Array arr) {
                 return contents.SequenceEqual(arr.contents);
             }
             return false;

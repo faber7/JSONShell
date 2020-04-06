@@ -1,8 +1,8 @@
 using System.Text;
 
-namespace Skell.Data
+namespace Skell.Types
 {
-    public class String : ISkellData
+    public class String : ISkellType
     {
         public readonly string contents;
 

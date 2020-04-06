@@ -3,9 +3,9 @@ using Serilog;
 
 namespace Skell.Interpreter
 {
-    internal class SkellVisitor : SkellBaseVisitor<Skell.Data.ISkellData>
+    internal class SkellVisitor : SkellBaseVisitor<Skell.Types.ISkellType>
     {
-        private readonly Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
+        private readonly Skell.Types.Boolean defaultReturnValue = new Skell.Types.Boolean(true);
         private static ILogger logger;
         private static Context globalContext;
         private Context currentContext;
@@ -20,15 +20,15 @@ namespace Skell.Interpreter
         /// <summary>
         /// program : statement+ ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitProgram(SkellParser.ProgramContext context)
+        override public Skell.Types.ISkellType VisitProgram(SkellParser.ProgramContext context)
         {
-            Skell.Data.ISkellData lastResult = defaultReturnValue;
+            Skell.Types.ISkellType lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
                 logger.Verbose("Visiting:\n" + statement.ToStringTree());
                 lastResult = Visit(statement);
-                if (lastResult is Skell.Data.Array arr) {
+                if (lastResult is Skell.Types.Array arr) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
-                } else if (lastResult is Skell.Data.Object obj) {
+                } else if (lastResult is Skell.Types.Object obj) {
                     logger.Debug($"Result: \n{obj}\n of type {lastResult.GetType()}");
                 } else {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
@@ -41,7 +41,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// statement : declaration EOL | expression EOL | control ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitStatement(SkellParser.StatementContext context)
+        override public Skell.Types.ISkellType VisitStatement(SkellParser.StatementContext context)
         {
             if (context.expression() != null) {
                 return VisitExpression(context.expression());
@@ -55,9 +55,9 @@ namespace Skell.Interpreter
         /// <summary>
         /// statementBlock : LCURL statement* RCURL ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
+        override public Skell.Types.ISkellType VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
-            Skell.Data.ISkellData lastResult = defaultReturnValue;
+            Skell.Types.ISkellType lastResult = defaultReturnValue;
             for (int i = 0; i < context.statement().Length; i++) {
                 lastResult = VisitStatement(context.statement(i));
             }
@@ -67,7 +67,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// declaration : varDecl ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitDeclaration(SkellParser.DeclarationContext context)
+        override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
         {
             return VisitVarDecl(context.varDecl());
         }
@@ -76,25 +76,25 @@ namespace Skell.Interpreter
         /// varDecl : typeName IDENTIFIER
         ///         | typeName IDENTIFIER OP_ASSGN expression;
         /// </summary>
-        override public Skell.Data.ISkellData VisitVarDecl(SkellParser.VarDeclContext context)
+        override public Skell.Types.ISkellType VisitVarDecl(SkellParser.VarDeclContext context)
         {
             var typeToken = Utility.GetTypeNameToken(context.typeName());
-            Skell.Data.ISkellData data = null;
+            Skell.Types.ISkellType data = null;
             switch(typeToken.Type) {
                 case SkellLexer.TYPE_OBJECT:
-                    data = new Skell.Data.Object();
+                    data = new Skell.Types.Object();
                 break;
                 case SkellLexer.TYPE_ARRAY:
-                    data = new Skell.Data.Array();
+                    data = new Skell.Types.Array();
                 break;
                 case SkellLexer.TYPE_NUMBER:
-                    data = new Skell.Data.Number();
+                    data = new Skell.Types.Number();
                 break;
                 case SkellLexer.TYPE_STRING:
-                    data = new Skell.Data.String();
+                    data = new Skell.Types.String();
                 break;
                 case SkellLexer.TYPE_BOOL:
-                    data = new Skell.Data.Boolean();
+                    data = new Skell.Types.Boolean();
                 break;
                 default:
                 // given type is null
@@ -118,7 +118,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// expression : eqExpr ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitExpression(SkellParser.ExpressionContext context)
+        override public Skell.Types.ISkellType VisitExpression(SkellParser.ExpressionContext context)
         {
             return Visit(context.eqExpr());
         }
@@ -126,18 +126,18 @@ namespace Skell.Interpreter
         /// <summary>
         /// eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitEqExpr(SkellParser.EqExprContext context)
+        override public Skell.Types.ISkellType VisitEqExpr(SkellParser.EqExprContext context)
         {
-            Skell.Data.ISkellData result = VisitRelExpr(context.relExpr(0));
+            Skell.Types.ISkellType result = VisitRelExpr(context.relExpr(0));
 
             if (context.relExpr(1) != null) {
-                Skell.Data.ISkellData next = VisitRelExpr(context.relExpr(1));
+                Skell.Types.ISkellType next = VisitRelExpr(context.relExpr(1));
                 var op = (Antlr4.Runtime.IToken) context.relExpr(1).GetLeftSibling().Payload;
                 bool ret = result.Equals(next);
                 if (op.Type == SkellLexer.OP_NE) {
                     ret = !ret;
                 }
-                return new Skell.Data.Boolean(ret);
+                return new Skell.Types.Boolean(ret);
             }
             return result;
         }
@@ -145,14 +145,14 @@ namespace Skell.Interpreter
         /// <summary>
         /// relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitRelExpr(SkellParser.RelExprContext context)
+        override public Skell.Types.ISkellType VisitRelExpr(SkellParser.RelExprContext context)
         {
-            Skell.Data.ISkellData result = VisitAddExpr(context.addExpr(0));
+            Skell.Types.ISkellType result = VisitAddExpr(context.addExpr(0));
 
             if (context.addExpr(1) != null) {
-                Skell.Data.ISkellData next = VisitAddExpr(context.addExpr(1));
+                Skell.Types.ISkellType next = VisitAddExpr(context.addExpr(1));
                 var op = (Antlr4.Runtime.IToken) context.addExpr(1).GetLeftSibling().Payload;
-                if (result is Skell.Data.Number r && next is Skell.Data.Number n) {
+                if (result is Skell.Types.Number r && next is Skell.Types.Number n) {
                     bool ret = false;
                     switch (op.Type) {
                         case SkellLexer.OP_GE:
@@ -168,7 +168,7 @@ namespace Skell.Interpreter
                             ret = r <= n;
                         break;
                     }
-                    return new Skell.Data.Boolean(ret);
+                    return new Skell.Types.Boolean(ret);
                 }
             }
             return result;
@@ -177,25 +177,25 @@ namespace Skell.Interpreter
         /// <summary>
         /// addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitAddExpr(SkellParser.AddExprContext context)
+        override public Skell.Types.ISkellType VisitAddExpr(SkellParser.AddExprContext context)
         {
             int i = 0;
-            Skell.Data.ISkellData result = VisitMulExpr(context.mulExpr(i));
+            Skell.Types.ISkellType result = VisitMulExpr(context.mulExpr(i));
 
             i++;
             while (context.mulExpr(i) != null) {
-                if (!(result is Skell.Data.Number)) {
+                if (!(result is Skell.Types.Number)) {
                     throw new System.NotImplementedException();
                 }
-                Skell.Data.ISkellData next = VisitMulExpr(context.mulExpr(i));
-                if (!(next is Skell.Data.Number)) {
+                Skell.Types.ISkellType next = VisitMulExpr(context.mulExpr(i));
+                if (!(next is Skell.Types.Number)) {
                     throw new System.NotImplementedException();
                 }
                 var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
-                    result = (Skell.Data.Number) result - (Skell.Data.Number) next;
+                    result = (Skell.Types.Number) result - (Skell.Types.Number) next;
                 } else {
-                    result = (Skell.Data.Number) result + (Skell.Data.Number) next;
+                    result = (Skell.Types.Number) result + (Skell.Types.Number) next;
                 }
                 i++;
             }
@@ -205,25 +205,25 @@ namespace Skell.Interpreter
         /// <summary>
         /// mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitMulExpr(SkellParser.MulExprContext context)
+        override public Skell.Types.ISkellType VisitMulExpr(SkellParser.MulExprContext context)
         {
             int i = 0;
-            Skell.Data.ISkellData result = VisitUnary(context.unary(i));
+            Skell.Types.ISkellType result = VisitUnary(context.unary(i));
 
             i++;
             while (context.unary(i) != null) {
-                if (!(result is Skell.Data.Number)) {
+                if (!(result is Skell.Types.Number)) {
                     throw new System.NotImplementedException();
                 }
-                Skell.Data.ISkellData next = VisitUnary(context.unary(i));
-                if (!(next is Skell.Data.Number)) {
+                Skell.Types.ISkellType next = VisitUnary(context.unary(i));
+                if (!(next is Skell.Types.Number)) {
                     throw new System.NotImplementedException();
                 }
                 var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
-                    result = (Skell.Data.Number) result / (Skell.Data.Number) next;
+                    result = (Skell.Types.Number) result / (Skell.Types.Number) next;
                 } else {
-                    result = (Skell.Data.Number) result * (Skell.Data.Number) next;
+                    result = (Skell.Types.Number) result * (Skell.Types.Number) next;
                 }
                 i++;
             }
@@ -233,7 +233,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// control : ifControl ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitControl(SkellParser.ControlContext context)
+        override public Skell.Types.ISkellType VisitControl(SkellParser.ControlContext context)
         {
             return VisitIfControl(context.ifControl());
         }
@@ -241,7 +241,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifControl : ifThenControl | ifThenElseControl ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitIfControl(SkellParser.IfControlContext context)
+        override public Skell.Types.ISkellType VisitIfControl(SkellParser.IfControlContext context)
         {
             if (context.ifThenControl() != null) {
                 return VisitIfThenControl(context.ifThenControl());
@@ -253,11 +253,11 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifThenControl : KW_IF expression KW_THEN statementBlock ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
+        override public Skell.Types.ISkellType VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
-            Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
+            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.expression());
             if (!cont.value) {
-                return new Skell.Data.Boolean(false);
+                return new Skell.Types.Boolean(false);
             }
             return VisitStatementBlock(context.statementBlock());
         }
@@ -265,12 +265,12 @@ namespace Skell.Interpreter
         /// <summary>
         /// ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
+        override public Skell.Types.ISkellType VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
         {
             // Evaluate the expression separately
             // Do not use VisitIfThenControl as the statementBlock in the
             // ifThenControl can return a false value
-            Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
+            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
             if (cont.value) {
                 return VisitStatementBlock(context.ifThenControl().statementBlock());
             } else if (context.statementBlock() != null) {
@@ -285,15 +285,15 @@ namespace Skell.Interpreter
         ///       | primary
         ///       ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitUnary(SkellParser.UnaryContext context)
+        override public Skell.Types.ISkellType VisitUnary(SkellParser.UnaryContext context)
         {
             if (context.unary() != null) {
                 var op = (Antlr4.Runtime.IToken) context.unary().GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_NOT) {
-                    Skell.Data.Boolean boolUnary = new Skell.Data.Boolean(VisitUnary(context.unary()).ToString());
+                    Skell.Types.Boolean boolUnary = new Skell.Types.Boolean(VisitUnary(context.unary()).ToString());
                     return !boolUnary;
                 }
-                Skell.Data.Number numUnary = new Skell.Data.Number(VisitUnary(context.unary()).ToString());
+                Skell.Types.Number numUnary = new Skell.Types.Number(VisitUnary(context.unary()).ToString());
                 return -numUnary;
             }
             return VisitPrimary(context.primary());
@@ -305,21 +305,21 @@ namespace Skell.Interpreter
         ///         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         ///         ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitPrimary(SkellParser.PrimaryContext context)
+        override public Skell.Types.ISkellType VisitPrimary(SkellParser.PrimaryContext context)
         {
             if (context.primary() != null) {
-                Skell.Data.ISkellData term = VisitPrimary(context.primary());
-                Skell.Data.ISkellData index;
+                Skell.Types.ISkellType term = VisitPrimary(context.primary());
+                Skell.Types.ISkellType index;
                 if (context.STRING() != null) {
                     index = Utility.GetString(context.STRING());
                 } else if (context.NUMBER() != null) {
-                    index = new Skell.Data.Number(context.NUMBER().GetText());
+                    index = new Skell.Types.Number(context.NUMBER().GetText());
                 } else {
                     index = currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
                 }
-                if (term is Skell.Data.Object obj) {
+                if (term is Skell.Types.Object obj) {
                     return obj.GetMember(index);
-                } else if (term is Skell.Data.Array arr) {
+                } else if (term is Skell.Types.Array arr) {
                     return arr.GetMember(index);
                 }
                 throw new System.NotImplementedException();
@@ -334,7 +334,7 @@ namespace Skell.Interpreter
         ///      | IDENTIFIER
         ///      ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitTerm(SkellParser.TermContext context)
+        override public Skell.Types.ISkellType VisitTerm(SkellParser.TermContext context)
         {
             if (context.IDENTIFIER() != null) {
                 return currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
@@ -345,7 +345,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// value : object | array | STRING | NUMBER | bool ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitValue(SkellParser.ValueContext context)
+        override public Skell.Types.ISkellType VisitValue(SkellParser.ValueContext context)
         {
             if (context.@object() != null) {
                 return VisitObject(context.@object());
@@ -357,9 +357,9 @@ namespace Skell.Interpreter
                 return Utility.GetString(context.STRING());
             }
             if (context.NUMBER() != null) {
-                return new Skell.Data.Number(context.NUMBER().GetText());
+                return new Skell.Types.Number(context.NUMBER().GetText());
             }
-            return new Skell.Data.Boolean(context.@bool().GetText());
+            return new Skell.Types.Boolean(context.@bool().GetText());
         }
 
         /// <summary>
@@ -367,14 +367,14 @@ namespace Skell.Interpreter
         ///       | LSQR RSQR
         ///       ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitArray(SkellParser.ArrayContext context)
+        override public Skell.Types.ISkellType VisitArray(SkellParser.ArrayContext context)
         {
             SkellParser.ValueContext[] values = context.value();
-            Skell.Data.ISkellData[] contents = new Skell.Data.ISkellData[values.Length];
+            Skell.Types.ISkellType[] contents = new Skell.Types.ISkellType[values.Length];
             for (int i = 0; i < values.Length; i++) {
                 contents[i] = VisitValue(values[i]);
             }
-            return new Skell.Data.Array(contents);
+            return new Skell.Types.Array(contents);
         }
 
         /// <summary>
@@ -383,10 +383,10 @@ namespace Skell.Interpreter
         ///        ;
         /// pair : STRING SYM_COLON value ;
         /// </summary>
-        override public Skell.Data.ISkellData VisitObject(SkellParser.ObjectContext context)
+        override public Skell.Types.ISkellType VisitObject(SkellParser.ObjectContext context)
         {
-            Skell.Data.String[] keys = new Skell.Data.String[context.pair().Length];
-            Skell.Data.ISkellData[] values = new Skell.Data.ISkellData[context.pair().Length];
+            Skell.Types.String[] keys = new Skell.Types.String[context.pair().Length];
+            Skell.Types.ISkellType[] values = new Skell.Types.ISkellType[context.pair().Length];
 
             for (int i = 0; i < context.pair().Length; i++) {
                 var pair = context.pair(i);
@@ -394,24 +394,24 @@ namespace Skell.Interpreter
                 values[i] = VisitValue(pair.value());
             }
 
-            return new Skell.Data.Object(keys, values);
+            return new Skell.Types.Object(keys, values);
         }
     }
 
     internal static class Utility
     {
         /// <summary>
-        /// Returns a Skell.Data.String for a STRING token
+        /// Returns a Skell.Types.String for a STRING token
         /// </summary>
         /// <remark>
         /// STRING : SYM_QUOTE (ESC | SAFECODEPOINT)* SYM_QUOTE ;
         /// </remark>
-        public static Skell.Data.String GetString(Antlr4.Runtime.Tree.ITerminalNode context)
+        public static Skell.Types.String GetString(Antlr4.Runtime.Tree.ITerminalNode context)
         {
             string contents = context.GetText();
             contents = contents.Remove(0,1);
             contents = contents.Remove(contents.Length - 1,1);
-            return new Skell.Data.String(contents);
+            return new Skell.Types.String(contents);
         }
 
         /// <summary>
@@ -437,15 +437,15 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Evaluates an expression and returns a Skell.Data.Boolean
+        /// Evaluates an expression and returns a Skell.Types.Boolean
         /// </summary>
-        public static Skell.Data.Boolean EvaluateExpr(SkellVisitor parser, SkellParser.ExpressionContext context)
+        public static Skell.Types.Boolean EvaluateExpr(SkellVisitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
-            if (!(expressionResult is Skell.Data.Boolean)) {
+            if (!(expressionResult is Skell.Types.Boolean)) {
                 throw new System.NotImplementedException();
             }
-            return (Skell.Data.Boolean) expressionResult;
+            return (Skell.Types.Boolean) expressionResult;
         }
 
         /// <summary>

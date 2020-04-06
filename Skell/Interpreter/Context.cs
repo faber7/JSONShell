@@ -4,18 +4,18 @@ namespace Skell.Interpreter
 {
     internal class Context
     {
-        private readonly Dictionary<string, Skell.Data.ISkellData> mem;
+        private readonly Dictionary<string, Skell.Types.ISkellType> mem;
 
         public Context()
         {
-            mem = new Dictionary<string, Data.ISkellData>();
+            mem = new Dictionary<string, Skell.Types.ISkellType>();
         }
 
         public bool Exists(string name) => mem.ContainsKey(name);
 
-        public void Set(string name, Skell.Data.ISkellData data) => mem[name] = data;
+        public void Set(string name, Skell.Types.ISkellType data) => mem[name] = data;
 
-        public Skell.Data.ISkellData Get(string name)
+        public Skell.Types.ISkellType Get(string name)
         {
             if (!Exists(name)) {
                 throw new System.NotImplementedException();
