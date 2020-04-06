@@ -8,7 +8,7 @@ using CommandLine;
 
 namespace Skell
 {
-    class Options
+    internal class Options
     {
         [Option(
             SetName = "LogLevel",
@@ -30,11 +30,11 @@ namespace Skell
         )]
         public string InputFile { get; set; }
     }
-    class Program
+    internal class Program
     {
         private static ILogger logger;
         private static SkellInterpreter interpreter;
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RunWithOptions)
@@ -50,7 +50,7 @@ namespace Skell
                 });
         }
 
-        static void exit(int exitCode)
+        private static void exit(int exitCode)
         {
             if (exitCode == 0) {
                 logger.Information("Exiting normally...");
@@ -61,7 +61,7 @@ namespace Skell
             Environment.Exit(exitCode);
         }
 
-        static void RunWithOptions(Options options)
+        private static void RunWithOptions(Options options)
         {
             SkellLogger.InitializeConsoleLogger(options.Debug, options.Verbose);
             logger = Log.ForContext<Program>();

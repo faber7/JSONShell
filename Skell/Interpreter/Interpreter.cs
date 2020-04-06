@@ -5,11 +5,11 @@ using Serilog;
 
 namespace Skell.Interpreter
 {
-    class SkellInterpreter
+    internal class SkellInterpreter
     {
         private static ILogger logger;
-        ITokenSource lexer;
-        SkellParser parser;
+        private ITokenSource lexer;
+        private SkellParser parser;
         SkellVisitor visitor;
 
         public SkellInterpreter()

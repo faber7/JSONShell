@@ -3,9 +3,9 @@ using Serilog;
 
 namespace Skell.Interpreter
 {
-    class SkellVisitor : SkellBaseVisitor<Skell.Data.ISkellData>
+    internal class SkellVisitor : SkellBaseVisitor<Skell.Data.ISkellData>
     {
-        Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
+        private Skell.Data.Boolean defaultReturnValue = new Skell.Data.Boolean(true);
         private static ILogger logger;
 
         public SkellVisitor()
@@ -364,7 +364,7 @@ namespace Skell.Interpreter
         }
     }
 
-    static class Utility
+    internal static class Utility
     {
         /// <summary>
         /// Returns a Skell.Data.String for a STRING token
