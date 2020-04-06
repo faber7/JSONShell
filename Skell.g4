@@ -21,11 +21,11 @@ unary : (OP_NOT | OP_SUB) unary
       ;
 primary : term
         | LPAREN expression RPAREN
+        | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         ;
 
 term : value
      | IDENTIFIER
-     | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
      ;
 
 value : object | array | STRING | NUMBER | bool ;

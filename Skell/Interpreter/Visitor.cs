@@ -245,26 +245,13 @@ namespace Skell.Interpreter
         /// <summary>
         /// primary : term
         ///         | LPAREN expression RPAREN
+        ///         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         ///         ;
         /// </summary>
         override public Skell.Data.ISkellData VisitPrimary(SkellParser.PrimaryContext context)
         {
-            if (context.term() != null) {
-                return VisitTerm(context.term());
-            }
-            return VisitExpression(context.expression());
-        }
-
-        /// <summary>
-        /// term : value
-        ///      | IDENTIFIER
-        ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
-        ///      ;
-        /// </summary>
-        override public Skell.Data.ISkellData VisitTerm(SkellParser.TermContext context)
-        {
-            if (context.term() != null) {
-                Skell.Data.ISkellData term = VisitTerm(context.term());
+            if (context.primary() != null) {
+                Skell.Data.ISkellData term = VisitPrimary(context.primary());
                 Skell.Data.ISkellData index;
                 if (context.STRING() != null) {
                     index = Utility.GetString(context.STRING());
@@ -277,14 +264,25 @@ namespace Skell.Interpreter
                     return obj.GetMember(index);
                 } else if (term is Skell.Data.Array arr) {
                     return arr.GetMember(index);
-                } else {
-                    throw new System.NotImplementedException();
                 }
-            } else if (context.IDENTIFIER() != null) {
                 throw new System.NotImplementedException();
-            } else {
-                return VisitValue(context.value());
+            } else if (context.term() != null) {
+                return VisitTerm(context.term());
             }
+            return VisitExpression(context.expression());
+        }
+
+        /// <summary>
+        /// term : value
+        ///      | IDENTIFIER
+        ///      ;
+        /// </summary>
+        override public Skell.Data.ISkellData VisitTerm(SkellParser.TermContext context)
+        {
+            if (context.IDENTIFIER() != null) {
+                throw new System.NotImplementedException();
+            }
+            return VisitValue(context.value());
         }
 
         /// <summary>
