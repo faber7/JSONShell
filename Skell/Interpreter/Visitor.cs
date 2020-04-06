@@ -13,9 +13,9 @@ namespace Skell.Interpreter
             logger = Log.ForContext<SkellVisitor>();
         }
 
-        /// <remarks>
+        /// <summary>
         /// program : statement+ ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitProgram(SkellParser.ProgramContext context)
         {
             Skell.Data.SkellData lastResult = defaultReturnValue;
@@ -39,9 +39,9 @@ namespace Skell.Interpreter
             return lastResult;
         }
 
-        /// <remarks>
+        /// <summary>
         /// statement : expression | control;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitStatement(SkellParser.StatementContext context)
         {
             if (context.expression() != null)
@@ -54,9 +54,9 @@ namespace Skell.Interpreter
             }
         }
 
-        /// <remarks>
+        /// <summary>
         /// statementBlock : LCURL statement* RCURL ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
             Skell.Data.SkellData lastResult = defaultReturnValue;
@@ -67,17 +67,17 @@ namespace Skell.Interpreter
             return lastResult;
         }
 
-        /// <remarks>
+        /// <summary>
         /// expression : eqExpr ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitExpression(SkellParser.ExpressionContext context)
         {
             return Visit(context.eqExpr());
         }
 
-        /// <remarks>
+        /// <summary>
         /// eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitEqExpr(SkellParser.EqExprContext context)
         {
             Skell.Data.SkellData result = VisitRelExpr(context.relExpr(0));
@@ -94,9 +94,9 @@ namespace Skell.Interpreter
             return result;
         }
 
-        /// <remarks>
+        /// <summary>
         /// relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitRelExpr(SkellParser.RelExprContext context)
         {
             Skell.Data.SkellData result = VisitAddExpr(context.addExpr(0));
@@ -126,9 +126,9 @@ namespace Skell.Interpreter
             return result;
         }
 
-        /// <remarks>
+        /// <summary>
         /// addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitAddExpr(SkellParser.AddExprContext context)
         {
             int i = 0;
@@ -154,9 +154,9 @@ namespace Skell.Interpreter
             return result;
         }
 
-        /// <remarks>
+        /// <summary>
         /// mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitMulExpr(SkellParser.MulExprContext context)
         {
             int i = 0;
@@ -182,17 +182,17 @@ namespace Skell.Interpreter
             return result;
         }
 
-        /// <remarks>
+        /// <summary>
         /// control : ifControl ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitControl(SkellParser.ControlContext context)
         {
             return VisitIfControl(context.ifControl());
         }
 
-        /// <remarks>
+        /// <summary>
         /// ifControl : ifThenControl | ifThenElseControl ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitIfControl(SkellParser.IfControlContext context)
         {
             if (context.ifThenControl() != null)
@@ -205,9 +205,9 @@ namespace Skell.Interpreter
             }
         }
 
-        /// <remarks>
+        /// <summary>
         /// ifThenControl : KW_IF expression KW_THEN statementBlock ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
             Skell.Data.Boolean cont = Utility.EvaluateExpr(this, context.expression());
@@ -218,9 +218,9 @@ namespace Skell.Interpreter
             return VisitStatementBlock(context.statementBlock());
         }
 
-        /// <remarks>
+        /// <summary>
         /// ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
         {
             // Evaluate the expression separately
@@ -244,11 +244,11 @@ namespace Skell.Interpreter
             }
         }
 
-        /// <remarks>
+        /// <summary>
         /// unary : (OP_NOT | OP_SUB) unary
         ///       | primary
         ///       ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitUnary(SkellParser.UnaryContext context)
         {
             if (context.unary() != null) {
@@ -263,11 +263,11 @@ namespace Skell.Interpreter
             return VisitPrimary(context.primary());
         }
 
-        /// <remarks>
+        /// <summary>
         /// primary : term
         ///         | LPAREN expression RPAREN
         ///         ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitPrimary(SkellParser.PrimaryContext context)
         {
             if (context.term() != null) {
@@ -276,12 +276,12 @@ namespace Skell.Interpreter
             return VisitExpression(context.expression());
         }
 
-        /// <remarks>
+        /// <summary>
         /// term : value
         ///      | IDENTIFIER
         ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         ///      ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitTerm(SkellParser.TermContext context)
         {
             if (context.term() != null) {
@@ -308,9 +308,9 @@ namespace Skell.Interpreter
             }
         }
         
-        /// <remarks>
+        /// <summary>
         /// value : object | array | STRING | NUMBER | bool ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitValue(SkellParser.ValueContext context)
         {
             if (context.@object() != null) {
@@ -328,11 +328,11 @@ namespace Skell.Interpreter
             return new Skell.Data.Boolean(context.@bool().GetText());
         }
 
-        /// <remarks>
+        /// <summary>
         /// array : LSQR value (SYM_COMMA value)* RSQR
         ///       | LSQR RSQR
         ///       ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitArray(SkellParser.ArrayContext context)
         {
             SkellParser.ValueContext[] values = context.value();
@@ -343,12 +343,12 @@ namespace Skell.Interpreter
             return new Skell.Data.Array(contents);
         }
 
-        /// <remarks>
+        /// <summary>
         /// object : LCURL pair (SYM_COMMA pair)* RCURL
         ///        | LCURL RCURL
         ///        ;
         /// pair : STRING SYM_COLON value ;
-        /// </remarks>
+        /// </summary>
         override public Skell.Data.SkellData VisitObject(SkellParser.ObjectContext context)
         {
             Skell.Data.String[] keys = new Skell.Data.String[context.pair().Length];
