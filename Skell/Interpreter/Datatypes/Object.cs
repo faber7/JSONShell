@@ -1,11 +1,12 @@
 using System.Text;
+using System.Linq;
 
 namespace Skell.Data
 {
-    class Object : SkellData
+    class Object : SkellIndexableData
     {
-        private Skell.Data.String[] keys;
-        private SkellData[] values;
+        private readonly Skell.Data.String[] keys;
+        private readonly SkellData[] values;
 
         public Object(Skell.Data.String[] k, SkellData[] v)
         {
@@ -15,6 +16,21 @@ namespace Skell.Data
             }
             keys = k;
             values = v;
+        }
+
+        public int Count() => keys.Length;
+
+        public SkellData GetMember(SkellData index)
+        {
+            if (index is String s && keys.Contains(s)) {
+                int n = keys.Select((str, i) => new {i, str})
+                    .Where(t => t.str == s)
+                    .Select(t => t.i)
+                    .First();
+                
+                return values[n];
+            }
+            throw new System.NotImplementedException();
         }
 
         public override string ToString()
