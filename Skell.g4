@@ -2,7 +2,7 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : expression | control;
+statement : expression EOL | control;
 
 statementBlock : LCURL statement* RCURL ;
 
@@ -42,6 +42,7 @@ object : LCURL pair (SYM_COMMA pair)* RCURL
 typeSpecifier : KW_OBJECT | KW_ARRAY | KW_NUMBER | KW_STRING | KW_BOOL | KW_NULL ;
 
 // Lexer Rules
+EOL: '\n' ;
 WS: [ \n\t\r]+ -> skip; // skip all the whitespace
 
 // Keywords

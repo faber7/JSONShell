@@ -90,7 +90,7 @@ namespace Skell
             string input;
             Console.Write("> ");
             while ((input = Console.In.ReadLine()) != null) {
-                interpreter.Interprete(input);
+                interpreter.Interprete(input + '\n');
                 Console.Write("> ");
             }
             Exit(0);
