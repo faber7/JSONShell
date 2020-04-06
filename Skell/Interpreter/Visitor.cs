@@ -315,7 +315,7 @@ namespace Skell.Interpreter
                 } else if (context.NUMBER() != null) {
                     index = new Skell.Data.Number(context.NUMBER().GetText());
                 } else {
-                    throw new System.NotImplementedException();
+                    index = currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
                 }
                 if (term is Skell.Data.Object obj) {
                     return obj.GetMember(index);
@@ -337,7 +337,7 @@ namespace Skell.Interpreter
         override public Skell.Data.ISkellData VisitTerm(SkellParser.TermContext context)
         {
             if (context.IDENTIFIER() != null) {
-                throw new System.NotImplementedException();
+                return currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
             }
             return VisitValue(context.value());
         }

@@ -15,6 +15,14 @@ namespace Skell.Interpreter
 
         public void Set(string name, Skell.Data.ISkellData data) => mem[name] = data;
 
+        public Skell.Data.ISkellData Get(string name)
+        {
+            if (!Exists(name)) {
+                throw new System.NotImplementedException();
+            }
+            return mem[name];
+        }
+
         public void Delete(string name) => mem.Remove(name);
     }
 }
