@@ -1,5 +1,7 @@
 using Generated;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Skell.Interpreter
 {
@@ -66,7 +68,7 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// declaration : KW_LET IDENTIFIER
-        ///             | KW_LET IDENTIFIER OP_ASSGN expression;
+        ///             | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
         /// </summary>
         override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
         {
@@ -77,9 +79,23 @@ namespace Skell.Interpreter
             } else if (context.expression() != null) {
                 var exp = VisitExpression(context.expression());
                 currentContext.Set(name, exp);
+            } else {
+                var lambda = VisitLambda(context.lambda());
+                currentContext.Set(name, lambda);
             }
 
             return defaultReturnValue;
+        }
+
+        /// <summary>
+        /// lambda : LPAREN RPAREN statementBlock
+        ///        | LPAREN lambdaArg (SYM_COMMA lambdaArg)* statementBlock
+        ///        ;
+        /// lambdaArg : typeName IDENTIFIER ;
+        /// </summary>
+        override public Skell.Types.ISkellType VisitLambda(SkellParser.LambdaContext context)
+        {
+            return new Skell.Types.Lambda(context);
         }
 
         /// <summary>
@@ -270,6 +286,7 @@ namespace Skell.Interpreter
         /// primary : term
         ///         | LPAREN expression RPAREN
         ///         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+        ///         | fnCall
         ///         ;
         /// </summary>
         override public Skell.Types.ISkellType VisitPrimary(SkellParser.PrimaryContext context)
@@ -292,8 +309,49 @@ namespace Skell.Interpreter
                 throw new System.NotImplementedException();
             } else if (context.term() != null) {
                 return VisitTerm(context.term());
+            } else if (context.expression() != null) {
+                return VisitExpression(context.expression());
+            } else {
+                return VisitFnCall(context.fnCall());
             }
-            return VisitExpression(context.expression());
+        }
+
+        /// <summary>
+        /// fnCall : IDENTIFIER LPAREN RPAREN
+        ///        | IDENTIFIER LPAREN fnArg (SYM_COMMA fnArg)* RPAREN
+        ///        ;
+        /// fnArg : IDENTIFIER SYM_COLON expression ;
+        /// </summary>
+        override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
+        {
+            string name = Utility.GetIdentifierName(context.IDENTIFIER());
+            Skell.Types.Lambda lambda = Utility.GetLambda(name, currentContext);
+            Dictionary<string, Skell.Types.ISkellType> args = new Dictionary<string, Types.ISkellType>();
+            foreach (var arg in context.fnArg()) {
+                string argName = Utility.GetIdentifierName(arg.IDENTIFIER());
+                Skell.Types.ISkellType argValue = VisitExpression(arg.expression());
+
+                args.Add(argName, argValue);
+            }
+
+            var extra = Utility.GetExtraArgs(lambda.argsList, args);
+            var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
+
+            if (extra.Count > 0 || invalid.Count > 0) {
+                throw new System.NotImplementedException();
+            }
+
+            // Create a new context for the function call
+            Context ctx = new Context();
+            foreach (var arg in args) {
+                ctx.Set(arg.Key, arg.Value);
+            }
+
+            currentContext = ctx;
+            var result = VisitStatementBlock(lambda.statementBlock);
+            currentContext = globalContext;
+
+            return result;
         }
 
         /// <summary>
@@ -390,6 +448,92 @@ namespace Skell.Interpreter
         public static string GetIdentifierName(Antlr4.Runtime.Tree.ITerminalNode context)
         {
             return context.GetText();
+        }
+
+        /// <summary>
+        /// Returns the token for the given typeName context
+        /// </summary>
+        /// <remark>
+        /// typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// </remark>
+        public static Antlr4.Runtime.IToken GetTokenOfTypeName(SkellParser.TypeNameContext context)
+        {
+            return (Antlr4.Runtime.IToken) context.children[0].Payload;
+        }
+
+        /// <summary>
+        /// Returns the lambda if it exists
+        /// </summary>
+        public static Skell.Types.Lambda GetLambda(string name, Context context)
+        {
+            if (context.Exists(name)) {
+                Skell.Types.ISkellType data = context.Get(name);
+                if (data is Skell.Types.Lambda lambda) {
+                    return lambda;
+                }
+            }
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns true if the data matches the given token type
+        /// </summary>
+        private static bool MatchType(Skell.Types.ISkellType data, Antlr4.Runtime.IToken token)
+        {
+            if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY) {
+                return true;
+            } else if (data is Skell.Types.Boolean && token.Type == SkellLexer.TYPE_BOOL) {
+                return true;
+            } else if (data is Skell.Types.Number && token.Type == SkellLexer.TYPE_NUMBER) {
+                return true;
+            } else if (data is Skell.Types.Object && token.Type == SkellLexer.TYPE_OBJECT) {
+                return true;
+            } else if (data is Skell.Types.String && token.Type == SkellLexer.TYPE_STRING) {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the extra arguments that are to be passed to the function.
+        /// Use with ValidateArgs().
+        /// </summary>
+        public static Dictionary<string,Skell.Types.ISkellType> GetExtraArgs(
+            Dictionary<string, Antlr4.Runtime.IToken> lambdaArgs,
+            Dictionary<string, Skell.Types.ISkellType> args
+        )
+        {
+            Dictionary<string, Skell.Types.ISkellType> extra = new Dictionary<string, Skell.Types.ISkellType>();
+            if (args.Count > lambdaArgs.Count) {
+                foreach (var extraArg in args.Where(
+                    pair => !lambdaArgs.Keys.Contains(pair.Key)
+                ).ToArray()) {
+                    extra.Add(extraArg.Key, extraArg.Value);
+                }
+            }
+            return extra;
+        }
+
+        /// <summary>
+        /// Retrieves the arguments that are either not passed to the function
+        /// or are passed but do not have the same type.
+        /// Use with GetExtraArgs().
+        /// </summary>
+        public static Dictionary<string, Antlr4.Runtime.IToken> GetInvalidArgs(
+            Dictionary<string, Antlr4.Runtime.IToken> lambdaArgs,
+            Dictionary<string, Skell.Types.ISkellType> args
+        )
+        {
+            Dictionary<string, Antlr4.Runtime.IToken> ret = new Dictionary<string, Antlr4.Runtime.IToken>();
+            var arguments = lambdaArgs.Keys.ToArray();
+            for (int i = 0; i < arguments.Length; i++) {
+                var name = arguments[i];
+                var type = lambdaArgs[name];
+                if (!(args.Keys.Contains(name) && MatchType(args[name], type))) {
+                    ret.Add(name, type);
+                }
+            }
+            return ret;
         }
 
         /// <summary>
