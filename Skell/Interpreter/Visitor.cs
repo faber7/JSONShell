@@ -15,7 +15,7 @@ namespace Skell.Interpreter
         public SkellVisitor()
         {
             logger = Log.ForContext<SkellVisitor>();
-            globalContext = new Context();
+            globalContext = new Context("$GLOBAL");
             currentContext = globalContext;
         }
 
@@ -342,7 +342,7 @@ namespace Skell.Interpreter
             }
 
             // Create a new context for the function call
-            Context ctx = new Context();
+            Context ctx = new Context(name);
             foreach (var arg in args) {
                 ctx.Set(arg.Key, arg.Value);
             }

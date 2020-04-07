@@ -7,11 +7,13 @@ namespace Skell.Interpreter
     {
         private readonly ILogger logger;
         private readonly Dictionary<string, Skell.Types.ISkellType> mem;
+        public readonly string contextName;
 
-        public Context()
+        public Context(string name)
         {
             logger = Log.ForContext<Context>();
             mem = new Dictionary<string, Skell.Types.ISkellType>();
+            contextName = name;
         }
 
         public bool Exists(string name) => mem.ContainsKey(name);
@@ -19,21 +21,21 @@ namespace Skell.Interpreter
         public void Set(string name, Skell.Types.ISkellType data)
         {
             mem[name] = data;
-            logger.Debug($"{name} is now {data}");
+            logger.Debug($"In {contextName}, {name} is now {data}");
         }
 
         public Skell.Types.ISkellType Get(string name)
         {
+            logger.Verbose($"In {contextName}, accessing {name}");
             if (!Exists(name)) {
                 throw new System.NotImplementedException();
             }
-            logger.Verbose($"Accessing {name}");
             return mem[name];
         }
 
         public void Delete(string name) 
         {
-            logger.Debug($"{name} was {mem[name]}, now removed");
+            logger.Debug($"In {contextName}, {name} was {mem[name]}, now removed");
             mem.Remove(name);
         }
     }
