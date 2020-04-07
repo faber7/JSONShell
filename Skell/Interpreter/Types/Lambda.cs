@@ -14,7 +14,7 @@ namespace Skell.Types
     ///        ;
     /// lambdaArg : typeName IDENTIFIER ;
     /// </remark>
-    class Lambda : ISkellType
+    public class Lambda : ISkellType
     {
         public readonly Dictionary<string, IToken> argsList;
         private readonly SkellParser.LambdaContext context;

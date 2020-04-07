@@ -33,7 +33,7 @@ namespace Skell.Interpreter
             return mem[name];
         }
 
-        public void Delete(string name) 
+        public void Delete(string name)
         {
             logger.Debug($"In {contextName}, {name} was {mem[name]}, now removed");
             mem.Remove(name);
