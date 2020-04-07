@@ -7,7 +7,12 @@ statement : EOL | declaration EOL | expression EOL | control ;
 statementBlock : LCURL statement* RCURL ;
 
 declaration : KW_LET IDENTIFIER
-            | KW_LET IDENTIFIER OP_ASSGN expression;
+            | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
+
+lambda : LPAREN RPAREN statementBlock
+       | LPAREN lambdaArg (SYM_COMMA lambdaArg)* RPAREN statementBlock
+       ;
+lambdaArg : typeName IDENTIFIER ;
 
 control : ifControl ;
 ifControl : ifThenControl | ifThenElseControl ;
@@ -25,7 +30,13 @@ unary : (OP_NOT | OP_SUB) unary
 primary : term
         | LPAREN expression RPAREN
         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+        | fnCall
         ;
+
+fnCall : IDENTIFIER LPAREN RPAREN 
+       | IDENTIFIER LPAREN fnArg (SYM_COMMA fnArg)* RPAREN
+       ;
+fnArg : IDENTIFIER SYM_COLON expression ;
 
 term : value
      | IDENTIFIER

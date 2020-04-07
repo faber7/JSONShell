@@ -56,6 +56,18 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitDeclaration([NotNull] SkellParser.DeclarationContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.lambda"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLambda([NotNull] SkellParser.LambdaContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.lambdaArg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLambdaArg([NotNull] SkellParser.LambdaArgContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.control"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -122,6 +134,18 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitPrimary([NotNull] SkellParser.PrimaryContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.fnCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFnCall([NotNull] SkellParser.FnCallContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.fnArg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFnArg([NotNull] SkellParser.FnArgContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.term"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -157,5 +181,11 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitObject([NotNull] SkellParser.ObjectContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.typeName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTypeName([NotNull] SkellParser.TypeNameContext context);
 }
 } // namespace Generated
