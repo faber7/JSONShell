@@ -496,16 +496,16 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// array : LSQR value (SYM_COMMA value)* RSQR
+        /// array : LSQR term (SYM_COMMA term)* RSQR
         ///       | LSQR RSQR
         ///       ;
         /// </summary>
         override public Skell.Types.ISkellType VisitArray(SkellParser.ArrayContext context)
         {
-            SkellParser.ValueContext[] values = context.value();
+            SkellParser.TermContext[] values = context.term();
             Skell.Types.ISkellType[] contents = new Skell.Types.ISkellType[values.Length];
             for (int i = 0; i < values.Length; i++) {
-                contents[i] = VisitValue(values[i]);
+                contents[i] = VisitTerm(values[i]);
             }
             return new Skell.Types.Array(contents);
         }
@@ -514,7 +514,7 @@ namespace Skell.Interpreter
         /// object : LCURL pair (SYM_COMMA pair)* RCURL
         ///        | LCURL RCURL
         ///        ;
-        /// pair : STRING SYM_COLON value ;
+        /// pair : STRING SYM_COLON term ;
         /// </summary>
         override public Skell.Types.ISkellType VisitObject(SkellParser.ObjectContext context)
         {
@@ -524,7 +524,7 @@ namespace Skell.Interpreter
             for (int i = 0; i < context.pair().Length; i++) {
                 var pair = context.pair(i);
                 keys[i] = Utility.GetString(pair.STRING());
-                values[i] = VisitValue(pair.value());
+                values[i] = VisitTerm(pair.term());
             }
 
             return new Skell.Types.Object(keys, values);
