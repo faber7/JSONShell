@@ -14,10 +14,11 @@ lambda : LPAREN RPAREN statementBlock
        ;
 lambdaArg : typeName IDENTIFIER ;
 
-control : ifControl ;
+control : ifControl | forControl;
 ifControl : ifThenControl | ifThenElseControl ;
 ifThenControl : KW_IF expression KW_THEN statementBlock ;
 ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
+forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
 
 expression : eqExpr ;
 eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
