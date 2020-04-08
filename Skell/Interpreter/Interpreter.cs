@@ -1,21 +1,21 @@
-using Generated;
+using Skell.Generated;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Serilog;
 
 namespace Skell.Interpreter
 {
-    internal class SkellInterpreter
+    internal class Interpreter
     {
         private static ILogger logger;
         private ITokenSource lexer;
         private SkellParser parser;
-        private readonly SkellVisitor visitor;
+        private readonly Visitor visitor;
 
-        public SkellInterpreter()
+        public Interpreter()
         {
-            logger = Log.ForContext<SkellInterpreter>();
-            visitor = new SkellVisitor();
+            logger = Log.ForContext<Interpreter>();
+            visitor = new Visitor();
         }
 
         public void Interprete(string src)

@@ -33,7 +33,7 @@ namespace Skell
     internal class Program
     {
         private static ILogger logger;
-        private static SkellInterpreter interpreter;
+        private static Interpreter.Interpreter interpreter;
         private static void Main(string[] args)
         {
             CommandLine.Parser.Default.ParseArguments<Options>(args)
@@ -57,16 +57,16 @@ namespace Skell
             } else {
                 logger.Information($"Exiting with error code {exitCode}");
             }
-            SkellLogger.TerminateConsoleLogger();
+            Logger.TerminateConsoleLogger();
             Environment.Exit(exitCode);
         }
 
         private static void RunWithOptions(Options options)
         {
-            SkellLogger.InitializeConsoleLogger(options.Debug, options.Verbose);
+            Logger.InitializeConsoleLogger(options.Debug, options.Verbose);
             logger = Log.ForContext<Program>();
 
-            interpreter = new SkellInterpreter();
+            interpreter = new Interpreter.Interpreter();
 
             if (options.InputFile == null) {
                 logger.Information("No arguments specified, running in interpreter mode");

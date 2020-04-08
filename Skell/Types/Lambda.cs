@@ -1,7 +1,6 @@
-using System.Linq;
 using System.Collections.Generic;
 using Antlr4.Runtime;
-using Generated;
+using Skell.Generated;
 
 namespace Skell.Types
 {

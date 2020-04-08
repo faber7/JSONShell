@@ -19,7 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace Generated {
+namespace Skell.Generated {
 using System;
 using System.IO;
 using System.Text;
@@ -2088,4 +2088,4 @@ public partial class SkellParser : Parser {
 
 
 }
-} // namespace Generated
+} // namespace Skell.Generated

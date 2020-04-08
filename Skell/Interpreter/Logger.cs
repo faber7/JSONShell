@@ -1,8 +1,8 @@
 using Serilog;
 
-namespace Skell
+namespace Skell.Interpreter
 {
-    public static class SkellLogger
+    public static class Logger
     {
         private const string outputTemplate = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}";
 

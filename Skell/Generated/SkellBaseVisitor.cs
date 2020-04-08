@@ -19,7 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace Generated {
+namespace Skell.Generated {
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
@@ -314,4 +314,4 @@ public partial class SkellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitTypeName([NotNull] SkellParser.TypeNameContext context) { return VisitChildren(context); }
 }
-} // namespace Generated
+} // namespace Skell.Generated

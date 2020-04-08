@@ -1,11 +1,11 @@
-using Generated;
+using Skell.Generated;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Skell.Interpreter
 {
-    internal class SkellVisitor : SkellBaseVisitor<Skell.Types.ISkellType>
+    internal class Visitor : SkellBaseVisitor<Skell.Types.ISkellType>
     {
         private readonly Skell.Types.Null defaultReturnValue = new Skell.Types.Null();
         private static ILogger logger;
@@ -15,9 +15,9 @@ namespace Skell.Interpreter
         private bool flag_return;
         private bool flag_returned;
 
-        public SkellVisitor()
+        public Visitor()
         {
-            logger = Log.ForContext<SkellVisitor>();
+            logger = Log.ForContext<Visitor>();
             Context global = new Context("GLOBAL");
             contexts = new List<Context>();
             contexts.Append(global);
@@ -645,7 +645,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// Evaluates an expression and returns a Skell.Types.Boolean
         /// </summary>
-        public static Skell.Types.Boolean EvaluateExpr(SkellVisitor parser, SkellParser.ExpressionContext context)
+        public static Skell.Types.Boolean EvaluateExpr(Visitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
             if (!(expressionResult is Skell.Types.Boolean)) {
