@@ -188,22 +188,16 @@ namespace Skell.Interpreter
                 Skell.Types.ISkellType next = VisitAddExpr(context.addExpr(1));
                 var op = (Antlr4.Runtime.IToken) context.addExpr(1).GetLeftSibling().Payload;
                 if (result is Skell.Types.Number r && next is Skell.Types.Number n) {
-                    bool ret = false;
                     switch (op.Type) {
                         case SkellLexer.OP_GE:
-                            ret = r >= n;
-                        break;
+                            return r >= n;
                         case SkellLexer.OP_GT:
-                            ret = r > n;
-                        break;
+                            return r > n;
                         case SkellLexer.OP_LE:
-                            ret = r < n;
-                        break;
+                            return r < n;
                         case SkellLexer.OP_LT:
-                            ret = r <= n;
-                        break;
+                            return r <= n;
                     }
-                    return new Skell.Types.Boolean(ret);
                 }
             }
             return result;

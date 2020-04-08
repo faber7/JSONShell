@@ -38,6 +38,21 @@ namespace Skell.Types
             throw new Skell.Error.IndexOutOfRange(index, new Skell.Types.Array(dict.Keys.ToArray()));
         }
 
+        public static Number operator +(Object a) => throw new Skell.Error.InvalidOperation("+", a);
+        public static Number operator -(Object a) => throw new Skell.Error.InvalidOperation("-", a);
+        public static Number operator +(Object a, Object b) => throw new Skell.Error.InvalidOperation("+", a, b);
+        public static Number operator -(Object a, Object b) => throw new Skell.Error.InvalidOperation("-", a, b);
+        public static Number operator *(Object a, Object b) => throw new Skell.Error.InvalidOperation("*", a, b);
+        public static Number operator /(Object a, Object b) => throw new Skell.Error.InvalidOperation("/", a, b);
+
+        public static Boolean operator !(Object a) => throw new Skell.Error.InvalidOperation("!", a);
+        public static Boolean operator ==(Object a1, Object a2) => new Boolean(a1.Equals(a2));
+        public static Boolean operator !=(Object a1, Object a2) => new Boolean(!a1.Equals(a2));
+        public static Boolean operator >(Object a, Object b) => throw new Skell.Error.InvalidOperation(">", a, b);
+        public static Boolean operator >=(Object a, Object b) => throw new Skell.Error.InvalidOperation(">=", a, b);
+        public static Boolean operator <(Object a, Object b) => throw new Skell.Error.InvalidOperation("<", a, b);
+        public static Boolean operator <=(Object a, Object b) => throw new Skell.Error.InvalidOperation("<=", a, b);
+
         public override string ToString()
         {
             StringBuilder s = new StringBuilder();
@@ -54,5 +69,13 @@ namespace Skell.Types
             s.Append(" }");
             return s.ToString();
         }
+        public override bool Equals(object obj)
+        {
+            if (obj is Object ob) {
+                return dict.Count == ob.dict.Count && !dict.Except(ob.dict).Any();
+            }
+            return false;
+        }
+        public override int GetHashCode() => dict.GetHashCode();
     }
 }
