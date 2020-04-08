@@ -11,6 +11,8 @@ namespace Skell.Interpreter
         private static ILogger logger;
         private static Context globalContext;
         private Context currentContext;
+        private bool CAN_RETURN = false;
+        private bool RETURNED = false;
 
         public SkellVisitor()
         {
@@ -62,6 +64,9 @@ namespace Skell.Interpreter
             Skell.Types.ISkellType lastResult = defaultReturnValue;
             for (int i = 0; i < context.statement().Length; i++) {
                 lastResult = VisitStatement(context.statement(i));
+                if (RETURNED) {
+                    return lastResult;
+                }
             }
             return lastResult;
         }
@@ -214,14 +219,16 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// control : ifControl | forControl;
+        /// control : ifControl | forControl | returnControl ;
         /// </summary>
         override public Skell.Types.ISkellType VisitControl(SkellParser.ControlContext context)
         {
             if (context.ifControl() != null) {
                 return VisitIfControl(context.ifControl());
+            } else if (context.forControl() != null) {
+                return VisitForControl(context.forControl());
             }
-            return VisitForControl(context.forControl());
+            return VisitReturnControl(context.returnControl());
         }
 
         /// <summary>
@@ -277,14 +284,43 @@ namespace Skell.Interpreter
                 string varName = Utility.GetIdentifierName(context.IDENTIFIER());
                 currentContext = ctx;
                 Skell.Types.ISkellType lastResult = defaultReturnValue;
+                CAN_RETURN = true;
                 foreach (Skell.Types.ISkellType data in arr) {
                     ctx.Set(varName, data);
                     lastResult = VisitStatementBlock(context.statementBlock());
+                    if (RETURNED) {
+                        logger.Debug("For loop returned with " + lastResult);
+                        logger.Debug("Resetting RETURNED flag");
+                        RETURNED = false;
+                        break;
+                    }
                 }
                 currentContext = globalContext;
+                CAN_RETURN = false;
                 return lastResult;
             }
             throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// returnControl : KW_RETURN expression? ;
+        /// </summary>
+        /// <remark>
+        /// Sets FLAG_RETURN before returning
+        /// </remark>
+        override public Skell.Types.ISkellType VisitReturnControl(SkellParser.ReturnControlContext context)
+        {
+            if (!CAN_RETURN) {
+                logger.Warning("Tried to return from non-returnable area");
+                throw new System.NotImplementedException();
+            }
+            Skell.Types.ISkellType retval = defaultReturnValue;
+            if (context.expression() != null) {
+                retval = VisitExpression(context.expression());
+            }
+            logger.Debug($"Returning with value {retval} and FLAG_RETURN set");
+            RETURNED = true;
+            return retval;
         }
 
         /// <summary>
@@ -371,9 +407,16 @@ namespace Skell.Interpreter
                 ctx.Set(arg.Key, arg.Value);
             }
 
+            CAN_RETURN = true;
             currentContext = ctx;
             var result = VisitStatementBlock(lambda.statementBlock);
+            if (RETURNED) {
+                logger.Debug($"{name}() returned {result}");
+                logger.Debug("Resetting RETURNED flag");
+                RETURNED = false;
+            }
             currentContext = globalContext;
+            CAN_RETURN = false;
 
             return result;
         }
