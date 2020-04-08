@@ -339,7 +339,6 @@ namespace Skell.Interpreter
                     if (flag_returned)
                     {
                         logger.Debug("For loop returned with " + lastResult);
-                        logger.Debug("Resetting RETURNED flag");
                         flag_returned = false;
                         break;
                     }
@@ -368,7 +367,7 @@ namespace Skell.Interpreter
             if (context.expression() != null) {
                 retval = VisitExpression(context.expression());
             }
-            logger.Debug($"Returning with value {retval} and FLAG_RETURN set");
+            logger.Debug($"Returning with value {retval}");
             flag_returned = true;
             return retval;
         }
@@ -460,7 +459,6 @@ namespace Skell.Interpreter
             var result = VisitStatementBlock(lambda.statementBlock);
             if (flag_returned) {
                 logger.Debug($"{name}() returned {result}");
-                logger.Debug("Resetting RETURNED flag");
                 flag_returned = false;
             }
 
