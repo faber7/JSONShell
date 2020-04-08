@@ -23,22 +23,22 @@ namespace Skell.Types
 
         public static bool operator >(Boolean a, Boolean b)
         {
-            throw new System.NotImplementedException();
+            throw new Skell.Error.InvalidOperation(">", a, b);
         }
 
         public static bool operator >=(Boolean a, Boolean b)
         {
-            throw new System.NotImplementedException();
+            throw new Skell.Error.InvalidOperation(">=", a, b);
         }
 
         public static bool operator <(Boolean a, Boolean b)
         {
-            throw new System.NotImplementedException();
+            throw new Skell.Error.InvalidOperation("<", a, b);
         }
 
         public static bool operator <=(Boolean a, Boolean b)
         {
-            throw new System.NotImplementedException();
+            throw new Skell.Error.InvalidOperation("<=", a, b);
         }
 
         public static bool operator ==(Boolean a, Boolean b)
