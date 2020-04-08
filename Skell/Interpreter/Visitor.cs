@@ -214,11 +214,14 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// control : ifControl ;
+        /// control : ifControl | forControl;
         /// </summary>
         override public Skell.Types.ISkellType VisitControl(SkellParser.ControlContext context)
         {
-            return VisitIfControl(context.ifControl());
+            if (context.ifControl() != null) {
+                return VisitIfControl(context.ifControl());
+            }
+            return VisitForControl(context.forControl());
         }
 
         /// <summary>
@@ -261,6 +264,27 @@ namespace Skell.Interpreter
             } else {
                 return VisitIfControl(context.ifControl());
             }
+        }
+
+        /// <summary>
+        /// forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
+        /// </summary>
+        override public Skell.Types.ISkellType VisitForControl(SkellParser.ForControlContext context)
+        {
+            var primary = VisitExpression(context.expression());
+            if (primary is Skell.Types.Array arr) {
+                Context ctx = new Context("ForLoop");
+                string varName = Utility.GetIdentifierName(context.IDENTIFIER());
+                currentContext = ctx;
+                Skell.Types.ISkellType lastResult = defaultReturnValue;
+                foreach (Skell.Types.ISkellType data in arr) {
+                    ctx.Set(varName, data);
+                    lastResult = VisitStatementBlock(context.statementBlock());
+                }
+                currentContext = globalContext;
+                return lastResult;
+            }
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
