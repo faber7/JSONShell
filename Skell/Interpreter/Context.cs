@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Serilog;
 
 namespace Skell.Interpreter
@@ -28,7 +29,10 @@ namespace Skell.Interpreter
         {
             logger.Verbose($"In {contextName}, accessing {name}");
             if (!Exists(name)) {
-                throw new System.NotImplementedException();
+                Skell.Types.String index = new Skell.Types.String(name);
+                var indicesArray = mem.Keys.Select(str => new Skell.Types.String(str)).ToArray();
+                Skell.Types.Array indices = new Skell.Types.Array(indicesArray);
+                throw new Skell.Error.IndexOutOfRange(index, indices);
             }
             return mem[name];
         }

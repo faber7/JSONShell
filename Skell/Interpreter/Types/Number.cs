@@ -31,7 +31,7 @@ namespace Skell.Types
             } else if (decimal.TryParse(token, out decimalValue)) {
                 isInt = false;
             } else {
-                throw new Skell.Error.NativeParseError(token);
+                throw new Skell.Error.NativeParseFailure(token);
             }
         }
 

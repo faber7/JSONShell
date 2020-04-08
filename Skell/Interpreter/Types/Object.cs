@@ -35,7 +35,7 @@ namespace Skell.Types
             if (index is String s && dict.ContainsKey(s)) {
                 return dict[s];
             }
-            throw new System.NotImplementedException();
+            throw new Skell.Error.IndexOutOfRange(index, new Skell.Types.Array(dict.Keys.ToArray()));
         }
 
         public override string ToString()

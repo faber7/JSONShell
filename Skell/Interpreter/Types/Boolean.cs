@@ -17,7 +17,7 @@ namespace Skell.Types
         public Boolean(string token)
         {
             if (!bool.TryParse(token, out value)) {
-                throw new Skell.Error.NativeParseError(token);
+                throw new Skell.Error.NativeParseFailure(token);
             }
         }
 

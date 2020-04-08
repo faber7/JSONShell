@@ -30,10 +30,15 @@ namespace Skell.Types
                 if (i.integerValue < contents.Count) {
                     return contents[i.integerValue];
                 } else {
-                    throw new System.NotImplementedException();
+                    var indices = new Skell.Types.Array(
+                        Enumerable.Range(0, contents.Count - 1)
+                        .Select(i => new Skell.Types.Number(i))
+                        .ToArray()
+                    );
+                    throw new Skell.Error.IndexOutOfRange(index, indices);
                 }
             }
-            throw new System.NotImplementedException();
+            throw new Skell.Error.UnexpectedType(index, typeof(Skell.Types.Number));
         }
 
         public override string ToString()
