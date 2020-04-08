@@ -9,16 +9,62 @@ namespace Skell.Interpreter
     {
         private readonly Skell.Types.Null defaultReturnValue = new Skell.Types.Null();
         private static ILogger logger;
-        private static Context globalContext;
-        private Context currentContext;
-        private bool CAN_RETURN = false;
-        private bool RETURNED = false;
+
+        private readonly List<Context> contexts;
+        private Context current_context;
+        private bool flag_return;
+        private bool flag_returned;
 
         public SkellVisitor()
         {
             logger = Log.ForContext<SkellVisitor>();
-            globalContext = new Context("$GLOBAL");
-            currentContext = globalContext;
+            Context global = new Context("GLOBAL");
+            contexts = new List<Context>();
+            contexts.Append(global);
+            current_context = global;
+        }
+
+        /// <summary>
+        /// Safely set flag_return
+        /// The returned value must be passed to EXIT_RETURNABLE_STATE() even if nothing was returned
+        /// </summary>
+        private bool ENTER_RETURNABLE_STATE() {
+            logger.Debug("Entering returnable state from current: " + flag_return);
+            var ret = flag_return;
+            flag_return = true;
+            return ret;
+        }
+
+        /// <summary>
+        /// Unsets flag_return
+        /// Pass the returned value of ENTER_RETURNABLE_STATE(), even if nothing was returned
+        /// </summary>
+        private void EXIT_RETURNABLE_STATE(bool last) {
+            logger.Debug("Exiting from current returnable state to: " + last);
+            flag_return = last;
+        }
+
+        /// <summary>
+        /// Safely switch to a new context
+        /// The returned context is the current context
+        /// Pass it to EXIT_CONTEXT() to switch back
+        /// </summary>
+        private Context ENTER_CONTEXT(string name) {
+            logger.Debug($"Entering a new context from {current_context.contextName}");
+            Context context = new Context("{" + name + "}");
+            contexts.Append(context);
+            var last_context = current_context;
+            current_context = context;
+            return last_context;
+        }
+
+        /// <summary>
+        /// Exit from the current context to the given context
+        /// </summary>
+        private void EXIT_CONTEXT(Context prevContext) {
+            logger.Debug($"Exiting context {current_context.contextName} to {prevContext.contextName}");
+            contexts.Remove(current_context);
+            current_context = prevContext;
         }
 
         /// <summary>
@@ -64,7 +110,8 @@ namespace Skell.Interpreter
             Skell.Types.ISkellType lastResult = defaultReturnValue;
             for (int i = 0; i < context.statement().Length; i++) {
                 lastResult = VisitStatement(context.statement(i));
-                if (RETURNED) {
+                if (flag_returned) {
+                    // do not unset flag_returned here as it is the caller's job
                     return lastResult;
                 }
             }
@@ -80,13 +127,13 @@ namespace Skell.Interpreter
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
 
             if (context.OP_ASSGN() == null) {
-                currentContext.Set(name, new Skell.Types.Object());
+                current_context.Set(name, new Skell.Types.Object());
             } else if (context.expression() != null) {
                 var exp = VisitExpression(context.expression());
-                currentContext.Set(name, exp);
+                current_context.Set(name, exp);
             } else {
                 var lambda = VisitLambda(context.lambda());
-                currentContext.Set(name, lambda);
+                current_context.Set(name, lambda);
             }
 
             return defaultReturnValue;
@@ -280,23 +327,26 @@ namespace Skell.Interpreter
         {
             var primary = VisitExpression(context.expression());
             if (primary is Skell.Types.Array arr) {
-                Context ctx = new Context("ForLoop");
                 string varName = Utility.GetIdentifierName(context.IDENTIFIER());
-                currentContext = ctx;
                 Skell.Types.ISkellType lastResult = defaultReturnValue;
-                CAN_RETURN = true;
+
+                var last_context = ENTER_CONTEXT($"for {arr}");
+                var last_return = ENTER_RETURNABLE_STATE();
+
                 foreach (Skell.Types.ISkellType data in arr) {
-                    ctx.Set(varName, data);
+                    current_context.Set(varName, data);
                     lastResult = VisitStatementBlock(context.statementBlock());
-                    if (RETURNED) {
+                    if (flag_returned)
+                    {
                         logger.Debug("For loop returned with " + lastResult);
                         logger.Debug("Resetting RETURNED flag");
-                        RETURNED = false;
+                        flag_returned = false;
                         break;
                     }
                 }
-                currentContext = globalContext;
-                CAN_RETURN = false;
+
+                EXIT_RETURNABLE_STATE(last_return);
+                EXIT_CONTEXT(last_context);
                 return lastResult;
             }
             throw new System.NotImplementedException();
@@ -310,7 +360,7 @@ namespace Skell.Interpreter
         /// </remark>
         override public Skell.Types.ISkellType VisitReturnControl(SkellParser.ReturnControlContext context)
         {
-            if (!CAN_RETURN) {
+            if (!flag_return) {
                 logger.Warning("Tried to return from non-returnable area");
                 throw new System.NotImplementedException();
             }
@@ -319,7 +369,7 @@ namespace Skell.Interpreter
                 retval = VisitExpression(context.expression());
             }
             logger.Debug($"Returning with value {retval} and FLAG_RETURN set");
-            RETURNED = true;
+            flag_returned = true;
             return retval;
         }
 
@@ -359,7 +409,7 @@ namespace Skell.Interpreter
                 } else if (context.NUMBER() != null) {
                     index = new Skell.Types.Number(context.NUMBER().GetText());
                 } else {
-                    index = currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
+                    index = current_context.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
                 }
                 if (term is Skell.Types.Object obj) {
                     return obj.GetMember(index);
@@ -385,7 +435,7 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
-            Skell.Types.Lambda lambda = Utility.GetLambda(name, currentContext);
+            Skell.Types.Lambda lambda = Utility.GetLambda(name, current_context);
             Dictionary<string, Skell.Types.ISkellType> args = new Dictionary<string, Types.ISkellType>();
             foreach (var arg in context.fnArg()) {
                 string argName = Utility.GetIdentifierName(arg.IDENTIFIER());
@@ -401,22 +451,21 @@ namespace Skell.Interpreter
                 throw new System.NotImplementedException();
             }
 
-            // Create a new context for the function call
-            Context ctx = new Context(name);
-            foreach (var arg in args) {
-                ctx.Set(arg.Key, arg.Value);
-            }
+            var last_context = ENTER_CONTEXT($"{name}");
+            var last_return = ENTER_RETURNABLE_STATE();
 
-            CAN_RETURN = true;
-            currentContext = ctx;
+            foreach (var arg in args) {
+                current_context.Set(arg.Key, arg.Value);
+            }
             var result = VisitStatementBlock(lambda.statementBlock);
-            if (RETURNED) {
+            if (flag_returned) {
                 logger.Debug($"{name}() returned {result}");
                 logger.Debug("Resetting RETURNED flag");
-                RETURNED = false;
+                flag_returned = false;
             }
-            currentContext = globalContext;
-            CAN_RETURN = false;
+
+            EXIT_RETURNABLE_STATE(last_return);
+            EXIT_CONTEXT(last_context);
 
             return result;
         }
@@ -429,7 +478,7 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitTerm(SkellParser.TermContext context)
         {
             if (context.IDENTIFIER() != null) {
-                return currentContext.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
+                return current_context.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
             }
             return VisitValue(context.value());
         }
