@@ -46,10 +46,10 @@ term : value
 
 value : object | array | STRING | NUMBER | bool ;
 bool : KW_TRUE | KW_FALSE ;
-array : LSQR value (SYM_COMMA value)* RSQR
+array : LSQR term (SYM_COMMA term)* RSQR
       | LSQR RSQR
       ;
-pair : STRING SYM_COLON value ;
+pair : STRING SYM_COLON term ;
 object : LCURL pair (SYM_COMMA pair)* RCURL
        | LCURL RCURL
        ;

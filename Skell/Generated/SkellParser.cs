@@ -1609,11 +1609,11 @@ public partial class SkellParser : Parser {
 
 	public partial class ArrayContext : ParserRuleContext {
 		public ITerminalNode LSQR() { return GetToken(SkellParser.LSQR, 0); }
-		public ValueContext[] value() {
-			return GetRuleContexts<ValueContext>();
+		public TermContext[] term() {
+			return GetRuleContexts<TermContext>();
 		}
-		public ValueContext value(int i) {
-			return GetRuleContext<ValueContext>(i);
+		public TermContext term(int i) {
+			return GetRuleContext<TermContext>(i);
 		}
 		public ITerminalNode RSQR() { return GetToken(SkellParser.RSQR, 0); }
 		public ITerminalNode[] SYM_COMMA() { return GetTokens(SkellParser.SYM_COMMA); }
@@ -1645,7 +1645,7 @@ public partial class SkellParser : Parser {
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 226; Match(LSQR);
-				State = 227; value();
+				State = 227; term();
 				State = 232;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
@@ -1653,7 +1653,7 @@ public partial class SkellParser : Parser {
 					{
 					{
 					State = 228; Match(SYM_COMMA);
-					State = 229; value();
+					State = 229; term();
 					}
 					}
 					State = 234;
@@ -1686,8 +1686,8 @@ public partial class SkellParser : Parser {
 	public partial class PairContext : ParserRuleContext {
 		public ITerminalNode STRING() { return GetToken(SkellParser.STRING, 0); }
 		public ITerminalNode SYM_COLON() { return GetToken(SkellParser.SYM_COLON, 0); }
-		public ValueContext value() {
-			return GetRuleContext<ValueContext>(0);
+		public TermContext term() {
+			return GetRuleContext<TermContext>(0);
 		}
 		public PairContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -1710,7 +1710,7 @@ public partial class SkellParser : Parser {
 			{
 			State = 241; Match(STRING);
 			State = 242; Match(SYM_COLON);
-			State = 243; value();
+			State = 243; term();
 			}
 		}
 		catch (RecognitionException re) {
@@ -2054,8 +2054,8 @@ public partial class SkellParser : Parser {
 		'\xDF', '\x3', '\x2', '\x2', '\x2', '\xE1', '/', '\x3', '\x2', '\x2', 
 		'\x2', '\xE2', '\xE3', '\t', '\b', '\x2', '\x2', '\xE3', '\x31', '\x3', 
 		'\x2', '\x2', '\x2', '\xE4', '\xE5', '\a', '\x13', '\x2', '\x2', '\xE5', 
-		'\xEA', '\x5', '.', '\x18', '\x2', '\xE6', '\xE7', '\a', '\x1A', '\x2', 
-		'\x2', '\xE7', '\xE9', '\x5', '.', '\x18', '\x2', '\xE8', '\xE6', '\x3', 
+		'\xEA', '\x5', ',', '\x17', '\x2', '\xE6', '\xE7', '\a', '\x1A', '\x2', 
+		'\x2', '\xE7', '\xE9', '\x5', ',', '\x17', '\x2', '\xE8', '\xE6', '\x3', 
 		'\x2', '\x2', '\x2', '\xE9', '\xEC', '\x3', '\x2', '\x2', '\x2', '\xEA', 
 		'\xE8', '\x3', '\x2', '\x2', '\x2', '\xEA', '\xEB', '\x3', '\x2', '\x2', 
 		'\x2', '\xEB', '\xED', '\x3', '\x2', '\x2', '\x2', '\xEC', '\xEA', '\x3', 
@@ -2065,7 +2065,7 @@ public partial class SkellParser : Parser {
 		'\x2', '\x2', '\x2', '\xF1', '\xEF', '\x3', '\x2', '\x2', '\x2', '\xF2', 
 		'\x33', '\x3', '\x2', '\x2', '\x2', '\xF3', '\xF4', '\a', '-', '\x2', 
 		'\x2', '\xF4', '\xF5', '\a', '\x1C', '\x2', '\x2', '\xF5', '\xF6', '\x5', 
-		'.', '\x18', '\x2', '\xF6', '\x35', '\x3', '\x2', '\x2', '\x2', '\xF7', 
+		',', '\x17', '\x2', '\xF6', '\x35', '\x3', '\x2', '\x2', '\x2', '\xF7', 
 		'\xF8', '\a', '\x15', '\x2', '\x2', '\xF8', '\xFD', '\x5', '\x34', '\x1B', 
 		'\x2', '\xF9', '\xFA', '\a', '\x1A', '\x2', '\x2', '\xFA', '\xFC', '\x5', 
 		'\x34', '\x1B', '\x2', '\xFB', '\xF9', '\x3', '\x2', '\x2', '\x2', '\xFC', 
