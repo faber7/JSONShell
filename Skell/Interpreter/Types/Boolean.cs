@@ -62,7 +62,7 @@ namespace Skell.Types
             if (obj is Boolean b) {
                 return value == b.value;
             }
-            throw new System.NotImplementedException();
+            return false;
         }
     }
 }

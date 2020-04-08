@@ -42,7 +42,7 @@ namespace Skell.Types
             if (obj is String s) {
                 return contents == s.contents;
             }
-            throw new System.NotImplementedException();
+            return false;
         }
     }
 }
