@@ -220,11 +220,11 @@ namespace Skell.Interpreter
             i++;
             while (context.mulExpr(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new System.NotImplementedException();
+                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 Skell.Types.ISkellType next = VisitMulExpr(context.mulExpr(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new System.NotImplementedException();
+                    throw new Skell.Error.UnexpectedType(next, typeof(Skell.Types.Number));
                 }
                 var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
@@ -248,11 +248,11 @@ namespace Skell.Interpreter
             i++;
             while (context.unary(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new System.NotImplementedException();
+                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 Skell.Types.ISkellType next = VisitUnary(context.unary(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new System.NotImplementedException();
+                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
@@ -348,7 +348,7 @@ namespace Skell.Interpreter
                 EXIT_CONTEXT(last_context);
                 return lastResult;
             }
-            throw new System.NotImplementedException();
+            throw new Skell.Error.UnexpectedType(primary, typeof(Skell.Types.Array));
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Skell.Interpreter
                 } else if (term is Skell.Types.Array arr) {
                     return arr.GetMember(index);
                 }
-                throw new System.NotImplementedException();
+                throw new Skell.Error.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
                 return VisitTerm(context.term());
             } else if (context.expression() != null) {
@@ -580,13 +580,11 @@ namespace Skell.Interpreter
         /// </summary>
         public static Skell.Types.Lambda GetLambda(string name, Context context)
         {
-            if (context.Exists(name)) {
-                Skell.Types.ISkellType data = context.Get(name);
-                if (data is Skell.Types.Lambda lambda) {
-                    return lambda;
-                }
+            Skell.Types.ISkellType data = context.Get(name);
+            if (data is Skell.Types.Lambda lambda) {
+                return lambda;
             }
-            throw new System.NotImplementedException();
+            throw new Skell.Error.UnexpectedType(data, typeof(Skell.Types.Lambda));
         }
 
         /// <summary>
@@ -657,7 +655,7 @@ namespace Skell.Interpreter
         {
             var expressionResult = parser.VisitExpression(context);
             if (!(expressionResult is Skell.Types.Boolean)) {
-                throw new System.NotImplementedException();
+                throw new Skell.Error.UnexpectedType(expressionResult, typeof(Skell.Types.Boolean));
             }
             return (Skell.Types.Boolean) expressionResult;
         }
