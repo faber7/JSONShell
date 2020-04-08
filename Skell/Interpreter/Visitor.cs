@@ -107,15 +107,14 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellType VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
-            Skell.Types.ISkellType lastResult = defaultReturnValue;
             for (int i = 0; i < context.statement().Length; i++) {
-                lastResult = VisitStatement(context.statement(i));
+                var result = VisitStatement(context.statement(i));
                 if (flag_returned) {
                     // do not unset flag_returned here as it is the caller's job
-                    return lastResult;
+                    return result;
                 }
             }
-            return lastResult;
+            return defaultReturnValue;
         }
 
         /// <summary>
@@ -290,10 +289,10 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
             Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.expression());
-            if (!cont.value) {
-                return new Skell.Types.Boolean(false);
+            if (cont.value) {
+                VisitStatementBlock(context.statementBlock());
             }
-            return VisitStatementBlock(context.statementBlock());
+            return defaultReturnValue;
         }
 
         /// <summary>
@@ -306,12 +305,13 @@ namespace Skell.Interpreter
             // ifThenControl can return a false value
             Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
             if (cont.value) {
-                return VisitStatementBlock(context.ifThenControl().statementBlock());
+                VisitStatementBlock(context.ifThenControl().statementBlock());
             } else if (context.statementBlock() != null) {
-                return VisitStatementBlock(context.statementBlock());
+                VisitStatementBlock(context.statementBlock());
             } else {
-                return VisitIfControl(context.ifControl());
+                VisitIfControl(context.ifControl());
             }
+            return defaultReturnValue;
         }
 
         /// <summary>
@@ -322,25 +322,25 @@ namespace Skell.Interpreter
             var primary = VisitExpression(context.expression());
             if (primary is Skell.Types.Array arr) {
                 string varName = Utility.GetIdentifierName(context.IDENTIFIER());
-                Skell.Types.ISkellType lastResult = defaultReturnValue;
+                Skell.Types.ISkellType result = defaultReturnValue;
 
                 var last_context = ENTER_CONTEXT($"for {arr}");
                 var last_return = ENTER_RETURNABLE_STATE();
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     current_context.Set(varName, data);
-                    lastResult = VisitStatementBlock(context.statementBlock());
+                    result = VisitStatementBlock(context.statementBlock());
                     if (flag_returned)
                     {
-                        logger.Debug("For loop returned with " + lastResult);
+                        logger.Debug("For loop returned with " + result);
                         flag_returned = false;
-                        break;
+                        return result;
                     }
                 }
 
                 EXIT_RETURNABLE_STATE(last_return);
                 EXIT_CONTEXT(last_context);
-                return lastResult;
+                return defaultReturnValue;
             }
             throw new Skell.Error.UnexpectedType(primary, typeof(Skell.Types.Array));
         }
