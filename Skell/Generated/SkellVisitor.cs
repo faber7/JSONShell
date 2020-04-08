@@ -98,6 +98,12 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitForControl([NotNull] SkellParser.ForControlContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.returnControl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReturnControl([NotNull] SkellParser.ReturnControlContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
