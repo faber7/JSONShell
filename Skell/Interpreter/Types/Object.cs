@@ -13,10 +13,14 @@ namespace Skell.Types
             dict = new Dictionary<String, ISkellType>();
         }
 
+        /// <summary>
+        /// Creates an object with the given keys and values
+        /// If the number of keys and values aren't equal, throws IndexOutOfRangeException()
+        /// </summary>
         public Object(String[] k, ISkellType[] v)
         {
             if (k.Length != v.Length) {
-                throw new System.NotImplementedException();
+                throw new System.IndexOutOfRangeException();
             }
             dict = new Dictionary<String, ISkellType>();
             for (int i = 0; i < k.Length; i++) {
