@@ -1,5 +1,6 @@
 using Serilog;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Skell.Error
 {
@@ -58,5 +59,33 @@ namespace Skell.Error
         public InvalidOperation() : base() {}
         public InvalidOperation(string message) : base(message) {}
         public InvalidOperation(string message, System.Exception innerException) : base(message, innerException) {}
+    }
+
+    internal class InvalidLambdaCall : System.Exception
+    {
+        public InvalidLambdaCall(
+            Skell.Types.Lambda lambda,
+            Dictionary<string, Skell.Types.ISkellType> arguments
+        ) {
+            StringBuilder msg = new StringBuilder();
+            msg.Append($"Lambda {lambda.name} was called with the following arguments:\n");
+            foreach (KeyValuePair<string, Skell.Types.ISkellType> pair in arguments) {
+                msg.Append($"\t {pair.Value} as {pair.Key}\n");
+            }
+            if (lambda.argsList.Count == 0) {
+                msg.Append("Expected no arguments");
+            } else {
+                msg.Append("Expected list of arguments:\n");
+            }
+            foreach (KeyValuePair<string, Antlr4.Runtime.IToken> pair in lambda.argsList) {
+                msg.Append($"\t {pair.Key} of {pair.Value.Text}\n");
+            }
+
+            Log.Information(msg.ToString());
+        }
+
+        public InvalidLambdaCall() : base() {}
+        public InvalidLambdaCall(string message) : base(message) {}
+        public InvalidLambdaCall(string message, System.Exception innerException) : base(message, innerException) {}
     }
 }

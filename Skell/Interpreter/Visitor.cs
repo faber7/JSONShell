@@ -2,6 +2,8 @@ using Skell.Generated;
 using Serilog;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+using Antlr4.Runtime;
 
 namespace Skell.Interpreter
 {
@@ -9,6 +11,7 @@ namespace Skell.Interpreter
     {
         private readonly Skell.Types.Null defaultReturnValue = new Skell.Types.Null();
         private static ILogger logger;
+        private ICharStream tokenSource;
 
         private readonly List<Context> contexts;
         private Context current_context;
@@ -22,6 +25,11 @@ namespace Skell.Interpreter
             contexts = new List<Context>();
             contexts.Append(global);
             current_context = global;
+        }
+
+        public void SetSource(ICharStream source)
+        {
+            tokenSource = source;
         }
 
         /// <summary>
@@ -87,7 +95,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// statement : EOL | declaration EOL | expression EOL | control ;
+        /// statement : EOL | programExec EOL | declaration EOL | expression EOL | control ;
         /// </summary>
         override public Skell.Types.ISkellType VisitStatement(SkellParser.StatementContext context)
         {
@@ -97,9 +105,40 @@ namespace Skell.Interpreter
                 return VisitControl(context.control());
             } else if (context.declaration() != null) {
                 return VisitDeclaration(context.declaration());
+            } else if (context.programExec() != null) {
+                return VisitProgramExec(context.programExec());
             } else {
                 return defaultReturnValue;
             }
+        }
+
+        /// <summary>
+        /// programExec : SYM_DOLLAR ~EOL* ;
+        /// </summary>
+        override public Skell.Types.ISkellType VisitProgramExec(SkellParser.ProgramExecContext context)
+        {
+            string execString = tokenSource.GetText(
+                    new Antlr4.Runtime.Misc.Interval(
+                        context.Start.StartIndex, context.Stop.StopIndex
+                    )
+                )
+                .Substring(1);
+            List<string> argsList = execString.Split(' ').ToList();
+            if (argsList.First().Length == 0) {
+                argsList.RemoveAt(0);
+            }
+
+            Process process = new Process();
+
+            logger.Information($"Running command: {execString}");
+            process.StartInfo.FileName = argsList.First();
+            process.StartInfo.Arguments = string.Join(" ", argsList.Skip(1));
+            process.Start();
+            process.WaitForExit();
+
+            int exitCode = process.ExitCode;
+
+            return new Skell.Types.Number(exitCode);
         }
 
         /// <summary>
@@ -120,6 +159,10 @@ namespace Skell.Interpreter
         /// <summary>
         /// declaration : KW_LET IDENTIFIER
         ///             | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
+        /// lambda : LPAREN RPAREN statementBlock
+        ///        | LPAREN lambdaArg (SYM_COMMA lambdaArg)* statementBlock
+        ///        ;
+        /// lambdaArg : typeName IDENTIFIER ;
         /// </summary>
         override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
         {
@@ -131,22 +174,11 @@ namespace Skell.Interpreter
                 var exp = VisitExpression(context.expression());
                 current_context.Set(name, exp);
             } else {
-                var lambda = VisitLambda(context.lambda());
+                var lambda = new Skell.Types.Lambda(name, context.lambda());
                 current_context.Set(name, lambda);
             }
 
             return defaultReturnValue;
-        }
-
-        /// <summary>
-        /// lambda : LPAREN RPAREN statementBlock
-        ///        | LPAREN lambdaArg (SYM_COMMA lambdaArg)* statementBlock
-        ///        ;
-        /// lambdaArg : typeName IDENTIFIER ;
-        /// </summary>
-        override public Skell.Types.ISkellType VisitLambda(SkellParser.LambdaContext context)
-        {
-            return new Skell.Types.Lambda(context);
         }
 
         /// <summary>
@@ -392,6 +424,9 @@ namespace Skell.Interpreter
         ///         | fnCall
         ///         ;
         /// </summary>
+        /// <remark>
+        /// term is executed if it refers to a lambda
+        /// </remark>
         override public Skell.Types.ISkellType VisitPrimary(SkellParser.PrimaryContext context)
         {
             if (context.primary() != null) {
@@ -411,7 +446,17 @@ namespace Skell.Interpreter
                 }
                 throw new Skell.Error.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
-                return VisitTerm(context.term());
+                Skell.Types.ISkellType term = VisitTerm(context.term());
+                if (term is Skell.Types.Lambda lambda) {
+                    var args = new Dictionary<string, Skell.Types.ISkellType>();
+                    var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
+                    if (lambda.argsList.Count == 0) {
+                        return VisitStatementBlock(lambda.statementBlock);
+                    } else {
+                        throw new Skell.Error.InvalidLambdaCall(lambda, args);
+                    }
+                }
+                return term;
             } else if (context.expression() != null) {
                 return VisitExpression(context.expression());
             } else {
@@ -420,11 +465,12 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// fnCall : IDENTIFIER LPAREN RPAREN
-        ///        | IDENTIFIER LPAREN fnArg (SYM_COMMA fnArg)* RPAREN
-        ///        ;
+        /// fnCall : IDENTIFIER fnArg+ ;
         /// fnArg : IDENTIFIER SYM_COLON expression ;
         /// </summary>
+        /// <remark>
+        /// If there is no argument, the call is seen as a term instead of a fnCall
+        /// </remark>
         override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
@@ -441,7 +487,7 @@ namespace Skell.Interpreter
             var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
 
             if (extra.Count > 0 || invalid.Count > 0) {
-                throw new System.NotImplementedException();
+                throw new Skell.Error.InvalidLambdaCall(lambda, args);
             }
 
             var last_context = ENTER_CONTEXT($"{name}");

@@ -18,10 +18,12 @@ namespace Skell.Types
         public readonly Dictionary<string, IToken> argsList;
         private readonly SkellParser.LambdaContext context;
         public readonly SkellParser.StatementBlockContext statementBlock;
+        public readonly string name;
 
-        public Lambda(SkellParser.LambdaContext ctx)
+        public Lambda(string nm, SkellParser.LambdaContext ctx)
         {
             context = ctx;
+            name = nm;
             statementBlock = context.statementBlock();
             argsList = new Dictionary<string, IToken>();
             for (int i = 0; i < context.lambdaArg().Length; i++) {
