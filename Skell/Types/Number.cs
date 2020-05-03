@@ -1,3 +1,6 @@
+using System;
+using System.Globalization;
+
 namespace Skell.Types
 {
     public class Number : ISkellType
@@ -26,12 +29,24 @@ namespace Skell.Types
 
         public Number(string token)
         {
-            if (int.TryParse(token, out integerValue)) {
+            bool result;
+            NumberStyles style;
+            IFormatProvider provider = CultureInfo.InvariantCulture;
+
+            style = NumberStyles.Integer | NumberStyles.AllowExponent;
+            result = int.TryParse(token, style, provider, out integerValue);
+            if (result) {
                 isInt = true;
-            } else if (decimal.TryParse(token, out decimalValue)) {
+                return;
+            }
+
+            style = NumberStyles.Float;
+
+            result = decimal.TryParse(token, style, provider, out decimalValue);
+
+            if (result) {
                 isInt = false;
-            } else {
-                throw new Skell.Error.NativeParseFailure(token);
+                return;
             }
         }
 
@@ -90,7 +105,7 @@ namespace Skell.Types
             }
         }
 
-        public static Boolean operator !(Number a) => throw new Skell.Error.InvalidOperation("!", a);
+        public static Boolean operator !(Number a) => throw new Skell.Problems.InvalidOperation("!", a);
         public static Boolean operator ==(Number a, Number b) => new Boolean(a.Equals(b));
         public static Boolean operator !=(Number a, Number b) => new Boolean(!a.Equals(b));
         public static Boolean operator >(Number a, Number b)
