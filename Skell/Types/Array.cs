@@ -31,7 +31,7 @@ namespace Skell.Types
                     return contents[i.integerValue];
                 } else {
                     var indices = new Skell.Types.Array(
-                        Enumerable.Range(0, contents.Count - 1)
+                        Enumerable.Range(0, contents.Count)
                         .Select(i => new Skell.Types.Number(i))
                         .ToArray()
                     );
