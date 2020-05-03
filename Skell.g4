@@ -11,7 +11,7 @@ statementBlock : LCURL statement* RCURL ;
 declaration : KW_LET IDENTIFIER
             | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
 
-lambda : (lambdaArg (SYM_COMMA lambdaArg)*)? statementBlock ;
+lambda : KW_FUN (lambdaArg (SYM_COMMA lambdaArg)*)? statementBlock ;
 lambdaArg : typeName IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
@@ -70,6 +70,7 @@ KW_FOR : 'for' ;
 KW_IN : 'in' ;
 KW_RETURN : 'return' ;
 KW_LET : 'let' ;
+KW_FUN : 'fun' ;
 // Typenames
 TYPE_OBJECT : 'object' ;
 TYPE_ARRAY : 'array' ;
