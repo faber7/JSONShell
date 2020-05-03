@@ -51,7 +51,7 @@ namespace Skell.Interpreter
             if (data is Skell.Types.Lambda lambda) {
                 return lambda;
             }
-            throw new Skell.Error.UnexpectedType(data, typeof(Skell.Types.Lambda));
+            throw new Skell.Problems.UnexpectedType(data, typeof(Skell.Types.Lambda));
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Skell.Interpreter
         {
             var expressionResult = parser.VisitExpression(context);
             if (!(expressionResult is Skell.Types.Boolean)) {
-                throw new Skell.Error.UnexpectedType(expressionResult, typeof(Skell.Types.Boolean));
+                throw new Skell.Problems.UnexpectedType(expressionResult, typeof(Skell.Types.Boolean));
             }
             return (Skell.Types.Boolean) expressionResult;
         }

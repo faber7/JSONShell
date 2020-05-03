@@ -35,10 +35,10 @@ namespace Skell.Types
                         .Select(i => new Skell.Types.Number(i))
                         .ToArray()
                     );
-                    throw new Skell.Error.IndexOutOfRange(index, indices);
+                    throw new Skell.Problems.IndexOutOfRange(index, indices);
                 }
             }
-            throw new Skell.Error.UnexpectedType(index, typeof(Skell.Types.Number));
+            throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
         }
 
         public override string ToString()
@@ -80,20 +80,20 @@ namespace Skell.Types
             position = 0;
         }
 
-        public static Number operator +(Array a) => throw new Skell.Error.InvalidOperation("+", a);
-        public static Number operator -(Array a) => throw new Skell.Error.InvalidOperation("-", a);
-        public static Number operator +(Array a, Array b) => throw new Skell.Error.InvalidOperation("+", a, b);
-        public static Number operator -(Array a, Array b) => throw new Skell.Error.InvalidOperation("-", a, b);
-        public static Number operator *(Array a, Array b) => throw new Skell.Error.InvalidOperation("*", a, b);
-        public static Number operator /(Array a, Array b) => throw new Skell.Error.InvalidOperation("/", a, b);
+        public static Number operator +(Array a) => throw new Skell.Problems.InvalidOperation("+", a);
+        public static Number operator -(Array a) => throw new Skell.Problems.InvalidOperation("-", a);
+        public static Number operator +(Array a, Array b) => throw new Skell.Problems.InvalidOperation("+", a, b);
+        public static Number operator -(Array a, Array b) => throw new Skell.Problems.InvalidOperation("-", a, b);
+        public static Number operator *(Array a, Array b) => throw new Skell.Problems.InvalidOperation("*", a, b);
+        public static Number operator /(Array a, Array b) => throw new Skell.Problems.InvalidOperation("/", a, b);
 
-        public static Boolean operator !(Array a) => throw new Skell.Error.InvalidOperation("!", a);
+        public static Boolean operator !(Array a) => throw new Skell.Problems.InvalidOperation("!", a);
         public static Boolean operator ==(Array a1, Array a2) => new Boolean(a1.Equals(a2));
         public static Boolean operator !=(Array a1, Array a2) => new Boolean(!a1.Equals(a2));
-        public static Boolean operator >(Array a, Array b) => throw new Skell.Error.InvalidOperation(">", a, b);
-        public static Boolean operator >=(Array a, Array b) => throw new Skell.Error.InvalidOperation(">=", a, b);
-        public static Boolean operator <(Array a, Array b) => throw new Skell.Error.InvalidOperation("<", a, b);
-        public static Boolean operator <=(Array a, Array b) => throw new Skell.Error.InvalidOperation("<=", a, b);
+        public static Boolean operator >(Array a, Array b) => throw new Skell.Problems.InvalidOperation(">", a, b);
+        public static Boolean operator >=(Array a, Array b) => throw new Skell.Problems.InvalidOperation(">=", a, b);
+        public static Boolean operator <(Array a, Array b) => throw new Skell.Problems.InvalidOperation("<", a, b);
+        public static Boolean operator <=(Array a, Array b) => throw new Skell.Problems.InvalidOperation("<=", a, b);
 
         public override int GetHashCode() => contents.GetHashCode();
         public override bool Equals(object obj)

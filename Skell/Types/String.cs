@@ -16,20 +16,20 @@ namespace Skell.Types
             contents = token;
         }
 
-        public static Number operator +(String a) => throw new Skell.Error.InvalidOperation("+", a);
-        public static Number operator -(String a) => throw new Skell.Error.InvalidOperation("-", a);
-        public static Number operator +(String a, String b) => throw new Skell.Error.InvalidOperation("+", a, b);
-        public static Number operator -(String a, String b) => throw new Skell.Error.InvalidOperation("-", a, b);
-        public static Number operator *(String a, String b) => throw new Skell.Error.InvalidOperation("*", a, b);
-        public static Number operator /(String a, String b) => throw new Skell.Error.InvalidOperation("/", a, b);
+        public static Number operator +(String a) => throw new Skell.Problems.InvalidOperation("+", a);
+        public static Number operator -(String a) => throw new Skell.Problems.InvalidOperation("-", a);
+        public static Number operator +(String a, String b) => throw new Skell.Problems.InvalidOperation("+", a, b);
+        public static Number operator -(String a, String b) => throw new Skell.Problems.InvalidOperation("-", a, b);
+        public static Number operator *(String a, String b) => throw new Skell.Problems.InvalidOperation("*", a, b);
+        public static Number operator /(String a, String b) => throw new Skell.Problems.InvalidOperation("/", a, b);
 
-        public static Boolean operator !(String a) => throw new Skell.Error.InvalidOperation("!", a);
+        public static Boolean operator !(String a) => throw new Skell.Problems.InvalidOperation("!", a);
         public static Boolean operator ==(String a1, String a2) => new Boolean(a1.Equals(a2));
         public static Boolean operator !=(String a1, String a2) => new Boolean(!a1.Equals(a2));
-        public static Boolean operator >(String a, String b) => throw new Skell.Error.InvalidOperation(">", a, b);
-        public static Boolean operator >=(String a, String b) => throw new Skell.Error.InvalidOperation(">=", a, b);
-        public static Boolean operator <(String a, String b) => throw new Skell.Error.InvalidOperation("<", a, b);
-        public static Boolean operator <=(String a, String b) => throw new Skell.Error.InvalidOperation("<=", a, b);
+        public static Boolean operator >(String a, String b) => throw new Skell.Problems.InvalidOperation(">", a, b);
+        public static Boolean operator >=(String a, String b) => throw new Skell.Problems.InvalidOperation(">=", a, b);
+        public static Boolean operator <(String a, String b) => throw new Skell.Problems.InvalidOperation("<", a, b);
+        public static Boolean operator <=(String a, String b) => throw new Skell.Problems.InvalidOperation("<=", a, b);
 
         public override string ToString()
         {

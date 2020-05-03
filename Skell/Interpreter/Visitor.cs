@@ -255,11 +255,11 @@ namespace Skell.Interpreter
             i++;
             while (context.mulExpr(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 Skell.Types.ISkellType next = VisitMulExpr(context.mulExpr(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new Skell.Error.UnexpectedType(next, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(next, typeof(Skell.Types.Number));
                 }
                 var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
@@ -283,11 +283,11 @@ namespace Skell.Interpreter
             i++;
             while (context.unary(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 Skell.Types.ISkellType next = VisitUnary(context.unary(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new Skell.Error.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
                 }
                 var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
@@ -384,7 +384,7 @@ namespace Skell.Interpreter
                 EXIT_CONTEXT(last_context);
                 return defaultReturnValue;
             }
-            throw new Skell.Error.UnexpectedType(primary, typeof(Skell.Types.Array));
+            throw new Skell.Problems.UnexpectedType(primary, typeof(Skell.Types.Array));
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace Skell.Interpreter
                 } else if (term is Skell.Types.Array arr) {
                     return arr.GetMember(index);
                 }
-                throw new Skell.Error.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
+                throw new Skell.Problems.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
                 Skell.Types.ISkellType term = VisitTerm(context.term());
                 if (term is Skell.Types.Lambda lambda) {
@@ -463,7 +463,7 @@ namespace Skell.Interpreter
                     if (lambda.argsList.Count == 0) {
                         return VisitStatementBlock(lambda.statementBlock);
                     } else {
-                        throw new Skell.Error.InvalidLambdaCall(lambda, args);
+                        throw new Skell.Problems.InvalidLambdaCall(lambda, args);
                     }
                 }
                 return term;
@@ -497,7 +497,7 @@ namespace Skell.Interpreter
             var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
 
             if (extra.Count > 0 || invalid.Count > 0) {
-                throw new Skell.Error.InvalidLambdaCall(lambda, args);
+                throw new Skell.Problems.InvalidLambdaCall(lambda, args);
             }
 
             var last_context = ENTER_CONTEXT($"{name}");

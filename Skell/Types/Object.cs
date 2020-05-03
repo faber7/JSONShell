@@ -35,23 +35,23 @@ namespace Skell.Types
             if (index is String s && dict.ContainsKey(s)) {
                 return dict[s];
             }
-            throw new Skell.Error.IndexOutOfRange(index, new Skell.Types.Array(dict.Keys.ToArray()));
+            throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(dict.Keys.ToArray()));
         }
 
-        public static Number operator +(Object a) => throw new Skell.Error.InvalidOperation("+", a);
-        public static Number operator -(Object a) => throw new Skell.Error.InvalidOperation("-", a);
-        public static Number operator +(Object a, Object b) => throw new Skell.Error.InvalidOperation("+", a, b);
-        public static Number operator -(Object a, Object b) => throw new Skell.Error.InvalidOperation("-", a, b);
-        public static Number operator *(Object a, Object b) => throw new Skell.Error.InvalidOperation("*", a, b);
-        public static Number operator /(Object a, Object b) => throw new Skell.Error.InvalidOperation("/", a, b);
+        public static Number operator +(Object a) => throw new Skell.Problems.InvalidOperation("+", a);
+        public static Number operator -(Object a) => throw new Skell.Problems.InvalidOperation("-", a);
+        public static Number operator +(Object a, Object b) => throw new Skell.Problems.InvalidOperation("+", a, b);
+        public static Number operator -(Object a, Object b) => throw new Skell.Problems.InvalidOperation("-", a, b);
+        public static Number operator *(Object a, Object b) => throw new Skell.Problems.InvalidOperation("*", a, b);
+        public static Number operator /(Object a, Object b) => throw new Skell.Problems.InvalidOperation("/", a, b);
 
-        public static Boolean operator !(Object a) => throw new Skell.Error.InvalidOperation("!", a);
+        public static Boolean operator !(Object a) => throw new Skell.Problems.InvalidOperation("!", a);
         public static Boolean operator ==(Object a1, Object a2) => new Boolean(a1.Equals(a2));
         public static Boolean operator !=(Object a1, Object a2) => new Boolean(!a1.Equals(a2));
-        public static Boolean operator >(Object a, Object b) => throw new Skell.Error.InvalidOperation(">", a, b);
-        public static Boolean operator >=(Object a, Object b) => throw new Skell.Error.InvalidOperation(">=", a, b);
-        public static Boolean operator <(Object a, Object b) => throw new Skell.Error.InvalidOperation("<", a, b);
-        public static Boolean operator <=(Object a, Object b) => throw new Skell.Error.InvalidOperation("<=", a, b);
+        public static Boolean operator >(Object a, Object b) => throw new Skell.Problems.InvalidOperation(">", a, b);
+        public static Boolean operator >=(Object a, Object b) => throw new Skell.Problems.InvalidOperation(">=", a, b);
+        public static Boolean operator <(Object a, Object b) => throw new Skell.Problems.InvalidOperation("<", a, b);
+        public static Boolean operator <=(Object a, Object b) => throw new Skell.Problems.InvalidOperation("<=", a, b);
 
         public override string ToString()
         {

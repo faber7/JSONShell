@@ -32,7 +32,7 @@ namespace Skell.Interpreter
                 Skell.Types.String index = new Skell.Types.String(name);
                 var indicesArray = mem.Keys.Select(str => new Skell.Types.String(str)).ToArray();
                 Skell.Types.Array indices = new Skell.Types.Array(indicesArray);
-                throw new Skell.Error.IndexOutOfRange(index, indices);
+                throw new Skell.Problems.IndexOutOfRange(index, indices);
             }
             return mem[name];
         }

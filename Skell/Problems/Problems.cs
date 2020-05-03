@@ -2,44 +2,29 @@ using Serilog;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Skell.Error
+namespace Skell.Problems
 {
-    internal class NativeParseFailure : System.Exception
+    abstract class Exception : System.Exception
     {
-        public NativeParseFailure(string token)
-        {
-            Log.Error($"Failed to parse \"{token}\" to native type");
-        }
-
-        public NativeParseFailure() : base() {}
-        public NativeParseFailure(string message, System.Exception innerException) : base(message, innerException) {}
     }
 
-    internal class UnexpectedType : System.Exception
+    internal class UnexpectedType : Exception
     {
         public UnexpectedType(Skell.Types.ISkellType got, System.Type expected)
         {
             Log.Error($"Expected {expected}, got {got} of type {got.GetType()}");
         }
-
-        public UnexpectedType() : base() {}
-        public UnexpectedType(string message) : base(message) {}
-        public UnexpectedType(string message, System.Exception innerException) : base(message, innerException) {}
     }
 
-    internal class IndexOutOfRange : System.Exception
+    internal class IndexOutOfRange : Exception
     {
         public IndexOutOfRange(Skell.Types.ISkellType index, Skell.Types.Array indices)
         {
             Log.Error($"Expected an index from {indices}, got {index}");
         }
-
-        public IndexOutOfRange() : base() {}
-        public IndexOutOfRange(string message) : base(message) {}
-        public IndexOutOfRange(string message, System.Exception innerException) : base(message, innerException) {}
     }
 
-    internal class InvalidOperation : System.Exception
+    internal class InvalidOperation : Exception
     {
         public InvalidOperation(string operation, string operandType)
         {
@@ -55,13 +40,9 @@ namespace Skell.Error
         {
             Log.Error($"Cannot perform operation {operand1} {operation} {operand2}");
         }
-
-        public InvalidOperation() : base() {}
-        public InvalidOperation(string message) : base(message) {}
-        public InvalidOperation(string message, System.Exception innerException) : base(message, innerException) {}
     }
 
-    internal class InvalidLambdaCall : System.Exception
+    internal class InvalidLambdaCall : Exception
     {
         public InvalidLambdaCall(
             Skell.Types.Lambda lambda,
@@ -83,9 +64,5 @@ namespace Skell.Error
 
             Log.Information(msg.ToString());
         }
-
-        public InvalidLambdaCall() : base() {}
-        public InvalidLambdaCall(string message) : base(message) {}
-        public InvalidLambdaCall(string message, System.Exception innerException) : base(message, innerException) {}
     }
 }
