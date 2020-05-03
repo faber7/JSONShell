@@ -130,9 +130,19 @@ namespace Skell.Interpreter
 
             Process process = new Process();
 
-            logger.Information($"Running command: {execString}");
             process.StartInfo.FileName = argsList.First();
-            process.StartInfo.Arguments = string.Join(" ", argsList.Skip(1));
+            argsList = argsList.Skip(1).Select(
+                str => {
+                    if (str.StartsWith('$')) {
+                        string name = str.Substring(1);
+                        return current_context.Get(name).ToString();
+                    }
+                    return str;
+                }
+            ).ToList();
+
+            logger.Information($"Running command: {execString}");
+            process.StartInfo.Arguments = string.Join(" ", argsList);
             process.Start();
             process.WaitForExit();
 
