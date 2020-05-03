@@ -2,16 +2,16 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : EOL | declaration EOL | expression EOL | control ;
+statement : EOL | programExec EOL | declaration EOL | expression EOL | control ;
+
+programExec : SYM_DOLLAR ~EOL* ;
 
 statementBlock : LCURL statement* RCURL ;
 
 declaration : KW_LET IDENTIFIER
             | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
 
-lambda : LPAREN RPAREN statementBlock
-       | LPAREN lambdaArg (SYM_COMMA lambdaArg)* RPAREN statementBlock
-       ;
+lambda : (lambdaArg (SYM_COMMA lambdaArg)*)? statementBlock ;
 lambdaArg : typeName IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
@@ -35,9 +35,8 @@ primary : term
         | fnCall
         ;
 
-fnCall : IDENTIFIER LPAREN RPAREN 
-       | IDENTIFIER LPAREN fnArg (SYM_COMMA fnArg)* RPAREN
-       ;
+// If there is no argument, the function is identified as a term instead
+fnCall : IDENTIFIER fnArg+ ;
 fnArg : IDENTIFIER SYM_COLON expression ;
 
 term : value
@@ -89,6 +88,7 @@ SYM_PERIOD : '.' ;
 SYM_COMMA : ',' ;
 SYM_QUOTE : '"' ;
 SYM_COLON : ':' ;
+SYM_DOLLAR : '$' ;
 
 OP_ASSGN : '=' ;
 
