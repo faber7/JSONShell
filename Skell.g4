@@ -118,7 +118,7 @@ DIGIT : [0-9] ;
 NONZERO_DIGIT : [1-9] ;
 ZERO : '0' ;
 SIGN : (OP_ADD | OP_SUB) ;
-INT : ZERO | NONZERO_DIGIT DIGIT* ;
+INT : DIGIT+ ;
 FRAC : SYM_PERIOD DIGIT+ ;
 EXP : ('e' | 'E') SIGN? INT? ;
 HEX : [0-9a-fA-F] ;
