@@ -62,17 +62,17 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitDeclaration([NotNull] SkellParser.DeclarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.lambda"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLambda([NotNull] SkellParser.LambdaContext context);
+	Result VisitFunction([NotNull] SkellParser.FunctionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.lambdaArg"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.functionArg"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLambdaArg([NotNull] SkellParser.LambdaArgContext context);
+	Result VisitFunctionArg([NotNull] SkellParser.FunctionArgContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.control"/>.
 	/// </summary>

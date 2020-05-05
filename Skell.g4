@@ -9,10 +9,10 @@ programExec : SYM_DOLLAR ~EOL* ;
 statementBlock : LCURL statement* RCURL ;
 
 declaration : KW_LET IDENTIFIER
-            | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
+            | KW_LET IDENTIFIER OP_ASSGN (expression | function);
 
-lambda : KW_FUN (lambdaArg (SYM_COMMA lambdaArg)*)? statementBlock ;
-lambdaArg : typeName IDENTIFIER ;
+function : KW_FUN (functionArg (SYM_COMMA functionArg)*)? statementBlock ;
+functionArg : typeName IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
 ifControl : ifThenControl | ifThenElseControl ;

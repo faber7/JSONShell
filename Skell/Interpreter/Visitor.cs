@@ -168,11 +168,11 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// declaration : KW_LET IDENTIFIER
-        ///             | KW_LET IDENTIFIER OP_ASSGN (expression | lambda);
-        /// lambda : LPAREN RPAREN statementBlock
-        ///        | LPAREN lambdaArg (SYM_COMMA lambdaArg)* statementBlock
-        ///        ;
-        /// lambdaArg : typeName IDENTIFIER ;
+        ///             | KW_LET IDENTIFIER OP_ASSGN (expression | function);
+        /// function : LPAREN RPAREN statementBlock
+        ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
+        ///          ;
+        /// functionArg : typeName IDENTIFIER ;
         /// </summary>
         override public Skell.Types.ISkellType VisitDeclaration(SkellParser.DeclarationContext context)
         {
@@ -184,8 +184,8 @@ namespace Skell.Interpreter
                 var exp = VisitExpression(context.expression());
                 current_context.Set(name, exp);
             } else {
-                var lambda = new Skell.Types.Lambda(name, context.lambda());
-                current_context.Set(name, lambda);
+                var fn = new Skell.Types.Function(name, context.function());
+                current_context.Set(name, fn);
             }
 
             return defaultReturnValue;
@@ -457,13 +457,13 @@ namespace Skell.Interpreter
                 throw new Skell.Problems.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
                 Skell.Types.ISkellType term = VisitTerm(context.term());
-                if (term is Skell.Types.Lambda lambda) {
+                if (term is Skell.Types.Function fn) {
                     var args = new Dictionary<string, Skell.Types.ISkellType>();
-                    var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
-                    if (lambda.argsList.Count == 0) {
-                        return VisitStatementBlock(lambda.statementBlock);
+                    var invalid = Utility.GetInvalidArgs(fn.argsList, args);
+                    if (fn.argsList.Count == 0) {
+                        return VisitStatementBlock(fn.statementBlock);
                     } else {
-                        throw new Skell.Problems.InvalidLambdaCall(lambda, args);
+                        throw new Skell.Problems.InvalidLambdaCall(fn, args);
                     }
                 }
                 return term;
@@ -484,7 +484,7 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
-            Skell.Types.Lambda lambda = Utility.GetLambda(name, current_context);
+            Skell.Types.Function fn = Utility.GetFunction(name, current_context);
             Dictionary<string, Skell.Types.ISkellType> args = new Dictionary<string, Types.ISkellType>();
             foreach (var arg in context.fnArg()) {
                 string argName = Utility.GetIdentifierName(arg.IDENTIFIER());
@@ -493,11 +493,11 @@ namespace Skell.Interpreter
                 args.Add(argName, argValue);
             }
 
-            var extra = Utility.GetExtraArgs(lambda.argsList, args);
-            var invalid = Utility.GetInvalidArgs(lambda.argsList, args);
+            var extra = Utility.GetExtraArgs(fn.argsList, args);
+            var invalid = Utility.GetInvalidArgs(fn.argsList, args);
 
             if (extra.Count > 0 || invalid.Count > 0) {
-                throw new Skell.Problems.InvalidLambdaCall(lambda, args);
+                throw new Skell.Problems.InvalidLambdaCall(fn, args);
             }
 
             var last_context = ENTER_CONTEXT($"{name}");
@@ -506,7 +506,7 @@ namespace Skell.Interpreter
             foreach (var arg in args) {
                 current_context.Set(arg.Key, arg.Value);
             }
-            var result = VisitStatementBlock(lambda.statementBlock);
+            var result = VisitStatementBlock(fn.statementBlock);
             if (flag_returned) {
                 logger.Debug($"{name}() returned {result}");
                 flag_returned = false;

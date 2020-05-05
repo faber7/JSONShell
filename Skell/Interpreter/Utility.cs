@@ -43,15 +43,15 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns the lambda if it exists
+        /// Returns the user-defined function if it exists
         /// </summary>
-        public static Skell.Types.Lambda GetLambda(string name, Context context)
+        public static Skell.Types.Function GetFunction(string name, Context context)
         {
             Skell.Types.ISkellType data = context.Get(name);
-            if (data is Skell.Types.Lambda lambda) {
-                return lambda;
+            if (data is Skell.Types.Function fn) {
+                return fn;
             }
-            throw new Skell.Problems.UnexpectedType(data, typeof(Skell.Types.Lambda));
+            throw new Skell.Problems.UnexpectedType(data, typeof(Skell.Types.Function));
         }
 
         /// <summary>

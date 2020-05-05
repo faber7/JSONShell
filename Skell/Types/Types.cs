@@ -5,6 +5,11 @@ namespace Skell.Types
     {
     }
 
+    // Base type for any executable type
+    public interface ISkellLambda : ISkellType
+    {
+    }
+
     // Base type for any datatype that has member access support
     public interface ISkellIndexableType : ISkellType
     {

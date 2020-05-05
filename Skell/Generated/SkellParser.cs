@@ -47,7 +47,7 @@ public partial class SkellParser : Parser {
 		INT=52, FRAC=53, EXP=54, HEX=55, UNICODE=56, ESC=57, SAFECODEPOINT=58;
 	public const int
 		RULE_program = 0, RULE_statement = 1, RULE_programExec = 2, RULE_statementBlock = 3, 
-		RULE_declaration = 4, RULE_lambda = 5, RULE_lambdaArg = 6, RULE_control = 7, 
+		RULE_declaration = 4, RULE_function = 5, RULE_functionArg = 6, RULE_control = 7, 
 		RULE_ifControl = 8, RULE_ifThenControl = 9, RULE_ifThenElseControl = 10, 
 		RULE_forControl = 11, RULE_returnControl = 12, RULE_expression = 13, RULE_eqExpr = 14, 
 		RULE_relExpr = 15, RULE_addExpr = 16, RULE_mulExpr = 17, RULE_unary = 18, 
@@ -56,7 +56,7 @@ public partial class SkellParser : Parser {
 		RULE_typeName = 28;
 	public static readonly string[] ruleNames = {
 		"program", "statement", "programExec", "statementBlock", "declaration", 
-		"lambda", "lambdaArg", "control", "ifControl", "ifThenControl", "ifThenElseControl", 
+		"function", "functionArg", "control", "ifControl", "ifThenControl", "ifThenElseControl", 
 		"forControl", "returnControl", "expression", "eqExpr", "relExpr", "addExpr", 
 		"mulExpr", "unary", "primary", "fnCall", "fnArg", "term", "value", "bool", 
 		"array", "pair", "object", "typeName"
@@ -383,8 +383,8 @@ public partial class SkellParser : Parser {
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
-		public LambdaContext lambda() {
-			return GetRuleContext<LambdaContext>(0);
+		public FunctionContext function() {
+			return GetRuleContext<FunctionContext>(0);
 		}
 		public DeclarationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -438,7 +438,7 @@ public partial class SkellParser : Parser {
 					break;
 				case KW_FUN:
 					{
-					State = 98; lambda();
+					State = 98; function();
 					}
 					break;
 				default:
@@ -459,37 +459,37 @@ public partial class SkellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class LambdaContext : ParserRuleContext {
+	public partial class FunctionContext : ParserRuleContext {
 		public ITerminalNode KW_FUN() { return GetToken(SkellParser.KW_FUN, 0); }
 		public StatementBlockContext statementBlock() {
 			return GetRuleContext<StatementBlockContext>(0);
 		}
-		public LambdaArgContext[] lambdaArg() {
-			return GetRuleContexts<LambdaArgContext>();
+		public FunctionArgContext[] functionArg() {
+			return GetRuleContexts<FunctionArgContext>();
 		}
-		public LambdaArgContext lambdaArg(int i) {
-			return GetRuleContext<LambdaArgContext>(i);
+		public FunctionArgContext functionArg(int i) {
+			return GetRuleContext<FunctionArgContext>(i);
 		}
 		public ITerminalNode[] SYM_COMMA() { return GetTokens(SkellParser.SYM_COMMA); }
 		public ITerminalNode SYM_COMMA(int i) {
 			return GetToken(SkellParser.SYM_COMMA, i);
 		}
-		public LambdaContext(ParserRuleContext parent, int invokingState)
+		public FunctionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_lambda; } }
+		public override int RuleIndex { get { return RULE_function; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISkellVisitor<TResult> typedVisitor = visitor as ISkellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLambda(this);
+			if (typedVisitor != null) return typedVisitor.VisitFunction(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public LambdaContext lambda() {
-		LambdaContext _localctx = new LambdaContext(Context, State);
-		EnterRule(_localctx, 10, RULE_lambda);
+	public FunctionContext function() {
+		FunctionContext _localctx = new FunctionContext(Context, State);
+		EnterRule(_localctx, 10, RULE_function);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -500,7 +500,7 @@ public partial class SkellParser : Parser {
 			_la = TokenStream.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL))) != 0)) {
 				{
-				State = 104; lambdaArg();
+				State = 104; functionArg();
 				State = 109;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
@@ -508,7 +508,7 @@ public partial class SkellParser : Parser {
 					{
 					{
 					State = 105; Match(SYM_COMMA);
-					State = 106; lambdaArg();
+					State = 106; functionArg();
 					}
 					}
 					State = 111;
@@ -532,27 +532,27 @@ public partial class SkellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class LambdaArgContext : ParserRuleContext {
+	public partial class FunctionArgContext : ParserRuleContext {
 		public TypeNameContext typeName() {
 			return GetRuleContext<TypeNameContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(SkellParser.IDENTIFIER, 0); }
-		public LambdaArgContext(ParserRuleContext parent, int invokingState)
+		public FunctionArgContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_lambdaArg; } }
+		public override int RuleIndex { get { return RULE_functionArg; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISkellVisitor<TResult> typedVisitor = visitor as ISkellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLambdaArg(this);
+			if (typedVisitor != null) return typedVisitor.VisitFunctionArg(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public LambdaArgContext lambdaArg() {
-		LambdaArgContext _localctx = new LambdaArgContext(Context, State);
-		EnterRule(_localctx, 12, RULE_lambdaArg);
+	public FunctionArgContext functionArg() {
+		FunctionArgContext _localctx = new FunctionArgContext(Context, State);
+		EnterRule(_localctx, 12, RULE_functionArg);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{

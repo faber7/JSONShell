@@ -126,8 +126,8 @@ statement
 programExec
 statementBlock
 declaration
-lambda
-lambdaArg
+function
+functionArg
 control
 ifControl
 ifThenControl
