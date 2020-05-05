@@ -10,7 +10,7 @@ namespace Skell.Interpreter
         public static class Function
         {
             public static void SetupContextForFunction(
-                Skell.Types.Function function,
+                Skell.Types.ISkellLambda function,
                 Context context,
                 List<Tuple<int, string, Skell.Types.ISkellType>> args
             ) {

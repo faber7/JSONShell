@@ -46,7 +46,7 @@ namespace Skell.Problems
     internal class InvalidLambdaCall : Exception
     {
         public InvalidLambdaCall(
-            Skell.Types.Function lambda,
+            Skell.Types.ISkellLambda lambda,
             List<Tuple<int, string, Skell.Types.ISkellType>> arguments
         ) {
             StringBuilder msg = new StringBuilder();

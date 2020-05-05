@@ -14,25 +14,27 @@ namespace Skell.Types
     ///          ;
     /// functionArg : typeName IDENTIFIER ;
     /// </remark>
-    public class Function : ISkellType
+    public class Function : ISkellLambda
     {
-        public readonly List<Tuple<string, IToken>> argsList;
         private readonly SkellParser.FunctionContext context;
-        public readonly SkellParser.StatementBlockContext statementBlock;
-        public readonly string name;
+        private readonly SkellParser.StatementBlockContext statementBlock;
 
         public Function(string nm, SkellParser.FunctionContext ctx)
         {
             context = ctx;
             name = nm;
             statementBlock = context.statementBlock();
-            argsList = new List<Tuple<string, IToken>>();
             for (int i = 0; i < context.functionArg().Length; i++) {
                 var arg = context.functionArg(i);
                 string name = Skell.Interpreter.Utility.GetIdentifierName(arg.IDENTIFIER());
                 IToken token = Skell.Interpreter.Utility.GetTokenOfTypeName(arg.typeName());
                 argsList.Add(new Tuple<string, IToken>(name, token));
             }
+        }
+
+        override public ISkellType execute(Skell.Generated.SkellBaseVisitor<ISkellType> visitor)
+        {
+            return visitor.Visit(statementBlock);
         }
     }
 }

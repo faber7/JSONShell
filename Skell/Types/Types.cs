@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Antlr4.Runtime;
+
 namespace Skell.Types
 {
     // Base type for all datatypes in Skell
@@ -5,9 +9,12 @@ namespace Skell.Types
     {
     }
 
-    // Base type for any executable type
-    public interface ISkellLambda : ISkellType
+    public abstract class ISkellLambda : ISkellType
     {
+        public readonly List<Tuple<string, IToken>> argsList = new List<Tuple<string, IToken>>();
+        public string name;
+
+        public abstract ISkellType execute(Skell.Generated.SkellBaseVisitor<ISkellType> visitor);
     }
 
     // Base type for any datatype that has member access support

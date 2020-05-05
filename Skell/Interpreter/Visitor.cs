@@ -408,12 +408,12 @@ namespace Skell.Interpreter
                 throw new Skell.Problems.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
                 Skell.Types.ISkellType term = VisitTerm(context.term());
-                if (term is Skell.Types.Function fn) {
+                if (term is Skell.Types.ISkellLambda fn) {
                     var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
                     var invalid = Utility.Function.GetInvalidArgs(fn.argsList, args);
                     if (fn.argsList.Count == 0) {
                         Utility.Function.SetupContextForFunction(fn, state.context, args);
-                        return VisitStatementBlock(fn.statementBlock);
+                        return fn.execute(this);
                     } else {
                         throw new Skell.Problems.InvalidLambdaCall(fn, args);
                     }
@@ -436,7 +436,7 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
-            Skell.Types.Function fn = Utility.GetFunction(name, state.context);
+            Skell.Types.ISkellLambda fn = Utility.GetFunction(name, state.context);
             var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
             int i = 0;
             foreach (var arg in context.expression()) {
@@ -456,7 +456,7 @@ namespace Skell.Interpreter
             var last_return = state.ENTER_RETURNABLE_STATE();
 
             Utility.Function.SetupContextForFunction(fn, state.context, args);
-            var result = VisitStatementBlock(fn.statementBlock);
+            var result = fn.execute(this);
             if (state.has_returned()) {
                 logger.Debug($"{name}() returned {result}");
                 state.end_return();
