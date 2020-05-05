@@ -552,9 +552,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// array : LSQR term (SYM_COMMA term)* RSQR
-        ///       | LSQR RSQR
-        ///       ;
+        /// array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
         /// </summary>
         override public Skell.Types.ISkellType VisitArray(SkellParser.ArrayContext context)
         {
@@ -567,9 +565,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// object : LCURL pair (SYM_COMMA pair)* RCURL
-        ///        | LCURL RCURL
-        ///        ;
+        /// object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
         /// pair : STRING SYM_COLON term ;
         /// </summary>
         override public Skell.Types.ISkellType VisitObject(SkellParser.ObjectContext context)

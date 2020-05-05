@@ -45,13 +45,9 @@ term : value
 
 value : object | array | STRING | NUMBER | bool ;
 bool : KW_TRUE | KW_FALSE ;
-array : LSQR term (SYM_COMMA term)* RSQR
-      | LSQR RSQR
-      ;
+array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
 pair : STRING SYM_COLON term ;
-object : LCURL pair (SYM_COMMA pair)* RCURL
-       | LCURL RCURL
-       ;
+object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Datatypes
 typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
