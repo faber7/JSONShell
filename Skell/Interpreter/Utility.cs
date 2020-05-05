@@ -6,6 +6,17 @@ namespace Skell.Interpreter
 {
     internal static class Utility
     {
+        public static void SetupContextForFunction(
+            Skell.Types.Function function,
+            Context context,
+            Dictionary<string, Skell.Types.ISkellType> args
+        ) {
+            context.Set(function.name, function);
+            foreach (var arg in args) {
+                context.Set(arg.Key, arg.Value);
+            }
+        }
+
         /// <summary>
         /// Returns a Skell.Types.String for a STRING token
         /// </summary>
