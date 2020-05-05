@@ -11,7 +11,7 @@ statementBlock : LCURL statement* RCURL ;
 declaration : KW_LET IDENTIFIER
             | KW_LET IDENTIFIER OP_ASSGN (expression | function);
 
-function : KW_FUN (functionArg (SYM_COMMA functionArg)*)? statementBlock ;
+function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
 functionArg : typeName IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
@@ -30,14 +30,13 @@ unary : (OP_NOT | OP_SUB) unary
       | primary
       ;
 primary : term
-        | LPAREN expression RPAREN
         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
         | fnCall
+        | LPAREN expression RPAREN
         ;
 
-// If there is no argument, the function is identified as a term instead
-fnCall : IDENTIFIER fnArg+ ;
-fnArg : IDENTIFIER SYM_COLON expression ;
+// If there is no argument, the function is identified as a term instead and executed directly
+fnCall : IDENTIFIER expression+ ;
 
 term : value
      | IDENTIFIER

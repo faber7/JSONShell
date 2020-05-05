@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Skell.Generated;
@@ -6,14 +7,53 @@ namespace Skell.Interpreter
 {
     internal static class Utility
     {
-        public static void SetupContextForFunction(
-            Skell.Types.Function function,
-            Context context,
-            Dictionary<string, Skell.Types.ISkellType> args
-        ) {
-            context.Set(function.name, function);
-            foreach (var arg in args) {
-                context.Set(arg.Key, arg.Value);
+        public static class Function
+        {
+            public static void SetupContextForFunction(
+                Skell.Types.Function function,
+                Context context,
+                List<Tuple<int, string, Skell.Types.ISkellType>> args
+            ) {
+                context.Set(function.name, function);
+                foreach (var arg in args) {
+                    context.Set(arg.Item2, arg.Item3);
+                }
+            }
+
+            /// <summary>
+            /// Retrieves the extra arguments that are to be passed to the function.
+            /// Use with GetInvalidArgs().
+            /// </summary>
+            public static List<Tuple<int, Skell.Types.ISkellType>> GetExtraArgs(
+                List<Tuple<string, Antlr4.Runtime.IToken>> lambdaArgs,
+                List<Tuple<int, string, Skell.Types.ISkellType>> args
+            )  
+            {
+                var extra = new List<Tuple<int, Skell.Types.ISkellType>>();
+                for (int i = lambdaArgs.Count; i < args.Count; i++) {
+                    extra.Add(new Tuple<int, Types.ISkellType>(i, args[i].Item3));
+                }
+                return extra;
+            }
+
+            /// <summary>
+            /// Retrieves the arguments that do not have the same type.
+            /// Use with GetExtraArgs().
+            /// </summary>
+            public static List<Tuple<int, string, Antlr4.Runtime.IToken>> GetInvalidArgs(
+                List<Tuple<string, Antlr4.Runtime.IToken>> lambdaArgs,
+                List<Tuple<int, string, Skell.Types.ISkellType>> args
+            )
+            {
+                var ret = new List<Tuple<int, string, Antlr4.Runtime.IToken>>();
+                int i = 0;
+                foreach (var arg in lambdaArgs) {
+                    if (i < args.Count && !MatchType(args[i].Item3, arg.Item2)) {
+                        ret.Add(new Tuple<int, string, Antlr4.Runtime.IToken>(i, arg.Item1, arg.Item2));
+                    }
+                    i++;
+                }
+                return ret;
             }
         }
 
@@ -82,48 +122,6 @@ namespace Skell.Interpreter
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Retrieves the extra arguments that are to be passed to the function.
-        /// Use with ValidateArgs().
-        /// </summary>
-        public static Dictionary<string,Skell.Types.ISkellType> GetExtraArgs(
-            Dictionary<string, Antlr4.Runtime.IToken> lambdaArgs,
-            Dictionary<string, Skell.Types.ISkellType> args
-        )
-        {
-            Dictionary<string, Skell.Types.ISkellType> extra = new Dictionary<string, Skell.Types.ISkellType>();
-            if (args.Count > lambdaArgs.Count) {
-                foreach (var extraArg in args.Where(
-                    pair => !lambdaArgs.Keys.Contains(pair.Key)
-                ).ToArray()) {
-                    extra.Add(extraArg.Key, extraArg.Value);
-                }
-            }
-            return extra;
-        }
-
-        /// <summary>
-        /// Retrieves the arguments that are either not passed to the function
-        /// or are passed but do not have the same type.
-        /// Use with GetExtraArgs().
-        /// </summary>
-        public static Dictionary<string, Antlr4.Runtime.IToken> GetInvalidArgs(
-            Dictionary<string, Antlr4.Runtime.IToken> lambdaArgs,
-            Dictionary<string, Skell.Types.ISkellType> args
-        )
-        {
-            Dictionary<string, Antlr4.Runtime.IToken> ret = new Dictionary<string, Antlr4.Runtime.IToken>();
-            var arguments = lambdaArgs.Keys.ToArray();
-            for (int i = 0; i < arguments.Length; i++) {
-                var name = arguments[i];
-                var type = lambdaArgs[name];
-                if (!(args.Keys.Contains(name) && MatchType(args[name], type))) {
-                    ret.Add(name, type);
-                }
-            }
-            return ret;
         }
 
         /// <summary>

@@ -158,12 +158,6 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFnCall([NotNull] SkellParser.FnCallContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.fnArg"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFnArg([NotNull] SkellParser.FnArgContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.term"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

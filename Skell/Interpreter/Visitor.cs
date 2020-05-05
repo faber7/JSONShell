@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using Antlr4.Runtime;
+using System;
 
 namespace Skell.Interpreter
 {
@@ -408,10 +409,10 @@ namespace Skell.Interpreter
             } else if (context.term() != null) {
                 Skell.Types.ISkellType term = VisitTerm(context.term());
                 if (term is Skell.Types.Function fn) {
-                    var args = new Dictionary<string, Skell.Types.ISkellType>();
-                    var invalid = Utility.GetInvalidArgs(fn.argsList, args);
+                    var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
+                    var invalid = Utility.Function.GetInvalidArgs(fn.argsList, args);
                     if (fn.argsList.Count == 0) {
-                        Utility.SetupContextForFunction(fn, state.context, args);
+                        Utility.Function.SetupContextForFunction(fn, state.context, args);
                         return VisitStatementBlock(fn.statementBlock);
                     } else {
                         throw new Skell.Problems.InvalidLambdaCall(fn, args);
@@ -436,16 +437,16 @@ namespace Skell.Interpreter
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
             Skell.Types.Function fn = Utility.GetFunction(name, state.context);
-            Dictionary<string, Skell.Types.ISkellType> args = new Dictionary<string, Types.ISkellType>();
-            foreach (var arg in context.fnArg()) {
-                string argName = Utility.GetIdentifierName(arg.IDENTIFIER());
-                Skell.Types.ISkellType argValue = VisitExpression(arg.expression());
-
-                args.Add(argName, argValue);
+            var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
+            int i = 0;
+            foreach (var arg in context.expression()) {
+                string argname = i < fn.argsList.Count ? fn.argsList[i].Item1 : "N/A" ;
+                args.Add(new Tuple<int, string, Types.ISkellType>(i, argname, VisitExpression(arg)));
+                i++;
             }
 
-            var extra = Utility.GetExtraArgs(fn.argsList, args);
-            var invalid = Utility.GetInvalidArgs(fn.argsList, args);
+            var extra = Utility.Function.GetExtraArgs(fn.argsList, args);
+            var invalid = Utility.Function.GetInvalidArgs(fn.argsList, args);
 
             if (extra.Count > 0 || invalid.Count > 0) {
                 throw new Skell.Problems.InvalidLambdaCall(fn, args);
@@ -454,7 +455,7 @@ namespace Skell.Interpreter
             var last_context = state.ENTER_CONTEXT($"{name}");
             var last_return = state.ENTER_RETURNABLE_STATE();
 
-            Utility.SetupContextForFunction(fn, state.context, args);
+            Utility.Function.SetupContextForFunction(fn, state.context, args);
             var result = VisitStatementBlock(fn.statementBlock);
             if (state.has_returned()) {
                 logger.Debug($"{name}() returned {result}");

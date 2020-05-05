@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Antlr4.Runtime;
 using Skell.Generated;
@@ -15,7 +16,7 @@ namespace Skell.Types
     /// </remark>
     public class Function : ISkellType
     {
-        public readonly Dictionary<string, IToken> argsList;
+        public readonly List<Tuple<string, IToken>> argsList;
         private readonly SkellParser.FunctionContext context;
         public readonly SkellParser.StatementBlockContext statementBlock;
         public readonly string name;
@@ -25,12 +26,12 @@ namespace Skell.Types
             context = ctx;
             name = nm;
             statementBlock = context.statementBlock();
-            argsList = new Dictionary<string, IToken>();
+            argsList = new List<Tuple<string, IToken>>();
             for (int i = 0; i < context.functionArg().Length; i++) {
                 var arg = context.functionArg(i);
                 string name = Skell.Interpreter.Utility.GetIdentifierName(arg.IDENTIFIER());
                 IToken token = Skell.Interpreter.Utility.GetTokenOfTypeName(arg.typeName());
-                argsList.Add(name, token);
+                argsList.Add(new Tuple<string, IToken>(name, token));
             }
         }
     }

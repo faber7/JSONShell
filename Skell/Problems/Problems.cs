@@ -1,4 +1,5 @@
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -46,20 +47,20 @@ namespace Skell.Problems
     {
         public InvalidLambdaCall(
             Skell.Types.Function lambda,
-            Dictionary<string, Skell.Types.ISkellType> arguments
+            List<Tuple<int, string, Skell.Types.ISkellType>> arguments
         ) {
             StringBuilder msg = new StringBuilder();
             msg.Append($"Lambda {lambda.name} was called with the following arguments:\n");
-            foreach (KeyValuePair<string, Skell.Types.ISkellType> pair in arguments) {
-                msg.Append($"\t {pair.Value} as {pair.Key}\n");
+            foreach (var arg in arguments) {
+                msg.Append($"\t {arg.Item1}. {arg.Item3} as {arg.Item2}\n");
             }
             if (lambda.argsList.Count == 0) {
                 msg.Append("Expected no arguments");
             } else {
                 msg.Append("Expected list of arguments:\n");
             }
-            foreach (KeyValuePair<string, Antlr4.Runtime.IToken> pair in lambda.argsList) {
-                msg.Append($"\t {pair.Key} of {pair.Value.Text}\n");
+            foreach (var arg in lambda.argsList) {
+                msg.Append($"\t {arg.Item1} of {arg.Item2.Text}\n");
             }
 
             Log.Information(msg.ToString());
