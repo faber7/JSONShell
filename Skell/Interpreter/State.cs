@@ -9,6 +9,7 @@ namespace Skell.Interpreter
         private static ILogger logger;
         private readonly List<Context> contexts;
         public Context context;
+        public Context functions;
         private bool flag_return;
         private bool flag_returned;
 
@@ -19,6 +20,7 @@ namespace Skell.Interpreter
             contexts = new List<Context>();
             contexts.Add(global);
             context = global;
+            functions = new Context("FUNCTIONS");
         }
 
         public bool can_return() => flag_return;

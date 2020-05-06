@@ -43,24 +43,42 @@ namespace Skell.Problems
         }
     }
 
-    internal class InvalidLambdaCall : Exception
+    internal class InvalidFunctionDefinition : Exception
     {
-        public InvalidLambdaCall(
-            Skell.Types.ISkellLambda lambda,
-            List<Tuple<int, string, Skell.Types.ISkellType>> arguments
+        public InvalidFunctionDefinition(
+            Skell.Types.Function function,
+            Skell.Types.Lambda definition
         ) {
             StringBuilder msg = new StringBuilder();
-            msg.Append($"Lambda {lambda.name} was called with the following arguments:\n");
+            msg.Append($"A definition of Function {function.name}");
+            msg.Append($" with the arguments: {definition.argString} already exists!\n");
+            msg.Append("The following definitions are available:\n");
+            foreach (var lambda in function.definitions) {
+                msg.Append($"\t {function.name}{lambda.argString}\n");
+            }
+
+            Log.Information(msg.ToString());
+        }
+    }
+
+    internal class InvalidFunctionCall : Exception
+    {
+        public InvalidFunctionCall(
+            Skell.Types.Function function,
+            List<Tuple<int, Skell.Types.ISkellType>> arguments
+        ) {
+            StringBuilder msg = new StringBuilder();
+            msg.Append($"Could not match a definition of Function {function.name} with the following arguments:\n");
             foreach (var arg in arguments) {
-                msg.Append($"\t {arg.Item1}. {arg.Item3} as {arg.Item2}\n");
+                msg.Append($"\t {arg.Item1}. {arg.Item2} as {arg.Item2.GetType().Name}\n");
             }
-            if (lambda.argsList.Count == 0) {
-                msg.Append("Expected no arguments");
+            if (function.definitions.Count == 0) {
+                msg.Append("No definitions exist");
             } else {
-                msg.Append("Expected list of arguments:\n");
+                msg.Append("The following definitions are available:\n");
             }
-            foreach (var arg in lambda.argsList) {
-                msg.Append($"\t {arg.Item1} of {arg.Item2.Text}\n");
+            foreach (var lambda in function.definitions) {
+                msg.Append($"\t {function.name}{lambda.argString}\n");
             }
 
             Log.Information(msg.ToString());

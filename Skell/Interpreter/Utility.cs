@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Serilog;
 using Skell.Generated;
 
 namespace Skell.Interpreter
@@ -9,51 +9,58 @@ namespace Skell.Interpreter
     {
         public static class Function
         {
-            public static void SetupContextForFunction(
-                Skell.Types.ISkellLambda function,
-                Context context,
-                List<Tuple<int, string, Skell.Types.ISkellType>> args
+            private static readonly ILogger logger = Log.ForContext(typeof(Function));
+
+            /// <summary>
+            /// Retrieves the function, creating a new one if necessary
+            /// </summary>
+            public static Skell.Types.Function Get(State state, string name)
+            {
+                Skell.Types.Function fn;
+                if (state.functions.Exists(name)) {
+                    fn = (Skell.Types.Function) state.functions.Get(name);
+                    return fn;
+                }
+                fn = new Skell.Types.Function(name);
+                state.functions.Set(name, fn);
+                return fn;
+            }
+
+            /// <summary>
+            /// Sets up, executes, and then cleans up function calls
+            /// </summary>
+            public static Skell.Types.ISkellType ExecuteFunction(
+                SkellBaseVisitor<Skell.Types.ISkellType> visitor,
+                State state,
+                Skell.Types.Function function,
+                List<Tuple<int, Skell.Types.ISkellType>> unnamedArgs
             ) {
-                context.Set(function.name, function);
+                Skell.Types.ISkellType returnValue;
+                var lambda = function.SelectLambda(unnamedArgs);
+                var args = lambda.NameArguments(unnamedArgs);
+                // pre-setup for state
+                var last_context = state.ENTER_CONTEXT($"{function.name}");
+                var last_return = state.ENTER_RETURNABLE_STATE();
+                // set up state with arguments in context
                 foreach (var arg in args) {
-                    context.Set(arg.Item2, arg.Item3);
+                    state.context.Set(arg.Item2, arg.Item3);
                 }
-            }
+                
+                if (lambda is Skell.Types.UserDefinedLambda udLambda) {
+                    returnValue = udLambda.Execute(visitor);
+                } else {
+                    returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute();
+                }
 
-            /// <summary>
-            /// Retrieves the extra arguments that are to be passed to the function.
-            /// Use with GetInvalidArgs().
-            /// </summary>
-            public static List<Tuple<int, Skell.Types.ISkellType>> GetExtraArgs(
-                List<Tuple<string, Antlr4.Runtime.IToken>> lambdaArgs,
-                List<Tuple<int, string, Skell.Types.ISkellType>> args
-            )  
-            {
-                var extra = new List<Tuple<int, Skell.Types.ISkellType>>();
-                for (int i = lambdaArgs.Count; i < args.Count; i++) {
-                    extra.Add(new Tuple<int, Types.ISkellType>(i, args[i].Item3));
+                //cleanup
+                if (state.has_returned()) {
+                    logger.Debug($"{function.name} returned {returnValue}");
+                    state.end_return();
                 }
-                return extra;
-            }
+                state.EXIT_RETURNABLE_STATE(last_return);
+                state.EXIT_CONTEXT(last_context);
 
-            /// <summary>
-            /// Retrieves the arguments that do not have the same type.
-            /// Use with GetExtraArgs().
-            /// </summary>
-            public static List<Tuple<int, string, Antlr4.Runtime.IToken>> GetInvalidArgs(
-                List<Tuple<string, Antlr4.Runtime.IToken>> lambdaArgs,
-                List<Tuple<int, string, Skell.Types.ISkellType>> args
-            )
-            {
-                var ret = new List<Tuple<int, string, Antlr4.Runtime.IToken>>();
-                int i = 0;
-                foreach (var arg in lambdaArgs) {
-                    if (i < args.Count && !MatchType(args[i].Item3, arg.Item2)) {
-                        ret.Add(new Tuple<int, string, Antlr4.Runtime.IToken>(i, arg.Item1, arg.Item2));
-                    }
-                    i++;
-                }
-                return ret;
+                return returnValue;
             }
         }
 
@@ -94,21 +101,9 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns the user-defined function if it exists
-        /// </summary>
-        public static Skell.Types.Function GetFunction(string name, Context context)
-        {
-            Skell.Types.ISkellType data = context.Get(name);
-            if (data is Skell.Types.Function fn) {
-                return fn;
-            }
-            throw new Skell.Problems.UnexpectedType(data, typeof(Skell.Types.Function));
-        }
-
-        /// <summary>
         /// Returns true if the data matches the given token type
         /// </summary>
-        private static bool MatchType(Skell.Types.ISkellType data, Antlr4.Runtime.IToken token)
+        public static bool MatchType(Skell.Types.ISkellType data, Antlr4.Runtime.IToken token)
         {
             if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY) {
                 return true;

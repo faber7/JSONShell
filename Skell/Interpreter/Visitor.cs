@@ -136,8 +136,8 @@ namespace Skell.Interpreter
                 var exp = VisitExpression(context.expression());
                 state.context.Set(name, exp);
             } else {
-                var fn = new Skell.Types.Function(name, context.function());
-                state.context.Set(name, fn);
+                var fn = Utility.Function.Get(state, name);
+                fn.AddUserDefinedLambda(context.function());
             }
 
             return defaultReturnValue;
@@ -386,7 +386,7 @@ namespace Skell.Interpreter
         ///         ;
         /// </summary>
         /// <remark>
-        /// term is executed if it refers to a lambda
+        /// term is executed if it refers to a function
         /// </remark>
         override public Skell.Types.ISkellType VisitPrimary(SkellParser.PrimaryContext context)
         {
@@ -408,15 +408,14 @@ namespace Skell.Interpreter
                 throw new Skell.Problems.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
             } else if (context.term() != null) {
                 Skell.Types.ISkellType term = VisitTerm(context.term());
-                if (term is Skell.Types.ISkellLambda fn) {
-                    var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
-                    var invalid = Utility.Function.GetInvalidArgs(fn.argsList, args);
-                    if (fn.argsList.Count == 0) {
-                        Utility.Function.SetupContextForFunction(fn, state.context, args);
-                        return fn.execute(this);
-                    } else {
-                        throw new Skell.Problems.InvalidLambdaCall(fn, args);
-                    }
+                if (term is Skell.Types.Function fn) {
+                    var args = new List<Tuple<int, Skell.Types.ISkellType>>();
+                    return Utility.Function.ExecuteFunction(
+                        this,
+                        state,
+                        fn,
+                        args
+                    );             
                 }
                 return term;
             } else if (context.expression() != null) {
@@ -436,36 +435,19 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitFnCall(SkellParser.FnCallContext context)
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
-            Skell.Types.ISkellLambda fn = Utility.GetFunction(name, state.context);
-            var args = new List<Tuple<int, string, Skell.Types.ISkellType>>();
+            Skell.Types.Function fn = Utility.Function.Get(state, name);
+            var args = new List<Tuple<int, Skell.Types.ISkellType>>();
             int i = 0;
             foreach (var arg in context.expression()) {
-                string argname = i < fn.argsList.Count ? fn.argsList[i].Item1 : "N/A" ;
-                args.Add(new Tuple<int, string, Types.ISkellType>(i, argname, VisitExpression(arg)));
+                args.Add(new Tuple<int, Types.ISkellType>(i, VisitExpression(arg)));
                 i++;
             }
-
-            var extra = Utility.Function.GetExtraArgs(fn.argsList, args);
-            var invalid = Utility.Function.GetInvalidArgs(fn.argsList, args);
-
-            if (extra.Count > 0 || invalid.Count > 0) {
-                throw new Skell.Problems.InvalidLambdaCall(fn, args);
-            }
-
-            var last_context = state.ENTER_CONTEXT($"{name}");
-            var last_return = state.ENTER_RETURNABLE_STATE();
-
-            Utility.Function.SetupContextForFunction(fn, state.context, args);
-            var result = fn.execute(this);
-            if (state.has_returned()) {
-                logger.Debug($"{name}() returned {result}");
-                state.end_return();
-            }
-
-            state.EXIT_RETURNABLE_STATE(last_return);
-            state.EXIT_CONTEXT(last_context);
-
-            return result;
+            return Utility.Function.ExecuteFunction(
+                this,
+                state,
+                fn,
+                args
+            );
         }
 
         /// <summary>
@@ -476,7 +458,11 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellType VisitTerm(SkellParser.TermContext context)
         {
             if (context.IDENTIFIER() != null) {
-                return state.context.Get(Utility.GetIdentifierName(context.IDENTIFIER()));
+                string name = Utility.GetIdentifierName(context.IDENTIFIER());
+                if (state.functions.Exists(name)) {
+                    return Utility.Function.Get(state, name);
+                }
+                return state.context.Get(name);
             }
             return VisitValue(context.value());
         }
