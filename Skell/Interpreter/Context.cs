@@ -27,7 +27,6 @@ namespace Skell.Interpreter
 
         public Skell.Types.ISkellType Get(string name)
         {
-            logger.Verbose($"In {contextName}, accessing {name}");
             if (!Exists(name)) {
                 Skell.Types.String index = new Skell.Types.String(name);
                 var indicesArray = mem.Keys.Select(str => new Skell.Types.String(str)).ToArray();

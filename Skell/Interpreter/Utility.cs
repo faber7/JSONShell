@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Serilog;
 using Skell.Generated;
 
@@ -38,8 +39,21 @@ namespace Skell.Interpreter
                 Skell.Types.ISkellType returnValue;
                 var lambda = function.SelectLambda(unnamedArgs);
                 var args = lambda.NameArguments(unnamedArgs);
+                
+                string argString = "";
+                if (args.Count > 0) {
+                    var sb = new StringBuilder(" ");
+                    for (int i = 0; i < args.Count; i++) {
+                        sb.Append($"{args[i].Item2}:{args[i].Item3}");
+                        if (i + 1 != args.Count) {
+                            sb.Append(" ");
+                        }
+                    }
+                    argString = sb.ToString();
+                }
+                
                 // pre-setup for state
-                var last_context = state.ENTER_CONTEXT($"{function.name}");
+                var last_context = state.ENTER_CONTEXT($"{function.name}{argString}");
                 var last_return = state.ENTER_RETURNABLE_STATE();
                 // set up state with arguments in context
                 foreach (var arg in args) {

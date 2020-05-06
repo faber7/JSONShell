@@ -322,7 +322,7 @@ namespace Skell.Interpreter
                 string varName = Utility.GetIdentifierName(context.IDENTIFIER());
                 Skell.Types.ISkellType result = defaultReturnValue;
 
-                var last_context = state.ENTER_CONTEXT($"for {arr}");
+                var last_context = state.ENTER_CONTEXT($"for {varName} in {arr}");
                 var last_return = state.ENTER_RETURNABLE_STATE();
 
                 foreach (Skell.Types.ISkellType data in arr) {
