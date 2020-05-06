@@ -130,11 +130,19 @@ namespace Skell.Interpreter
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
 
             if (context.expression() != null) {
-                var exp = VisitExpression(context.expression());
-                state.context.Set(name, exp);
+                if (!state.functions.Exists(name)) {
+                    var exp = VisitExpression(context.expression());
+                    state.context.Set(name, exp);
+                } else {
+                    throw new Skell.Problems.InvalidDefinition(name, state.functions.Get(name));
+                }
             } else {
-                var fn = Utility.Function.Get(state, name);
-                fn.AddUserDefinedLambda(context.function());
+                if (!state.context.Exists(name)) {
+                    var fn = Utility.Function.Get(state, name);
+                    fn.AddUserDefinedLambda(context.function());
+                } else {
+                    throw new Skell.Problems.InvalidDefinition(name, state.context.Get(name));
+                }
             }
 
             return defaultReturnValue;

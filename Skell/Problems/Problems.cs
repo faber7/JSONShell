@@ -43,6 +43,24 @@ namespace Skell.Problems
         }
     }
 
+    internal class InvalidDefinition : Exception
+    {
+        public InvalidDefinition(
+            string name, 
+            Skell.Types.ISkellType existing
+        ) {
+            string from, to;
+            if (existing.GetType() == typeof(Skell.Types.Function)) {
+                from = "function";
+                to = "value";
+            } else {
+                from = "value";
+                to = "function";
+            }
+            Log.Error($"Attempted to redefine the {from} {name} as a {to}");
+        }
+    }
+
     internal class InvalidFunctionDefinition : Exception
     {
         public InvalidFunctionDefinition(
