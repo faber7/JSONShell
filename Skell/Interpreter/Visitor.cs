@@ -119,8 +119,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : KW_LET IDENTIFIER
-        ///             | KW_LET IDENTIFIER OP_ASSGN (expression | function);
+        /// declaration : KW_LET IDENTIFIER OP_ASSGN (expression | function);
         /// function : LPAREN RPAREN statementBlock
         ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
         ///          ;
@@ -130,9 +129,7 @@ namespace Skell.Interpreter
         {
             string name = Utility.GetIdentifierName(context.IDENTIFIER());
 
-            if (context.OP_ASSGN() == null) {
-                state.context.Set(name, new Skell.Types.Object());
-            } else if (context.expression() != null) {
+            if (context.expression() != null) {
                 var exp = VisitExpression(context.expression());
                 state.context.Set(name, exp);
             } else {

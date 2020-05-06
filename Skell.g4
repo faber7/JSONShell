@@ -8,8 +8,7 @@ programExec : SYM_DOLLAR ~EOL* ;
 
 statementBlock : LCURL statement* RCURL ;
 
-declaration : KW_LET IDENTIFIER
-            | KW_LET IDENTIFIER OP_ASSGN (expression | function);
+declaration : KW_LET IDENTIFIER OP_ASSGN (expression | function);
 
 function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
 functionArg : typeName IDENTIFIER ;
