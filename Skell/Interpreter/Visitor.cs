@@ -322,8 +322,7 @@ namespace Skell.Interpreter
                 string varName = Utility.GetIdentifierName(context.IDENTIFIER());
                 Skell.Types.ISkellType result = defaultReturnValue;
 
-                var last_context = state.ENTER_CONTEXT($"for {varName} in {arr}");
-                var last_return = state.ENTER_RETURNABLE_STATE();
+                var last = state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.context.Set(varName, data);
@@ -336,8 +335,7 @@ namespace Skell.Interpreter
                     }
                 }
 
-                state.EXIT_RETURNABLE_STATE(last_return);
-                state.EXIT_CONTEXT(last_context);
+                state.EXIT_RETURNABLE_CONTEXT(last);
                 return defaultReturnValue;
             }
             throw new Skell.Problems.UnexpectedType(primary, typeof(Skell.Types.Array));
@@ -359,7 +357,6 @@ namespace Skell.Interpreter
             if (context.expression() != null) {
                 retval = VisitExpression(context.expression());
             }
-            logger.Debug($"Returning with value {retval}");
             state.start_return();
             return retval;
         }

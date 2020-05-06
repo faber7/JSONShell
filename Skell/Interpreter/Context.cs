@@ -22,7 +22,7 @@ namespace Skell.Interpreter
         public void Set(string name, Skell.Types.ISkellType data)
         {
             mem[name] = data;
-            logger.Debug($"In {contextName}, {name} is now {data}");
+            logger.Debug($"In {contextName}, {name} = {data}");
         }
 
         public Skell.Types.ISkellType Get(string name)

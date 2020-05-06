@@ -1,6 +1,6 @@
 using Serilog;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Skell.Interpreter
 {
@@ -29,46 +29,32 @@ namespace Skell.Interpreter
         public bool end_return() => flag_returned = false;
 
         /// <summary>
-        /// Safely set flag_return
-        /// The returned value must be passed to EXIT_RETURNABLE_STATE() even if nothing was returned
+        /// Safely enter a new returnable context
+        /// The returned values must be passed back to EXIT_RETURNABLE_CONTEXT() to switch back
         /// </summary>
-        public bool ENTER_RETURNABLE_STATE() {
-            logger.Debug("Entering returnable state from current: " + flag_return);
+        public Tuple<bool, Context> ENTER_RETURNABLE_CONTEXT(string name) {
             var ret = flag_return;
+            Context cont = new Context("{" + name + "}");
+
+            logger.Verbose($"Entering a new returnable context {cont.contextName} from {context.contextName}");
+
             flag_return = true;
-            return ret;
+            contexts.Add(cont);
+            var last_context = this.context;
+            context = cont;
+
+            return new Tuple<bool, Context>(ret, last_context);
         }
 
         /// <summary>
         /// Unsets flag_return
         /// Pass the returned value of ENTER_RETURNABLE_STATE(), even if nothing was returned
         /// </summary>
-        public void EXIT_RETURNABLE_STATE(bool last) {
-            logger.Debug("Exiting from current returnable state to previous: " + last);
-            flag_return = last;
-        }
-
-        /// <summary>
-        /// Safely switch to a new context
-        /// The returned context is the current context
-        /// Pass it to EXIT_CONTEXT() to switch back
-        /// </summary>
-        public Context ENTER_CONTEXT(string name) {
-            logger.Debug($"Entering a new context from {this.context.contextName}");
-            Context cont = new Context("{" + name + "}");
-            contexts.Add(cont);
-            var last_context = this.context;
-            context = cont;
-            return last_context;
-        }
-
-        /// <summary>
-        /// Exit from the current context to the given context
-        /// </summary>
-        public void EXIT_CONTEXT(Context prevContext) {
-            logger.Debug($"Exiting context {context.contextName} to {prevContext.contextName}");
+        public void EXIT_RETURNABLE_CONTEXT(Tuple<bool, Context> last) {
+            logger.Verbose($"Exiting from {context.contextName} to {last.Item2.contextName}");
+            flag_return = last.Item1;
             contexts.Remove(context);
-            context = prevContext;
+            context = last.Item2;
         }
     }
 }

@@ -53,8 +53,7 @@ namespace Skell.Interpreter
                 }
                 
                 // pre-setup for state
-                var last_context = state.ENTER_CONTEXT($"{function.name}{argString}");
-                var last_return = state.ENTER_RETURNABLE_STATE();
+                var last = state.ENTER_RETURNABLE_CONTEXT($"{function.name}{argString}");
                 // set up state with arguments in context
                 foreach (var arg in args) {
                     state.context.Set(arg.Item2, arg.Item3);
@@ -71,8 +70,7 @@ namespace Skell.Interpreter
                     logger.Debug($"{function.name} returned {returnValue}");
                     state.end_return();
                 }
-                state.EXIT_RETURNABLE_STATE(last_return);
-                state.EXIT_CONTEXT(last_context);
+                state.EXIT_RETURNABLE_CONTEXT(last);
 
                 return returnValue;
             }
