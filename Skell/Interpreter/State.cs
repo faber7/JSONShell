@@ -16,7 +16,7 @@ namespace Skell.Interpreter
         public State()
         {
             logger = Log.ForContext<State>();
-            Context global = new Context("GLOBAL");
+            Context global = new Context("ORIGIN");
             contexts = new List<Context>();
             contexts.Add(global);
             context = global;
