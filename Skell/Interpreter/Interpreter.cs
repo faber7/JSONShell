@@ -30,7 +30,7 @@ namespace Skell.Interpreter
             IParseTree tree = parser.program(); // Since program is our start rule
             logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
 
-            visitor.SetSource(lexer.InputStream);
+            visitor.tokenSource = lexer.InputStream;
             visitor.Visit(tree);
         }
     }

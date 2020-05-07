@@ -12,7 +12,7 @@ namespace Skell.Interpreter
     {
         private readonly Skell.Types.None defaultReturnValue = new Skell.Types.None();
         private static ILogger logger;
-        private ICharStream tokenSource;
+        public ICharStream tokenSource;
 
         private State state;
 
@@ -20,11 +20,6 @@ namespace Skell.Interpreter
         {
             logger = Log.ForContext<Visitor>();
             state = new State();
-        }
-
-        public void SetSource(ICharStream source)
-        {
-            tokenSource = source;
         }
 
         /// <summary>
@@ -35,11 +30,13 @@ namespace Skell.Interpreter
             Skell.Types.ISkellReturnable lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
                 lastResult = Visit(statement);
-                if (lastResult is Skell.Types.Array arr) {
+                if (lastResult is Skell.Types.String str) {
+                    logger.Debug($"Result: \"{lastResult}\" of type {lastResult.GetType()}");
+                } else if (lastResult is Skell.Types.Array arr) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
                 } else if (lastResult is Skell.Types.Object obj) {
                     logger.Debug($"Result is an object:\n {obj}");
-                } else if (!(lastResult is Skell.Types.None)) {
+                } else {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
             }
@@ -403,7 +400,7 @@ namespace Skell.Interpreter
                 Skell.Types.ISkellReturnable term = VisitPrimary(context.primary());
                 Skell.Types.ISkellType index;
                 if (context.STRING() != null) {
-                    index = Utility.GetString(context.STRING());
+                    index = Utility.GetString(context.STRING(), this);
                 } else if (context.NUMBER() != null) {
                     index = new Skell.Types.Number(context.NUMBER().GetText());
                 } else {
@@ -493,7 +490,7 @@ namespace Skell.Interpreter
                 return VisitArray(context.array());
             }
             if (context.STRING() != null) {
-                return Utility.GetString(context.STRING());
+                return Utility.GetString(context.STRING(), this);
             }
             if (context.NUMBER() != null) {
                 return new Skell.Types.Number(context.NUMBER().GetText());
@@ -530,7 +527,7 @@ namespace Skell.Interpreter
 
             for (int i = 0; i < context.pair().Length; i++) {
                 var pair = context.pair(i);
-                keys[i] = Utility.GetString(pair.STRING());
+                keys[i] = Utility.GetString(pair.STRING(), this);
                 var value = VisitTerm(pair.term());
                 if (value is Skell.Types.ISkellType val) {
                     values[i] = val;

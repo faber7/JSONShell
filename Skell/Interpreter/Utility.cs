@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Serilog;
 using Skell.Generated;
 
@@ -78,15 +80,43 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// Returns a Skell.Types.String for a STRING token
+        /// Requires visitor to handle string substitution
         /// </summary>
         /// <remark>
-        /// STRING : SYM_QUOTE (ESC | SAFECODEPOINT)* SYM_QUOTE ;
+        /// STRING : SYM_QUOTE (ESC | SAFECODEPOINT | SYM_DOLLAR LCURL ~[}]* RCURL)* SYM_QUOTE ;
         /// </remark>
-        public static Skell.Types.String GetString(Antlr4.Runtime.Tree.ITerminalNode context)
-        {
+        public static Skell.Types.String GetString(
+            Antlr4.Runtime.Tree.ITerminalNode context,
+            Visitor visitor
+        ) {
             string contents = context.GetText();
-            contents = contents.Remove(0,1);
-            contents = contents.Remove(contents.Length - 1,1);
+            contents = contents.Remove(0, 1);
+            contents = contents.Remove(contents.Length - 1, 1);
+            contents = Regex.Replace(
+                contents,
+                @"\$\{.*\}",
+                m => {
+                    string src = m.Value.Remove(0, 2);
+                    src = src.Remove(src.Length - 1, 1);
+                        
+                    var charStream = CharStreams.fromstring(src);
+                    var lexer = new SkellLexer(charStream);
+                    var tokenStream = new CommonTokenStream(lexer);
+                    var parser = new SkellParser(tokenStream);
+                    var tree = parser.expression();
+
+                    var dupSrc = visitor.tokenSource;
+                    visitor.tokenSource = charStream;
+                    var value = visitor.VisitExpression(tree);
+                    visitor.tokenSource = dupSrc;
+
+                    if (value is Skell.Types.ISkellType) {
+                        return value.ToString();
+                    } else {
+                        return "";
+                    }
+                }
+            );
             return new Skell.Types.String(contents);
         }
 
