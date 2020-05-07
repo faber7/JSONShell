@@ -11,7 +11,7 @@ namespace Skell.Problems
 
     internal class UnexpectedType : Exception
     {
-        public UnexpectedType(Skell.Types.ISkellType got, System.Type expected)
+        public UnexpectedType(Skell.Types.ISkellInternal got, System.Type expected)
         {
             Log.Error($"Expected {expected}, got {got} of type {got.GetType()}");
         }
@@ -47,7 +47,7 @@ namespace Skell.Problems
     {
         public InvalidDefinition(
             string name, 
-            Skell.Types.ISkellType existing
+            Skell.Types.ISkellInternal existing
         ) {
             string from, to;
             if (existing.GetType() == typeof(Skell.Types.Function)) {

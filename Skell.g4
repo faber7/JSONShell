@@ -11,7 +11,7 @@ statementBlock : LCURL statement* RCURL ;
 declaration : KW_LET IDENTIFIER OP_ASSGN (expression | function);
 
 function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
-functionArg : typeName IDENTIFIER ;
+functionArg : typeSpecifier IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
 ifControl : ifThenControl | ifThenElseControl ;
@@ -48,7 +48,7 @@ pair : STRING SYM_COLON term ;
 object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Datatypes
-typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+typeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_ANY ;
 
 // Lexer Rules
 EOL: '\n' ;
@@ -71,6 +71,7 @@ TYPE_ARRAY : 'array' ;
 TYPE_NUMBER : 'number' ;
 TYPE_STRING : 'string' ;
 TYPE_BOOL : 'bool' ;
+TYPE_ANY : 'any' ;
 
 // Symbols and operators
 LSQR: '[' ;

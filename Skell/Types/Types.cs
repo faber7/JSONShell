@@ -4,12 +4,22 @@ using Antlr4.Runtime;
 
 namespace Skell.Types
 {
-    // Base type for all datatypes in Skell
-    public interface ISkellType
+    // Base type for all internal datatypes
+    public interface ISkellInternal
     {
     }
 
-    // Base type for any datatype that has member access support
+    // Represents all usable datatypes + None type
+    public interface ISkellReturnable : ISkellInternal
+    {
+    }
+
+    // Represents all usable datatypes in Skell
+    public interface ISkellType : ISkellReturnable
+    {
+    }
+
+    // Represents all datatypes that have support for member access
     public interface ISkellIndexableType : ISkellType
     {
         int Count();

@@ -38,13 +38,13 @@ public partial class SkellParser : Parser {
 	public const int
 		EOL=1, WS=2, KW_TRUE=3, KW_FALSE=4, KW_IF=5, KW_THEN=6, KW_ELSE=7, KW_FOR=8, 
 		KW_IN=9, KW_RETURN=10, KW_LET=11, KW_FUN=12, TYPE_OBJECT=13, TYPE_ARRAY=14, 
-		TYPE_NUMBER=15, TYPE_STRING=16, TYPE_BOOL=17, LSQR=18, RSQR=19, LCURL=20, 
-		RCURL=21, LPAREN=22, RPAREN=23, SYM_PERIOD=24, SYM_COMMA=25, SYM_QUOTE=26, 
-		SYM_COLON=27, SYM_DOLLAR=28, OP_ASSGN=29, OP_EQ=30, OP_NE=31, OP_LT=32, 
-		OP_LE=33, OP_GT=34, OP_GE=35, OP_NOT=36, OP_OR=37, OP_AND=38, OP_ADD=39, 
-		OP_SUB=40, OP_DIV=41, OP_MUL=42, OP_MOD=43, IDENTIFIER=44, STRING=45, 
-		NUMBER=46, NONDIGIT=47, DIGIT=48, NONZERO_DIGIT=49, ZERO=50, SIGN=51, 
-		INT=52, FRAC=53, EXP=54, HEX=55, UNICODE=56, ESC=57, SAFECODEPOINT=58;
+		TYPE_NUMBER=15, TYPE_STRING=16, TYPE_BOOL=17, TYPE_ANY=18, LSQR=19, RSQR=20, 
+		LCURL=21, RCURL=22, LPAREN=23, RPAREN=24, SYM_PERIOD=25, SYM_COMMA=26, 
+		SYM_QUOTE=27, SYM_COLON=28, SYM_DOLLAR=29, OP_ASSGN=30, OP_EQ=31, OP_NE=32, 
+		OP_LT=33, OP_LE=34, OP_GT=35, OP_GE=36, OP_NOT=37, OP_OR=38, OP_AND=39, 
+		OP_ADD=40, OP_SUB=41, OP_DIV=42, OP_MUL=43, OP_MOD=44, IDENTIFIER=45, 
+		STRING=46, NUMBER=47, NONDIGIT=48, DIGIT=49, NONZERO_DIGIT=50, ZERO=51, 
+		SIGN=52, INT=53, FRAC=54, EXP=55, HEX=56, UNICODE=57, ESC=58, SAFECODEPOINT=59;
 	public const int
 		RULE_program = 0, RULE_statement = 1, RULE_programExec = 2, RULE_statementBlock = 3, 
 		RULE_declaration = 4, RULE_function = 5, RULE_functionArg = 6, RULE_control = 7, 
@@ -52,32 +52,33 @@ public partial class SkellParser : Parser {
 		RULE_forControl = 11, RULE_returnControl = 12, RULE_expression = 13, RULE_eqExpr = 14, 
 		RULE_relExpr = 15, RULE_addExpr = 16, RULE_mulExpr = 17, RULE_unary = 18, 
 		RULE_primary = 19, RULE_fnCall = 20, RULE_term = 21, RULE_value = 22, 
-		RULE_bool = 23, RULE_array = 24, RULE_pair = 25, RULE_object = 26, RULE_typeName = 27;
+		RULE_bool = 23, RULE_array = 24, RULE_pair = 25, RULE_object = 26, RULE_typeSpecifier = 27;
 	public static readonly string[] ruleNames = {
 		"program", "statement", "programExec", "statementBlock", "declaration", 
 		"function", "functionArg", "control", "ifControl", "ifThenControl", "ifThenElseControl", 
 		"forControl", "returnControl", "expression", "eqExpr", "relExpr", "addExpr", 
 		"mulExpr", "unary", "primary", "fnCall", "term", "value", "bool", "array", 
-		"pair", "object", "typeName"
+		"pair", "object", "typeSpecifier"
 	};
 
 	private static readonly string[] _LiteralNames = {
 		null, "'\n'", null, "'true'", "'false'", "'if'", "'then'", "'else'", "'for'", 
 		"'in'", "'return'", "'let'", "'fun'", "'object'", "'array'", "'number'", 
-		"'string'", "'bool'", "'['", "']'", "'{'", "'}'", "'('", "')'", "'.'", 
-		"','", "'\"'", "':'", "'$'", "'='", "'=='", "'!='", "'<'", "'<='", "'>'", 
-		"'>='", "'!'", "'|'", "'&'", "'+'", "'-'", "'/'", "'*'", "'%'", null, 
-		null, null, null, null, null, "'0'"
+		"'string'", "'bool'", "'any'", "'['", "']'", "'{'", "'}'", "'('", "')'", 
+		"'.'", "','", "'\"'", "':'", "'$'", "'='", "'=='", "'!='", "'<'", "'<='", 
+		"'>'", "'>='", "'!'", "'|'", "'&'", "'+'", "'-'", "'/'", "'*'", "'%'", 
+		null, null, null, null, null, null, "'0'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "EOL", "WS", "KW_TRUE", "KW_FALSE", "KW_IF", "KW_THEN", "KW_ELSE", 
 		"KW_FOR", "KW_IN", "KW_RETURN", "KW_LET", "KW_FUN", "TYPE_OBJECT", "TYPE_ARRAY", 
-		"TYPE_NUMBER", "TYPE_STRING", "TYPE_BOOL", "LSQR", "RSQR", "LCURL", "RCURL", 
-		"LPAREN", "RPAREN", "SYM_PERIOD", "SYM_COMMA", "SYM_QUOTE", "SYM_COLON", 
-		"SYM_DOLLAR", "OP_ASSGN", "OP_EQ", "OP_NE", "OP_LT", "OP_LE", "OP_GT", 
-		"OP_GE", "OP_NOT", "OP_OR", "OP_AND", "OP_ADD", "OP_SUB", "OP_DIV", "OP_MUL", 
-		"OP_MOD", "IDENTIFIER", "STRING", "NUMBER", "NONDIGIT", "DIGIT", "NONZERO_DIGIT", 
-		"ZERO", "SIGN", "INT", "FRAC", "EXP", "HEX", "UNICODE", "ESC", "SAFECODEPOINT"
+		"TYPE_NUMBER", "TYPE_STRING", "TYPE_BOOL", "TYPE_ANY", "LSQR", "RSQR", 
+		"LCURL", "RCURL", "LPAREN", "RPAREN", "SYM_PERIOD", "SYM_COMMA", "SYM_QUOTE", 
+		"SYM_COLON", "SYM_DOLLAR", "OP_ASSGN", "OP_EQ", "OP_NE", "OP_LT", "OP_LE", 
+		"OP_GT", "OP_GE", "OP_NOT", "OP_OR", "OP_AND", "OP_ADD", "OP_SUB", "OP_DIV", 
+		"OP_MUL", "OP_MOD", "IDENTIFIER", "STRING", "NUMBER", "NONDIGIT", "DIGIT", 
+		"NONZERO_DIGIT", "ZERO", "SIGN", "INT", "FRAC", "EXP", "HEX", "UNICODE", 
+		"ESC", "SAFECODEPOINT"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -287,7 +288,7 @@ public partial class SkellParser : Parser {
 			State = 78;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << WS) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << KW_THEN) | (1L << KW_ELSE) | (1L << KW_FOR) | (1L << KW_IN) | (1L << KW_RETURN) | (1L << KW_LET) | (1L << KW_FUN) | (1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << LSQR) | (1L << RSQR) | (1L << LCURL) | (1L << RCURL) | (1L << LPAREN) | (1L << RPAREN) | (1L << SYM_PERIOD) | (1L << SYM_COMMA) | (1L << SYM_QUOTE) | (1L << SYM_COLON) | (1L << SYM_DOLLAR) | (1L << OP_ASSGN) | (1L << OP_EQ) | (1L << OP_NE) | (1L << OP_LT) | (1L << OP_LE) | (1L << OP_GT) | (1L << OP_GE) | (1L << OP_NOT) | (1L << OP_OR) | (1L << OP_AND) | (1L << OP_ADD) | (1L << OP_SUB) | (1L << OP_DIV) | (1L << OP_MUL) | (1L << OP_MOD) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER) | (1L << NONDIGIT) | (1L << DIGIT) | (1L << NONZERO_DIGIT) | (1L << ZERO) | (1L << SIGN) | (1L << INT) | (1L << FRAC) | (1L << EXP) | (1L << HEX) | (1L << UNICODE) | (1L << ESC) | (1L << SAFECODEPOINT))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << WS) | (1L << KW_TRUE) | (1L << KW_FALSE) | (1L << KW_IF) | (1L << KW_THEN) | (1L << KW_ELSE) | (1L << KW_FOR) | (1L << KW_IN) | (1L << KW_RETURN) | (1L << KW_LET) | (1L << KW_FUN) | (1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_ANY) | (1L << LSQR) | (1L << RSQR) | (1L << LCURL) | (1L << RCURL) | (1L << LPAREN) | (1L << RPAREN) | (1L << SYM_PERIOD) | (1L << SYM_COMMA) | (1L << SYM_QUOTE) | (1L << SYM_COLON) | (1L << SYM_DOLLAR) | (1L << OP_ASSGN) | (1L << OP_EQ) | (1L << OP_NE) | (1L << OP_LT) | (1L << OP_LE) | (1L << OP_GT) | (1L << OP_GE) | (1L << OP_NOT) | (1L << OP_OR) | (1L << OP_AND) | (1L << OP_ADD) | (1L << OP_SUB) | (1L << OP_DIV) | (1L << OP_MUL) | (1L << OP_MOD) | (1L << IDENTIFIER) | (1L << STRING) | (1L << NUMBER) | (1L << NONDIGIT) | (1L << DIGIT) | (1L << NONZERO_DIGIT) | (1L << ZERO) | (1L << SIGN) | (1L << INT) | (1L << FRAC) | (1L << EXP) | (1L << HEX) | (1L << UNICODE) | (1L << ESC) | (1L << SAFECODEPOINT))) != 0)) {
 				{
 				{
 				State = 75;
@@ -487,7 +488,7 @@ public partial class SkellParser : Parser {
 			State = 107;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_ANY))) != 0)) {
 				{
 				State = 99; functionArg();
 				State = 104;
@@ -523,8 +524,8 @@ public partial class SkellParser : Parser {
 	}
 
 	public partial class FunctionArgContext : ParserRuleContext {
-		public TypeNameContext typeName() {
-			return GetRuleContext<TypeNameContext>(0);
+		public TypeSpecifierContext typeSpecifier() {
+			return GetRuleContext<TypeSpecifierContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(SkellParser.IDENTIFIER, 0); }
 		public FunctionArgContext(ParserRuleContext parent, int invokingState)
@@ -546,7 +547,7 @@ public partial class SkellParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 112; typeName();
+			State = 112; typeSpecifier();
 			State = 113; Match(IDENTIFIER);
 			}
 		}
@@ -1843,35 +1844,36 @@ public partial class SkellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TypeNameContext : ParserRuleContext {
+	public partial class TypeSpecifierContext : ParserRuleContext {
 		public ITerminalNode TYPE_OBJECT() { return GetToken(SkellParser.TYPE_OBJECT, 0); }
 		public ITerminalNode TYPE_ARRAY() { return GetToken(SkellParser.TYPE_ARRAY, 0); }
 		public ITerminalNode TYPE_NUMBER() { return GetToken(SkellParser.TYPE_NUMBER, 0); }
 		public ITerminalNode TYPE_STRING() { return GetToken(SkellParser.TYPE_STRING, 0); }
 		public ITerminalNode TYPE_BOOL() { return GetToken(SkellParser.TYPE_BOOL, 0); }
-		public TypeNameContext(ParserRuleContext parent, int invokingState)
+		public ITerminalNode TYPE_ANY() { return GetToken(SkellParser.TYPE_ANY, 0); }
+		public TypeSpecifierContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_typeName; } }
+		public override int RuleIndex { get { return RULE_typeSpecifier; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			ISkellVisitor<TResult> typedVisitor = visitor as ISkellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitTypeName(this);
+			if (typedVisitor != null) return typedVisitor.VisitTypeSpecifier(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public TypeNameContext typeName() {
-		TypeNameContext _localctx = new TypeNameContext(Context, State);
-		EnterRule(_localctx, 54, RULE_typeName);
+	public TypeSpecifierContext typeSpecifier() {
+		TypeSpecifierContext _localctx = new TypeSpecifierContext(Context, State);
+		EnterRule(_localctx, 54, RULE_typeSpecifier);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 257;
 			_la = TokenStream.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_ANY))) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -1906,7 +1908,7 @@ public partial class SkellParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', '<', '\x106', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', '=', '\x106', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 
@@ -1963,13 +1965,13 @@ public partial class SkellParser : Parser {
 		'\x3', '(', '\x1E', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', 
 		'\x12', '\x14', '\x16', '\x18', '\x1A', '\x1C', '\x1E', ' ', '\"', '$', 
 		'&', '(', '*', ',', '.', '\x30', '\x32', '\x34', '\x36', '\x38', '\x2', 
-		'\v', '\x3', '\x2', '\x3', '\x3', '\x3', '\x2', ' ', '!', '\x3', '\x2', 
-		'\"', '%', '\x3', '\x2', ')', '*', '\x3', '\x2', '+', ',', '\x4', '\x2', 
-		'&', '&', '*', '*', '\x3', '\x2', '.', '\x30', '\x3', '\x2', '\x5', '\x6', 
-		'\x3', '\x2', '\xF', '\x13', '\x2', '\x10E', '\x2', ';', '\x3', '\x2', 
-		'\x2', '\x2', '\x4', 'J', '\x3', '\x2', '\x2', '\x2', '\x6', 'L', '\x3', 
-		'\x2', '\x2', '\x2', '\b', 'S', '\x3', '\x2', '\x2', '\x2', '\n', '\\', 
-		'\x3', '\x2', '\x2', '\x2', '\f', '\x63', '\x3', '\x2', '\x2', '\x2', 
+		'\v', '\x3', '\x2', '\x3', '\x3', '\x3', '\x2', '!', '\"', '\x3', '\x2', 
+		'#', '&', '\x3', '\x2', '*', '+', '\x3', '\x2', ',', '-', '\x4', '\x2', 
+		'\'', '\'', '+', '+', '\x3', '\x2', '/', '\x31', '\x3', '\x2', '\x5', 
+		'\x6', '\x3', '\x2', '\xF', '\x14', '\x2', '\x10E', '\x2', ';', '\x3', 
+		'\x2', '\x2', '\x2', '\x4', 'J', '\x3', '\x2', '\x2', '\x2', '\x6', 'L', 
+		'\x3', '\x2', '\x2', '\x2', '\b', 'S', '\x3', '\x2', '\x2', '\x2', '\n', 
+		'\\', '\x3', '\x2', '\x2', '\x2', '\f', '\x63', '\x3', '\x2', '\x2', '\x2', 
 		'\xE', 'r', '\x3', '\x2', '\x2', '\x2', '\x10', 'x', '\x3', '\x2', '\x2', 
 		'\x2', '\x12', '|', '\x3', '\x2', '\x2', '\x2', '\x14', '~', '\x3', '\x2', 
 		'\x2', '\x2', '\x16', '\x83', '\x3', '\x2', '\x2', '\x2', '\x18', '\x89', 
@@ -1995,30 +1997,30 @@ public partial class SkellParser : Parser {
 		'\x2', '\x2', '\x2', 'J', '@', '\x3', '\x2', '\x2', '\x2', 'J', '\x43', 
 		'\x3', '\x2', '\x2', '\x2', 'J', '\x46', '\x3', '\x2', '\x2', '\x2', 'J', 
 		'I', '\x3', '\x2', '\x2', '\x2', 'K', '\x5', '\x3', '\x2', '\x2', '\x2', 
-		'L', 'P', '\a', '\x1E', '\x2', '\x2', 'M', 'O', '\n', '\x2', '\x2', '\x2', 
+		'L', 'P', '\a', '\x1F', '\x2', '\x2', 'M', 'O', '\n', '\x2', '\x2', '\x2', 
 		'N', 'M', '\x3', '\x2', '\x2', '\x2', 'O', 'R', '\x3', '\x2', '\x2', '\x2', 
 		'P', 'N', '\x3', '\x2', '\x2', '\x2', 'P', 'Q', '\x3', '\x2', '\x2', '\x2', 
 		'Q', '\a', '\x3', '\x2', '\x2', '\x2', 'R', 'P', '\x3', '\x2', '\x2', 
-		'\x2', 'S', 'W', '\a', '\x16', '\x2', '\x2', 'T', 'V', '\x5', '\x4', '\x3', 
+		'\x2', 'S', 'W', '\a', '\x17', '\x2', '\x2', 'T', 'V', '\x5', '\x4', '\x3', 
 		'\x2', 'U', 'T', '\x3', '\x2', '\x2', '\x2', 'V', 'Y', '\x3', '\x2', '\x2', 
 		'\x2', 'W', 'U', '\x3', '\x2', '\x2', '\x2', 'W', 'X', '\x3', '\x2', '\x2', 
 		'\x2', 'X', 'Z', '\x3', '\x2', '\x2', '\x2', 'Y', 'W', '\x3', '\x2', '\x2', 
-		'\x2', 'Z', '[', '\a', '\x17', '\x2', '\x2', '[', '\t', '\x3', '\x2', 
-		'\x2', '\x2', '\\', ']', '\a', '\r', '\x2', '\x2', ']', '^', '\a', '.', 
-		'\x2', '\x2', '^', '\x61', '\a', '\x1F', '\x2', '\x2', '_', '\x62', '\x5', 
+		'\x2', 'Z', '[', '\a', '\x18', '\x2', '\x2', '[', '\t', '\x3', '\x2', 
+		'\x2', '\x2', '\\', ']', '\a', '\r', '\x2', '\x2', ']', '^', '\a', '/', 
+		'\x2', '\x2', '^', '\x61', '\a', ' ', '\x2', '\x2', '_', '\x62', '\x5', 
 		'\x1C', '\xF', '\x2', '`', '\x62', '\x5', '\f', '\a', '\x2', '\x61', '_', 
 		'\x3', '\x2', '\x2', '\x2', '\x61', '`', '\x3', '\x2', '\x2', '\x2', '\x62', 
 		'\v', '\x3', '\x2', '\x2', '\x2', '\x63', '\x64', '\a', '\xE', '\x2', 
-		'\x2', '\x64', 'm', '\a', '\x18', '\x2', '\x2', '\x65', 'j', '\x5', '\xE', 
-		'\b', '\x2', '\x66', 'g', '\a', '\x1B', '\x2', '\x2', 'g', 'i', '\x5', 
+		'\x2', '\x64', 'm', '\a', '\x19', '\x2', '\x2', '\x65', 'j', '\x5', '\xE', 
+		'\b', '\x2', '\x66', 'g', '\a', '\x1C', '\x2', '\x2', 'g', 'i', '\x5', 
 		'\xE', '\b', '\x2', 'h', '\x66', '\x3', '\x2', '\x2', '\x2', 'i', 'l', 
 		'\x3', '\x2', '\x2', '\x2', 'j', 'h', '\x3', '\x2', '\x2', '\x2', 'j', 
 		'k', '\x3', '\x2', '\x2', '\x2', 'k', 'n', '\x3', '\x2', '\x2', '\x2', 
 		'l', 'j', '\x3', '\x2', '\x2', '\x2', 'm', '\x65', '\x3', '\x2', '\x2', 
 		'\x2', 'm', 'n', '\x3', '\x2', '\x2', '\x2', 'n', 'o', '\x3', '\x2', '\x2', 
-		'\x2', 'o', 'p', '\a', '\x19', '\x2', '\x2', 'p', 'q', '\x5', '\b', '\x5', 
+		'\x2', 'o', 'p', '\a', '\x1A', '\x2', '\x2', 'p', 'q', '\x5', '\b', '\x5', 
 		'\x2', 'q', '\r', '\x3', '\x2', '\x2', '\x2', 'r', 's', '\x5', '\x38', 
-		'\x1D', '\x2', 's', 't', '\a', '.', '\x2', '\x2', 't', '\xF', '\x3', '\x2', 
+		'\x1D', '\x2', 's', 't', '\a', '/', '\x2', '\x2', 't', '\xF', '\x3', '\x2', 
 		'\x2', '\x2', 'u', 'y', '\x5', '\x12', '\n', '\x2', 'v', 'y', '\x5', '\x18', 
 		'\r', '\x2', 'w', 'y', '\x5', '\x1A', '\xE', '\x2', 'x', 'u', '\x3', '\x2', 
 		'\x2', '\x2', 'x', 'v', '\x3', '\x2', '\x2', '\x2', 'x', 'w', '\x3', '\x2', 
@@ -2033,7 +2035,7 @@ public partial class SkellParser : Parser {
 		'\x2', '\x86', '\x88', '\x5', '\x12', '\n', '\x2', '\x87', '\x85', '\x3', 
 		'\x2', '\x2', '\x2', '\x87', '\x86', '\x3', '\x2', '\x2', '\x2', '\x88', 
 		'\x17', '\x3', '\x2', '\x2', '\x2', '\x89', '\x8A', '\a', '\n', '\x2', 
-		'\x2', '\x8A', '\x8B', '\a', '.', '\x2', '\x2', '\x8B', '\x8C', '\a', 
+		'\x2', '\x8A', '\x8B', '\a', '/', '\x2', '\x2', '\x8B', '\x8C', '\a', 
 		'\v', '\x2', '\x2', '\x8C', '\x8D', '\x5', '\x1C', '\xF', '\x2', '\x8D', 
 		'\x8E', '\x5', '\b', '\x5', '\x2', '\x8E', '\x19', '\x3', '\x2', '\x2', 
 		'\x2', '\x8F', '\x91', '\a', '\f', '\x2', '\x2', '\x90', '\x92', '\x5', 
@@ -2063,37 +2065,37 @@ public partial class SkellParser : Parser {
 		'\xB2', '\xAF', '\x3', '\x2', '\x2', '\x2', '\xB2', '\xB1', '\x3', '\x2', 
 		'\x2', '\x2', '\xB3', '\'', '\x3', '\x2', '\x2', '\x2', '\xB4', '\xB5', 
 		'\b', '\x15', '\x1', '\x2', '\xB5', '\xBC', '\x5', ',', '\x17', '\x2', 
-		'\xB6', '\xBC', '\x5', '*', '\x16', '\x2', '\xB7', '\xB8', '\a', '\x18', 
+		'\xB6', '\xBC', '\x5', '*', '\x16', '\x2', '\xB7', '\xB8', '\a', '\x19', 
 		'\x2', '\x2', '\xB8', '\xB9', '\x5', '\x1C', '\xF', '\x2', '\xB9', '\xBA', 
-		'\a', '\x19', '\x2', '\x2', '\xBA', '\xBC', '\x3', '\x2', '\x2', '\x2', 
+		'\a', '\x1A', '\x2', '\x2', '\xBA', '\xBC', '\x3', '\x2', '\x2', '\x2', 
 		'\xBB', '\xB4', '\x3', '\x2', '\x2', '\x2', '\xBB', '\xB6', '\x3', '\x2', 
 		'\x2', '\x2', '\xBB', '\xB7', '\x3', '\x2', '\x2', '\x2', '\xBC', '\xC3', 
 		'\x3', '\x2', '\x2', '\x2', '\xBD', '\xBE', '\f', '\x5', '\x2', '\x2', 
-		'\xBE', '\xBF', '\a', '\x14', '\x2', '\x2', '\xBF', '\xC0', '\t', '\b', 
-		'\x2', '\x2', '\xC0', '\xC2', '\a', '\x15', '\x2', '\x2', '\xC1', '\xBD', 
+		'\xBE', '\xBF', '\a', '\x15', '\x2', '\x2', '\xBF', '\xC0', '\t', '\b', 
+		'\x2', '\x2', '\xC0', '\xC2', '\a', '\x16', '\x2', '\x2', '\xC1', '\xBD', 
 		'\x3', '\x2', '\x2', '\x2', '\xC2', '\xC5', '\x3', '\x2', '\x2', '\x2', 
 		'\xC3', '\xC1', '\x3', '\x2', '\x2', '\x2', '\xC3', '\xC4', '\x3', '\x2', 
 		'\x2', '\x2', '\xC4', ')', '\x3', '\x2', '\x2', '\x2', '\xC5', '\xC3', 
-		'\x3', '\x2', '\x2', '\x2', '\xC6', '\xC8', '\a', '.', '\x2', '\x2', '\xC7', 
+		'\x3', '\x2', '\x2', '\x2', '\xC6', '\xC8', '\a', '/', '\x2', '\x2', '\xC7', 
 		'\xC9', '\x5', '\x1C', '\xF', '\x2', '\xC8', '\xC7', '\x3', '\x2', '\x2', 
 		'\x2', '\xC9', '\xCA', '\x3', '\x2', '\x2', '\x2', '\xCA', '\xC8', '\x3', 
 		'\x2', '\x2', '\x2', '\xCA', '\xCB', '\x3', '\x2', '\x2', '\x2', '\xCB', 
 		'+', '\x3', '\x2', '\x2', '\x2', '\xCC', '\xCF', '\x5', '.', '\x18', '\x2', 
-		'\xCD', '\xCF', '\a', '.', '\x2', '\x2', '\xCE', '\xCC', '\x3', '\x2', 
+		'\xCD', '\xCF', '\a', '/', '\x2', '\x2', '\xCE', '\xCC', '\x3', '\x2', 
 		'\x2', '\x2', '\xCE', '\xCD', '\x3', '\x2', '\x2', '\x2', '\xCF', '-', 
 		'\x3', '\x2', '\x2', '\x2', '\xD0', '\xD6', '\x5', '\x36', '\x1C', '\x2', 
-		'\xD1', '\xD6', '\x5', '\x32', '\x1A', '\x2', '\xD2', '\xD6', '\a', '/', 
-		'\x2', '\x2', '\xD3', '\xD6', '\a', '\x30', '\x2', '\x2', '\xD4', '\xD6', 
+		'\xD1', '\xD6', '\x5', '\x32', '\x1A', '\x2', '\xD2', '\xD6', '\a', '\x30', 
+		'\x2', '\x2', '\xD3', '\xD6', '\a', '\x31', '\x2', '\x2', '\xD4', '\xD6', 
 		'\x5', '\x30', '\x19', '\x2', '\xD5', '\xD0', '\x3', '\x2', '\x2', '\x2', 
 		'\xD5', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xD5', '\xD2', '\x3', '\x2', 
 		'\x2', '\x2', '\xD5', '\xD3', '\x3', '\x2', '\x2', '\x2', '\xD5', '\xD4', 
 		'\x3', '\x2', '\x2', '\x2', '\xD6', '/', '\x3', '\x2', '\x2', '\x2', '\xD7', 
 		'\xD8', '\t', '\t', '\x2', '\x2', '\xD8', '\x31', '\x3', '\x2', '\x2', 
-		'\x2', '\xD9', '\xDB', '\a', '\x14', '\x2', '\x2', '\xDA', '\xDC', '\a', 
+		'\x2', '\xD9', '\xDB', '\a', '\x15', '\x2', '\x2', '\xDA', '\xDC', '\a', 
 		'\x3', '\x2', '\x2', '\xDB', '\xDA', '\x3', '\x2', '\x2', '\x2', '\xDB', 
 		'\xDC', '\x3', '\x2', '\x2', '\x2', '\xDC', '\xE8', '\x3', '\x2', '\x2', 
 		'\x2', '\xDD', '\xE5', '\x5', ',', '\x17', '\x2', '\xDE', '\xE0', '\a', 
-		'\x1B', '\x2', '\x2', '\xDF', '\xE1', '\a', '\x3', '\x2', '\x2', '\xE0', 
+		'\x1C', '\x2', '\x2', '\xDF', '\xE1', '\a', '\x3', '\x2', '\x2', '\xE0', 
 		'\xDF', '\x3', '\x2', '\x2', '\x2', '\xE0', '\xE1', '\x3', '\x2', '\x2', 
 		'\x2', '\xE1', '\xE2', '\x3', '\x2', '\x2', '\x2', '\xE2', '\xE4', '\x5', 
 		',', '\x17', '\x2', '\xE3', '\xDE', '\x3', '\x2', '\x2', '\x2', '\xE4', 
@@ -2102,14 +2104,14 @@ public partial class SkellParser : Parser {
 		'\x2', '\x2', '\x2', '\xE7', '\xE5', '\x3', '\x2', '\x2', '\x2', '\xE8', 
 		'\xDD', '\x3', '\x2', '\x2', '\x2', '\xE8', '\xE9', '\x3', '\x2', '\x2', 
 		'\x2', '\xE9', '\xEA', '\x3', '\x2', '\x2', '\x2', '\xEA', '\xEB', '\a', 
-		'\x15', '\x2', '\x2', '\xEB', '\x33', '\x3', '\x2', '\x2', '\x2', '\xEC', 
-		'\xED', '\a', '/', '\x2', '\x2', '\xED', '\xEE', '\a', '\x1D', '\x2', 
+		'\x16', '\x2', '\x2', '\xEB', '\x33', '\x3', '\x2', '\x2', '\x2', '\xEC', 
+		'\xED', '\a', '\x30', '\x2', '\x2', '\xED', '\xEE', '\a', '\x1E', '\x2', 
 		'\x2', '\xEE', '\xEF', '\x5', ',', '\x17', '\x2', '\xEF', '\x35', '\x3', 
-		'\x2', '\x2', '\x2', '\xF0', '\xF2', '\a', '\x16', '\x2', '\x2', '\xF1', 
+		'\x2', '\x2', '\x2', '\xF0', '\xF2', '\a', '\x17', '\x2', '\x2', '\xF1', 
 		'\xF3', '\a', '\x3', '\x2', '\x2', '\xF2', '\xF1', '\x3', '\x2', '\x2', 
 		'\x2', '\xF2', '\xF3', '\x3', '\x2', '\x2', '\x2', '\xF3', '\xFF', '\x3', 
 		'\x2', '\x2', '\x2', '\xF4', '\xFC', '\x5', '\x34', '\x1B', '\x2', '\xF5', 
-		'\xF7', '\a', '\x1B', '\x2', '\x2', '\xF6', '\xF8', '\a', '\x3', '\x2', 
+		'\xF7', '\a', '\x1C', '\x2', '\x2', '\xF6', '\xF8', '\a', '\x3', '\x2', 
 		'\x2', '\xF7', '\xF6', '\x3', '\x2', '\x2', '\x2', '\xF7', '\xF8', '\x3', 
 		'\x2', '\x2', '\x2', '\xF8', '\xF9', '\x3', '\x2', '\x2', '\x2', '\xF9', 
 		'\xFB', '\x5', '\x34', '\x1B', '\x2', '\xFA', '\xF5', '\x3', '\x2', '\x2', 
@@ -2118,7 +2120,7 @@ public partial class SkellParser : Parser {
 		'\x100', '\x3', '\x2', '\x2', '\x2', '\xFE', '\xFC', '\x3', '\x2', '\x2', 
 		'\x2', '\xFF', '\xF4', '\x3', '\x2', '\x2', '\x2', '\xFF', '\x100', '\x3', 
 		'\x2', '\x2', '\x2', '\x100', '\x101', '\x3', '\x2', '\x2', '\x2', '\x101', 
-		'\x102', '\a', '\x17', '\x2', '\x2', '\x102', '\x37', '\x3', '\x2', '\x2', 
+		'\x102', '\a', '\x18', '\x2', '\x2', '\x102', '\x37', '\x3', '\x2', '\x2', 
 		'\x2', '\x103', '\x104', '\t', '\n', '\x2', '\x2', '\x104', '\x39', '\x3', 
 		'\x2', '\x2', '\x2', '\x1F', '=', 'J', 'P', 'W', '\x61', 'j', 'm', 'x', 
 		'|', '\x87', '\x91', '\x98', '\x9D', '\xA4', '\xAC', '\xB2', '\xBB', '\xC3', 

@@ -13,7 +13,7 @@ namespace Skell.Types
 
         /// <remark>
         /// function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
-        /// functionArg : typeName IDENTIFIER ;
+        /// functionArg : typeSpecifier IDENTIFIER ;
         /// </remark>
         public UserDefinedLambda(
             SkellParser.FunctionContext ctx
@@ -23,8 +23,8 @@ namespace Skell.Types
             var repr = new StringBuilder("(");
             for (int i = 0; i < context.functionArg().Length; i++) {
                 var arg = context.functionArg(i);
-                string name = Skell.Interpreter.Utility.GetIdentifierName(arg.IDENTIFIER());
-                IToken token = Skell.Interpreter.Utility.GetTokenOfTypeName(arg.typeName());
+                string name = arg.IDENTIFIER().GetText();
+                IToken token = Skell.Interpreter.Utility.GetTokenOfTypeName(arg.typeSpecifier());
                 argList.Add(new Tuple<string, IToken>(name, token));
 
                 repr.Append($"{token.Text} {name}");
@@ -36,7 +36,7 @@ namespace Skell.Types
             argString = repr.ToString();
         }
 
-        public ISkellType Execute(SkellBaseVisitor<ISkellType> visitor)
+        public ISkellReturnable Execute(SkellBaseVisitor<ISkellReturnable> visitor)
         {
             return visitor.VisitStatementBlock(statementBlock);
         }
@@ -51,11 +51,11 @@ namespace Skell.Types
 
     public class BuiltinLambda : Lambda
     {
-        public Func<ISkellType> Execute;
+        public Func<ISkellReturnable> Execute;
 
         public BuiltinLambda(
             List<Tuple<string, IToken>> args,
-            Func<ISkellType> fn
+            Func<ISkellReturnable> fn
         ) {
             var repr = new StringBuilder("(");
             for (int i = 0; i < args.Count; i++) {

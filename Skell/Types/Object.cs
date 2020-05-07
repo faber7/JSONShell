@@ -35,7 +35,8 @@ namespace Skell.Types
             if (index is String s && dict.ContainsKey(s)) {
                 return dict[s];
             }
-            throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(dict.Keys.ToArray()));
+            var range = dict.Keys.Select(i => (Skell.Types.ISkellType) i).ToArray();
+            throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(range));
         }
 
         public static Number operator +(Object a) => throw new Skell.Problems.InvalidOperation("+", a);

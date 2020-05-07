@@ -9,7 +9,7 @@ namespace Skell.Types
     /// <summary>
     /// Represents executable functions(both user-defined and builtin) that can be overloaded
     /// </summary>
-    public class Function : ISkellType
+    public class Function : ISkellInternal
     {
         public string name;
         public List<Lambda> definitions = new List<Lambda>();
@@ -46,7 +46,7 @@ namespace Skell.Types
 
         public void AddBuiltinLambda(
             List<Tuple<string, IToken>> args,
-            Func<ISkellType> fn
+            Func<ISkellReturnable> fn
         ) {
             var lambda = new BuiltinLambda(args, fn);
             foreach(var definition in definitions) {

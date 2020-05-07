@@ -32,7 +32,7 @@ namespace Skell.Types
                 } else {
                     var indices = new Skell.Types.Array(
                         Enumerable.Range(0, contents.Count)
-                        .Select(i => new Skell.Types.Number(i))
+                        .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
                         .ToArray()
                     );
                     throw new Skell.Problems.IndexOutOfRange(index, indices);

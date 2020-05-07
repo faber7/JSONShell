@@ -30,13 +30,13 @@ namespace Skell.Interpreter
             /// <summary>
             /// Sets up, executes, and then cleans up function calls
             /// </summary>
-            public static Skell.Types.ISkellType ExecuteFunction(
-                SkellBaseVisitor<Skell.Types.ISkellType> visitor,
+            public static Skell.Types.ISkellReturnable ExecuteFunction(
+                SkellBaseVisitor<Skell.Types.ISkellReturnable> visitor,
                 State state,
                 Skell.Types.Function function,
                 List<Tuple<int, Skell.Types.ISkellType>> unnamedArgs
             ) {
-                Skell.Types.ISkellType returnValue;
+                Skell.Types.ISkellReturnable returnValue;
                 var lambda = function.SelectLambda(unnamedArgs);
                 var args = lambda.NameArguments(unnamedArgs);
                 
@@ -91,23 +91,12 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns the name of the identifier
-        /// </summary>
-        /// <remark>
-        /// IDENTIFIER: NONDIGIT (NONDIGIT | DIGIT)* ;
-        /// </remark>
-        public static string GetIdentifierName(Antlr4.Runtime.Tree.ITerminalNode context)
-        {
-            return context.GetText();
-        }
-
-        /// <summary>
         /// Returns the token for the given typeName context
         /// </summary>
         /// <remark>
-        /// typeName : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// typeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_ANY ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfTypeName(SkellParser.TypeNameContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfTypeName(SkellParser.TypeSpecifierContext context)
         {
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
@@ -115,7 +104,7 @@ namespace Skell.Interpreter
         /// <summary>
         /// Returns true if the data matches the given token type
         /// </summary>
-        public static bool MatchType(Skell.Types.ISkellType data, Antlr4.Runtime.IToken token)
+        public static bool MatchType(Skell.Types.ISkellInternal data, Antlr4.Runtime.IToken token)
         {
             if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY) {
                 return true;
@@ -126,6 +115,8 @@ namespace Skell.Interpreter
             } else if (data is Skell.Types.Object && token.Type == SkellLexer.TYPE_OBJECT) {
                 return true;
             } else if (data is Skell.Types.String && token.Type == SkellLexer.TYPE_STRING) {
+                return true;
+            } else if (data is Skell.Types.ISkellType && token.Type == SkellLexer.TYPE_ANY) {
                 return true;
             }
             return false;

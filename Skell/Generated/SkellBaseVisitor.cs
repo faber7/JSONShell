@@ -304,7 +304,7 @@ public partial class SkellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitObject([NotNull] SkellParser.ObjectContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.typeName"/>.
+	/// Visit a parse tree produced by <see cref="SkellParser.typeSpecifier"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -312,6 +312,6 @@ public partial class SkellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitTypeName([NotNull] SkellParser.TypeNameContext context) { return VisitChildren(context); }
+	public virtual Result VisitTypeSpecifier([NotNull] SkellParser.TypeSpecifierContext context) { return VisitChildren(context); }
 }
 } // namespace Skell.Generated
