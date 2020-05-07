@@ -1,6 +1,7 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Skell.Interpreter
 {
@@ -10,8 +11,11 @@ namespace Skell.Interpreter
         private readonly List<Context<Skell.Types.ISkellType>> contexts;
         public Context<Skell.Types.ISkellType> context;
         public Context<Skell.Types.Function> functions;
+        public Dictionary<string, Namespace> namespaces;
+
         private bool flag_return;
         private bool flag_returned;
+        private Context<Skell.Types.Function> temp_functions;
 
         public State()
         {
@@ -21,6 +25,7 @@ namespace Skell.Interpreter
             contexts.Add(global);
             context = global;
             functions = new Context<Skell.Types.Function>("FUNCTIONS");
+            namespaces = new Dictionary<string, Namespace>();
         }
 
         public bool can_return() => flag_return;
@@ -55,6 +60,47 @@ namespace Skell.Interpreter
             flag_return = last.Item1;
             contexts.Remove(context);
             context = last.Item2;
+        }
+
+        /// <summary>
+        /// Disable user-defined functions.
+        /// Note that namespaced functions will still work,
+        /// as well as any locally defined functions after this call
+        /// </summary>
+        public void DISABLE_GLOBAL_FUNCTIONS(bool log = false) {
+            if (log) {
+                logger.Verbose("Disabling all existing functions");
+            }
+            temp_functions = functions;
+            functions = new Context<Types.Function>("TEMP_FUNCTIONS");
+        }
+
+        /// <summary>
+        /// Enable user-defined functions.
+        /// </summary>
+        public void ENABLE_GLOBAL_FUNCTIONS(bool log = false) {
+            if (log) {
+                logger.Verbose("Restoring global functions");
+            }
+            functions = temp_functions;
+            temp_functions = new Context<Types.Function>("TEMP_FUNCTIONS");
+        }
+
+        public void RegisterNamespace(Namespace ns)
+        {
+            namespaces.Add(ns.name, ns);
+        }
+
+        public Namespace GetNamespace(string name)
+        {
+            if (namespaces.ContainsKey(name)) {
+                return namespaces[name];
+            } else {
+                throw new Skell.Problems.InvalidNamespace(
+                    name,
+                    namespaces.Keys.Select((a, b) => new Skell.Types.String(a)).ToArray()
+                );
+            }
         }
     }
 }

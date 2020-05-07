@@ -9,7 +9,7 @@ namespace Skell.Types
     /// <summary>
     /// Represents executable functions(both user-defined and builtin) that can be overloaded
     /// </summary>
-    public class Function : ISkellInternal
+    public class Function : ISkellNamedType
     {
         public string name;
         public List<Lambda> definitions = new List<Lambda>();

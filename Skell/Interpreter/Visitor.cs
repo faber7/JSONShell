@@ -29,7 +29,7 @@ namespace Skell.Interpreter
         {
             Skell.Types.ISkellReturnable lastResult = defaultReturnValue;
             foreach (var statement in context.statement()) {
-                lastResult = Visit(statement);
+                lastResult = VisitStatement(statement);
                 if (lastResult is Skell.Types.String str) {
                     logger.Debug($"Result: \"{lastResult}\" of type {lastResult.GetType()}");
                 } else if (lastResult is Skell.Types.Array arr) {
@@ -44,11 +44,14 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// statement : EOL | programExec EOL | declaration EOL | expression EOL | control ;
+        /// statement : EOL | namespace EOL | programExec EOL | declaration EOL | expression EOL | control ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitStatement(SkellParser.StatementContext context)
         {
-            if (context.expression() != null) {
+            if (context.@namespace() != null) {
+                var ns = new Namespace(context.@namespace(), this);
+                state.RegisterNamespace(ns);
+            } else if (context.expression() != null) {
                 return VisitExpression(context.expression());
             } else if (context.control() != null) {
                 return VisitControl(context.control());
@@ -56,9 +59,8 @@ namespace Skell.Interpreter
                 return VisitDeclaration(context.declaration());
             } else if (context.programExec() != null) {
                 return VisitProgramExec(context.programExec());
-            } else {
-                return defaultReturnValue;
             }
+            return defaultReturnValue;
         }
 
         /// <summary>
@@ -191,7 +193,7 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
-            var value = Visit(context.eqExpr());
+            var value = VisitEqExpr(context.eqExpr());
             if (context.KW_IS() != null) {
                 var token = Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
                 // as there is no chance of a TYPE_ANY token
@@ -452,15 +454,25 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// fnCall : IDENTIFIER fnArg+ ;
+        /// fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
         /// </summary>
         /// <remark>
         /// If there is no argument, the call is seen as a term instead of a fnCall
         /// </remark>
         override public Skell.Types.ISkellReturnable VisitFnCall(SkellParser.FnCallContext context)
         {
-            string name = context.IDENTIFIER().GetText();
-            Skell.Types.Function fn = Utility.Function.Get(state, name);
+            Skell.Types.ISkellNamedType id;
+            bool isNamespaced = false;
+            if (context.namespacedIdentifier() != null) {
+                id = Utility.GetNamespacedIdentifier(context.namespacedIdentifier(), state);
+                isNamespaced = true;
+            } else {
+                id = state.functions.Get(context.IDENTIFIER().GetText());
+            }
+            if (!(id is Skell.Types.Function)) {
+                throw new Skell.Problems.UnexpectedType(id, typeof(Skell.Types.Function));
+            }
+            var fn = (Skell.Types.Function) id;
             var args = new List<Tuple<int, Skell.Types.ISkellType>>();
             int i = 0;
             foreach (var arg in context.expression()) {
@@ -472,17 +484,26 @@ namespace Skell.Interpreter
                 }
                 i++;
             }
-            return Utility.Function.ExecuteFunction(
+
+            if (isNamespaced) {
+                state.DISABLE_GLOBAL_FUNCTIONS(true);
+            }
+            var result = Utility.Function.ExecuteFunction(
                 this,
                 state,
                 fn,
                 args
             );
+            if (isNamespaced) {
+                state.ENABLE_GLOBAL_FUNCTIONS(true);
+            }
+            return result;
         }
 
         /// <summary>
         /// term : value
         ///      | IDENTIFIER
+        ///      | namespacedIdentifier
         ///      ;
         /// </summary>
         /// <remark>
@@ -504,6 +525,23 @@ namespace Skell.Interpreter
                     );   
                 }
                 return state.context.Get(name);
+            } else if (context.namespacedIdentifier() != null) {
+                var id = Utility.GetNamespacedIdentifier(context.namespacedIdentifier(), state);
+                if (id is Skell.Types.Function fn) {
+                    state.DISABLE_GLOBAL_FUNCTIONS(true);
+                    var args = new List<Tuple<int, Skell.Types.ISkellType>>();
+                    var result = Utility.Function.ExecuteFunction(
+                        this,
+                        state,
+                        fn,
+                        args
+                    );
+                    state.ENABLE_GLOBAL_FUNCTIONS(true);
+                    return result;
+                } else {
+                    // GetNamespacedIDentifier will never return a namespace so this cast is safe
+                    return (Skell.Types.ISkellType) id;
+                }
             }
             return VisitValue(context.value());
         }

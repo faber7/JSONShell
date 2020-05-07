@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
@@ -92,6 +93,30 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
+        /// Never returns a namespace. Will throw an exception if it refers to a namespace.
+        /// </summary>
+        /// <remark>
+        /// namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
+        /// </remark>
+        public static Skell.Types.ISkellNamedType GetNamespacedIdentifier(
+            SkellParser.NamespacedIdentifierContext context,
+            State state
+        ) {
+            Namespace ns = state.GetNamespace(context.IDENTIFIER().First().GetText());
+            foreach (var id in context.IDENTIFIER().Skip(1).SkipLast(1)) {
+                ns = ns.GetNamespace(id.GetText());
+            }
+            var result = ns.Get(context.IDENTIFIER().Last().GetText());
+            if (result is Namespace) {
+                throw new Skell.Problems.InvalidNamespacedIdentifier(
+                    context,
+                    ns.ListNames()
+                );
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Returns a Skell.Types.String for a STRING token
         /// Requires visitor to handle string substitution
         /// </summary>
@@ -142,6 +167,9 @@ namespace Skell.Interpreter
         /// </remark>
         public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(SkellParser.TypeSpecifierContext context)
         {
+            if (context.usableTypeSpecifier() != null) {
+                return Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
+            }
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
         

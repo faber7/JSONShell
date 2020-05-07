@@ -2,7 +2,11 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : EOL | programExec EOL | declaration EOL | expression EOL | control ;
+statement : EOL | namespace EOL | programExec EOL | declaration EOL | expression EOL | control ;
+
+namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
+namespaceStmt : EOL | namespaceDecl EOL | namespace EOL ;
+namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
 
 programExec : SYM_DOLLAR ~EOL* ;
 
@@ -35,11 +39,14 @@ primary : term
         ;
 
 // If there is no argument, the function is identified as a term instead and executed directly
-fnCall : IDENTIFIER expression+ ;
+fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
 
 term : value
      | IDENTIFIER
+     | namespacedIdentifier
      ;
+
+namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 
 value : object | array | STRING | NUMBER | bool ;
 bool : KW_TRUE | KW_FALSE ;
@@ -67,6 +74,7 @@ KW_RETURN : 'return' ;
 KW_LET : 'let' ;
 KW_FUN : 'fun' ;
 KW_IS : 'is' ;
+KW_NAMESPACE : 'namespace' ;
 // Typenames
 TYPE_OBJECT : 'object' ;
 TYPE_ARRAY : 'array' ;

@@ -115,4 +115,24 @@ namespace Skell.Problems
             Log.Information(msg.ToString());
         }
     }
+
+    internal class InvalidNamespace : Exception
+    {
+        public InvalidNamespace(string ns, Skell.Types.String[] namespaces)
+        {
+            Log.Error($"Namespace \"{ns}\" not found. Valid namespaces are {namespaces}");
+        }
+    }
+
+    internal class InvalidNamespacedIdentifier : Exception
+    {
+        public InvalidNamespacedIdentifier(
+            Skell.Generated.SkellParser.NamespacedIdentifierContext context,
+            Skell.Types.String[] names
+        )
+        {
+            int line = context.Start.Line, col = context.Start.Column;
+            Log.Error($"Namespaced identifier at {line}:{col} ended on a namespace, expected {names}");
+        }
+    }
 }

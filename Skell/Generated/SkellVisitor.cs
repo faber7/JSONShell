@@ -44,6 +44,24 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] SkellParser.StatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.namespace"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNamespace([NotNull] SkellParser.NamespaceContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.namespaceStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNamespaceStmt([NotNull] SkellParser.NamespaceStmtContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.namespaceDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNamespaceDecl([NotNull] SkellParser.NamespaceDeclContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.programExec"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -163,6 +181,12 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitTerm([NotNull] SkellParser.TermContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.namespacedIdentifier"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNamespacedIdentifier([NotNull] SkellParser.NamespacedIdentifierContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.value"/>.
 	/// </summary>

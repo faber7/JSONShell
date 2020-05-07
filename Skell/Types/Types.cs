@@ -9,13 +9,18 @@ namespace Skell.Types
     {
     }
 
+    // Base type for all types allowed in namespaces
+    public interface ISkellNamedType : ISkellInternal
+    {
+    }
+
     // Represents all usable datatypes + None type
     public interface ISkellReturnable : ISkellInternal
     {
     }
 
     // Represents all usable datatypes in Skell
-    public interface ISkellType : ISkellReturnable
+    public interface ISkellType : ISkellReturnable, ISkellNamedType
     {
     }
 
