@@ -30,13 +30,33 @@ namespace Skell.Types
 
         public int Count() => dict.Count;
 
-        public ISkellType GetMember(ISkellType index)
+        public ISkellType ThrowIndexOutOfRange(ISkellType index)
         {
-            if (index is String s && dict.ContainsKey(s)) {
-                return dict[s];
-            }
             var range = dict.Keys.Select(i => (Skell.Types.ISkellType) i).ToArray();
             throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(range));
+        }
+
+        public bool Exists(ISkellType index)
+        {
+            return (index is String s && dict.ContainsKey(s));
+        }
+
+        public ISkellType GetMember(ISkellType index)
+        {
+            if (Exists(index) && index is Skell.Types.String str) {
+                return dict[str];
+            } else {
+                return ThrowIndexOutOfRange(index);
+            }
+        }
+
+        public void Replace(ISkellType index, ISkellType value)
+        {
+            if (Exists(index) && index is String str) {
+                dict[str] = value;
+            } else {
+                ThrowIndexOutOfRange(index);
+            }
         }
 
         public void Insert(ISkellType index, ISkellType value)
@@ -50,10 +70,10 @@ namespace Skell.Types
 
         public void Delete(ISkellType index)
         {
-            if (index is Skell.Types.String str) {
+            if (Exists(index) && index is Skell.Types.String str) {
                 dict.Remove(str);
             } else {
-                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.String));
+                ThrowIndexOutOfRange(index);
             }
         }
 

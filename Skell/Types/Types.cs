@@ -24,7 +24,11 @@ namespace Skell.Types
     {
         int Count();
 
+        ISkellType ThrowIndexOutOfRange(ISkellType index);
+
+        bool Exists(ISkellType index);
         ISkellType GetMember(ISkellType index);
+        void Replace(ISkellType index, ISkellType value);
         void Insert(ISkellType index, ISkellType value);
         void Delete(ISkellType index);
         ISkellReturnable IndexOf(ISkellType value);

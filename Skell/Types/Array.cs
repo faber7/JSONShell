@@ -24,38 +24,74 @@ namespace Skell.Types
 
         public int Count() => contents.Count;
 
-        public ISkellType GetMember(ISkellType index)
+        public ISkellType ThrowIndexOutOfRange(ISkellType index)
         {
-            if (index is Number i && i.isInt) {
-                if (i.integerValue < contents.Count) {
-                    return contents[i.integerValue];
-                } else {
-                    var indices = new Skell.Types.Array(
-                        Enumerable.Range(0, contents.Count)
-                        .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
-                        .ToArray()
-                    );
-                    throw new Skell.Problems.IndexOutOfRange(index, indices);
-                }
-            }
-            throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
+            var indices = new Skell.Types.Array(
+                Enumerable.Range(0, contents.Count)
+                .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
+                .ToArray()
+            );
+            throw new Skell.Problems.IndexOutOfRange(index, indices);
         }
 
+        public ISkellType ThrowIndexOutOfRange(ISkellType index, bool allowFinal)
+        {
+            var indices = new Skell.Types.Array(
+                Enumerable.Range(0, contents.Count + (allowFinal ? 1 : 0))
+                .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
+                .ToArray()
+            );
+            throw new Skell.Problems.IndexOutOfRange(index, indices);
+        }
+
+        public bool Exists(ISkellType index)
+        {
+            return (index is Number n && n.isInt && n.integerValue < contents.Count);
+        }
+
+        public ISkellType GetMember(ISkellType index)
+        {
+            if (Exists(index)) {
+                return contents[((Number) index).integerValue];
+            } else {
+                return ThrowIndexOutOfRange(index);
+            }
+        }
+
+        public void Replace(ISkellType index, ISkellType value)
+        {
+            if (Exists(index)) {
+                var n = (Number) index;
+                contents[n.integerValue] = value;
+            } else {
+                ThrowIndexOutOfRange(index);
+            }
+        }
+
+        /// <summary>
+        /// Allows insertion at an index.
+        /// </summary>
+        /// <remark>
+        /// Insertion at Count + 1 => appending to the array
+        /// </remark>
         public void Insert(ISkellType index, ISkellType value)
         {
             if (index is Skell.Types.Number n && n.isInt) {
+                if (n.integerValue > contents.Count) {
+                    ThrowIndexOutOfRange(index, true);
+                }
                 contents.Insert(n.integerValue, value);
             } else {
-                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
+                throw new Skell.Problems.UnexpectedType(index, typeof(Number));
             }
         }
 
         public void Delete(ISkellType index)
         {
-            if (index is Skell.Types.Number n && n.isInt) {
-                contents.RemoveAt(n.integerValue);
+            if (Exists(index)) {
+                contents.RemoveAt(((Number) index).integerValue);
             } else {
-                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
+                ThrowIndexOutOfRange(index);
             }
         }
 
