@@ -39,6 +39,34 @@ namespace Skell.Types
             throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(range));
         }
 
+        public void Insert(ISkellType index, ISkellType value)
+        {
+            if (index is Skell.Types.String str) {
+                dict[str] = value;
+            } else {
+                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.String));
+            }
+        }
+
+        public void Delete(ISkellType index)
+        {
+            if (index is Skell.Types.String str) {
+                dict.Remove(str);
+            } else {
+                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.String));
+            }
+        }
+
+        public ISkellReturnable IndexOf(ISkellType value)
+        {
+            foreach (var pair in dict) {
+                if (pair.Value == value) {
+                    return pair.Key;
+                }
+            }
+            return new Skell.Types.None();
+        }
+
         public static Number operator +(Object a) => throw new Skell.Problems.InvalidOperation("+", a);
         public static Number operator -(Object a) => throw new Skell.Problems.InvalidOperation("-", a);
         public static Number operator +(Object a, Object b) => throw new Skell.Problems.InvalidOperation("+", a, b);

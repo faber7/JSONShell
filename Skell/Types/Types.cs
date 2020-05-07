@@ -25,6 +25,9 @@ namespace Skell.Types
         int Count();
 
         ISkellType GetMember(ISkellType index);
+        void Insert(ISkellType index, ISkellType value);
+        void Delete(ISkellType index);
+        ISkellReturnable IndexOf(ISkellType value);
     }
 
     /// <summary>

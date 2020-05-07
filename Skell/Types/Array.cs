@@ -41,6 +41,33 @@ namespace Skell.Types
             throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
         }
 
+        public void Insert(ISkellType index, ISkellType value)
+        {
+            if (index is Skell.Types.Number n && n.isInt) {
+                contents.Insert(n.integerValue, value);
+            } else {
+                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
+            }
+        }
+
+        public void Delete(ISkellType index)
+        {
+            if (index is Skell.Types.Number n && n.isInt) {
+                contents.RemoveAt(n.integerValue);
+            } else {
+                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.Number));
+            }
+        }
+
+        public ISkellReturnable IndexOf(ISkellType value)
+        {
+            if (contents.Contains(value)) {
+                return value;
+            } else {
+                return new Skell.Types.None();
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder s = new StringBuilder();
