@@ -36,7 +36,7 @@ namespace Skell.Interpreter
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
                 } else if (lastResult is Skell.Types.Object obj) {
                     logger.Debug($"Result is an object:\n {obj}");
-                } else {
+                } else if (!(lastResult is Skell.Types.None)) {
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
                 }
             }
@@ -116,34 +116,71 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : KW_LET IDENTIFIER OP_ASSGN (expression | function);
+        /// declaration : KW_LET primary OP_ASSGN (expression | function);
         /// function : LPAREN RPAREN statementBlock
         ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
         ///          ;
         /// functionArg : TypeSpecifier IDENTIFIER ;
+        ///
+        /// primary : term
+        ///         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+        ///         | fnCall
+        ///         | LPAREN expression RPAREN
+        ///         ;
+        /// term : value
+        ///      | IDENTIFIER
+        ///      ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
-            string name = context.IDENTIFIER().GetText();
+            var primary = context.primary();
+            if (primary.term() != null && primary.term().IDENTIFIER() != null) {
+                string name = primary.term().IDENTIFIER().GetText();
 
-            if (context.expression() != null) {
-                if (!state.functions.Exists(name)) {
-                    var exp = VisitExpression(context.expression());
-                    if (exp is Skell.Types.ISkellType expdata) {
-                        state.context.Set(name, expdata);
+                if (context.expression() != null) {
+                    if (!state.functions.Exists(name)) {
+                        var exp = VisitExpression(context.expression());
+                        if (exp is Skell.Types.ISkellType expdata) {
+                            state.context.Set(name, expdata);
+                        } else {
+                            throw new Skell.Problems.UnexpectedType(exp, typeof(Skell.Types.ISkellType));
+                        }
                     } else {
-                        throw new Skell.Problems.UnexpectedType(exp, typeof(Skell.Types.ISkellType));
+                        throw new Skell.Problems.InvalidDefinition(name, state.functions.Get(name));
                     }
                 } else {
-                    throw new Skell.Problems.InvalidDefinition(name, state.functions.Get(name));
+                    if (!state.context.Exists(name)) {
+                        var fn = Utility.Function.Get(state, name);
+                        fn.AddUserDefinedLambda(context.function());
+                    } else {
+                        throw new Skell.Problems.InvalidDefinition(name, state.context.Get(name));
+                    }
                 }
-            } else {
-                if (!state.context.Exists(name)) {
-                    var fn = Utility.Function.Get(state, name);
-                    fn.AddUserDefinedLambda(context.function());
+            } else if (primary.primary() != null) {
+                Skell.Types.ISkellReturnable value;
+                if (context.expression() != null) {
+                    value = Visit(context.expression());
                 } else {
-                    throw new Skell.Problems.InvalidDefinition(name, state.context.Get(name));
+                    throw new Skell.Problems.InvalidDefinition(context);
                 }
+                if (!(value is Skell.Types.ISkellType)) {
+                    throw new Skell.Problems.UnexpectedType(value, typeof(Skell.Types.ISkellType));
+                }
+
+                var obj = Visit(primary.primary());
+                if (obj is Skell.Types.ISkellIndexableType indexableObject) {
+                    var index = Utility.GetIndexFromPrimary(primary, this, state);
+                    if (indexableObject.Exists(index)) {
+                        indexableObject.Replace(index, (Skell.Types.ISkellType) value);
+                    } else {
+                        indexableObject.Insert(index, (Skell.Types.ISkellType) value);
+                    }
+                } else {
+                    throw new Skell.Problems.UnexpectedType(obj, typeof(Skell.Types.ISkellIndexableType));
+                }
+
+            } else {
+                throw new Skell.Problems.UnaccessibleLHS(primary);
             }
 
             return defaultReturnValue;
@@ -398,14 +435,7 @@ namespace Skell.Interpreter
         {
             if (context.primary() != null) {
                 Skell.Types.ISkellReturnable term = VisitPrimary(context.primary());
-                Skell.Types.ISkellType index;
-                if (context.STRING() != null) {
-                    index = Utility.GetString(context.STRING(), this);
-                } else if (context.NUMBER() != null) {
-                    index = new Skell.Types.Number(context.NUMBER().GetText());
-                } else {
-                    index = state.context.Get(context.IDENTIFIER().GetText());
-                }
+                Skell.Types.ISkellType index = Utility.GetIndexFromPrimary(context, this, state);
                 if (term is Skell.Types.Object obj) {
                     return obj.GetMember(index);
                 } else if (term is Skell.Types.Array arr) {

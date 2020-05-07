@@ -43,6 +43,14 @@ namespace Skell.Problems
         }
     }
 
+    internal class UnaccessibleLHS : Exception
+    {
+        public UnaccessibleLHS(Skell.Generated.SkellParser.PrimaryContext context)
+        {
+            Log.Error($"Attempted to declare an unaccessible expression at line {context.Start.Line}");
+        }
+    }
+
     internal class InvalidDefinition : Exception
     {
         public InvalidDefinition(
@@ -58,6 +66,11 @@ namespace Skell.Problems
                 to = "function";
             }
             Log.Error($"Attempted to redefine the {from} {name} as a {to}");
+        }
+
+        public InvalidDefinition(Skell.Generated.SkellParser.DeclarationContext context)
+        {
+            Log.Error($"Attempted to define a function as a value at line {context.Start.Line}");
         }
     }
 

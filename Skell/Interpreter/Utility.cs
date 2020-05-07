@@ -79,6 +79,19 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
+        /// Retrieve the index of an indexing operation
+        /// </summary>
+        public static Skell.Types.ISkellType GetIndexFromPrimary(SkellParser.PrimaryContext primary, Visitor visitor, State state) {
+            if (primary.STRING() != null) {
+                return Utility.GetString(primary.STRING(), visitor);
+            } else if (primary.NUMBER() != null) {
+                return new Skell.Types.Number(primary.NUMBER().GetText());
+            } else {
+                return state.context.Get(primary.IDENTIFIER().GetText());
+            }                    
+        }
+
+        /// <summary>
         /// Returns a Skell.Types.String for a STRING token
         /// Requires visitor to handle string substitution
         /// </summary>

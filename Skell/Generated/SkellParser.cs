@@ -380,7 +380,9 @@ public partial class SkellParser : Parser {
 
 	public partial class DeclarationContext : ParserRuleContext {
 		public ITerminalNode KW_LET() { return GetToken(SkellParser.KW_LET, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(SkellParser.IDENTIFIER, 0); }
+		public PrimaryContext primary() {
+			return GetRuleContext<PrimaryContext>(0);
+		}
 		public ITerminalNode OP_ASSGN() { return GetToken(SkellParser.OP_ASSGN, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
@@ -408,7 +410,7 @@ public partial class SkellParser : Parser {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 92; Match(KW_LET);
-			State = 93; Match(IDENTIFIER);
+			State = 93; primary(0);
 			State = 94; Match(OP_ASSGN);
 			State = 97;
 			ErrorHandler.Sync(this);
@@ -2080,8 +2082,8 @@ public partial class SkellParser : Parser {
 		'\x2', 'Y', 'W', '\x3', '\x2', '\x2', '\x2', 'Y', 'Z', '\x3', '\x2', '\x2', 
 		'\x2', 'Z', '\\', '\x3', '\x2', '\x2', '\x2', '[', 'Y', '\x3', '\x2', 
 		'\x2', '\x2', '\\', ']', '\a', '\x19', '\x2', '\x2', ']', '\t', '\x3', 
-		'\x2', '\x2', '\x2', '^', '_', '\a', '\r', '\x2', '\x2', '_', '`', '\a', 
-		'\x30', '\x2', '\x2', '`', '\x63', '\a', '!', '\x2', '\x2', '\x61', '\x64', 
+		'\x2', '\x2', '\x2', '^', '_', '\a', '\r', '\x2', '\x2', '_', '`', '\x5', 
+		'(', '\x15', '\x2', '`', '\x63', '\a', '!', '\x2', '\x2', '\x61', '\x64', 
 		'\x5', '\x1C', '\xF', '\x2', '\x62', '\x64', '\x5', '\f', '\a', '\x2', 
 		'\x63', '\x61', '\x3', '\x2', '\x2', '\x2', '\x63', '\x62', '\x3', '\x2', 
 		'\x2', '\x2', '\x64', '\v', '\x3', '\x2', '\x2', '\x2', '\x65', '\x66', 
