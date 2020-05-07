@@ -10,6 +10,16 @@ namespace Skell.Interpreter
         private Dictionary<string, Skell.Types.ISkellNamedType> contents;
 
         /// <summary>
+        /// This overloaded constructor is only for internal use (loading builtins)
+        /// </summary>
+        public Namespace(string nm)
+        {
+            definitionDirectory = ".";
+            contents = new Dictionary<string, Types.ISkellNamedType>();
+            this.name = nm;
+        }
+
+        /// <summary>
         /// namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
         /// namespaceStmt : EOL | namespaceDecl EOL | namespace EOL | namespaceLoad EOL ;
         /// namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
