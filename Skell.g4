@@ -20,7 +20,7 @@ ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
 forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
 returnControl : KW_RETURN expression? ;
 
-expression : eqExpr ;
+expression : eqExpr (KW_IS usableTypeSpecifier)? ;
 eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
 relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
 addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
@@ -48,7 +48,8 @@ pair : STRING SYM_COLON term ;
 object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Datatypes
-typeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_ANY ;
+typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
+usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
 
 // Lexer Rules
 EOL: '\n' ;
@@ -65,6 +66,7 @@ KW_IN : 'in' ;
 KW_RETURN : 'return' ;
 KW_LET : 'let' ;
 KW_FUN : 'fun' ;
+KW_IS : 'is' ;
 // Typenames
 TYPE_OBJECT : 'object' ;
 TYPE_ARRAY : 'array' ;

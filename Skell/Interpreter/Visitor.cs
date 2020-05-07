@@ -123,7 +123,7 @@ namespace Skell.Interpreter
         /// function : LPAREN RPAREN statementBlock
         ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
         ///          ;
-        /// functionArg : typeName IDENTIFIER ;
+        /// functionArg : TypeSpecifier IDENTIFIER ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
@@ -153,11 +153,17 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// expression : eqExpr ;
+        /// expression : eqExpr KW_IS usableTypeSpecifier ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
-            return Visit(context.eqExpr());
+            var value = Visit(context.eqExpr());
+            if (context.KW_IS() != null) {
+                var token = Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
+                // as there is no chance of a TYPE_ANY token
+                return new Skell.Types.Boolean(Utility.MatchType(value, token));
+            }
+            return value;
         }
 
         /// <summary>
@@ -420,7 +426,6 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// fnCall : IDENTIFIER fnArg+ ;
-        /// fnArg : IDENTIFIER SYM_COLON expression ;
         /// </summary>
         /// <remark>
         /// If there is no argument, the call is seen as a term instead of a fnCall

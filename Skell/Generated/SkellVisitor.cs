@@ -199,5 +199,11 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitTypeSpecifier([NotNull] SkellParser.TypeSpecifierContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.usableTypeSpecifier"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUsableTypeSpecifier([NotNull] SkellParser.UsableTypeSpecifierContext context);
 }
 } // namespace Skell.Generated

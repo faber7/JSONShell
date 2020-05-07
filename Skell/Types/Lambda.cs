@@ -24,7 +24,7 @@ namespace Skell.Types
             for (int i = 0; i < context.functionArg().Length; i++) {
                 var arg = context.functionArg(i);
                 string name = arg.IDENTIFIER().GetText();
-                IToken token = Skell.Interpreter.Utility.GetTokenOfTypeName(arg.typeSpecifier());
+                IToken token = Skell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.typeSpecifier());
                 argList.Add(new Tuple<string, IToken>(name, token));
 
                 repr.Append($"{token.Text} {name}");

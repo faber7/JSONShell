@@ -91,12 +91,25 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns the token for the given typeName context
+        /// Returns the token for the given typeSpecifier context
         /// </summary>
         /// <remark>
-        /// typeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_ANY ;
+        /// typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
+        /// usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfTypeName(SkellParser.TypeSpecifierContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(SkellParser.TypeSpecifierContext context)
+        {
+            return (Antlr4.Runtime.IToken) context.children[0].Payload;
+        }
+        
+        /// <summary>
+        /// Returns the token for the given usableTypeSpecifier context
+        /// </summary>
+        /// <remark>
+        /// typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
+        /// usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// </remark>
+        public static Antlr4.Runtime.IToken GetTokenOfUsableTypeSpecifier(SkellParser.UsableTypeSpecifierContext context)
         {
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
