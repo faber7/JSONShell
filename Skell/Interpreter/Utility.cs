@@ -106,14 +106,19 @@ namespace Skell.Interpreter
             foreach (var id in context.IDENTIFIER().Skip(1).SkipLast(1)) {
                 ns = ns.GetNamespace(id.GetText());
             }
-            var result = ns.Get(context.IDENTIFIER().Last().GetText());
-            if (result is Namespace) {
-                throw new Skell.Problems.InvalidNamespacedIdentifier(
-                    context,
-                    ns.ListNames()
-                );
+            var name = context.IDENTIFIER().Last().GetText();
+            if (ns.Exists(name)) {
+                var result = ns.Get(context.IDENTIFIER().Last().GetText());
+                if (result is Namespace) {
+                    throw new Skell.Problems.InvalidNamespacedIdentifier(
+                        context,
+                        ns.ListNames()
+                    );
+                }
+                return result;
+            } else {
+                throw new Skell.Problems.InvalidNamespacedIdentifier(context, ns.ListNames());
             }
-            return result;
         }
 
         /// <summary>
