@@ -44,6 +44,12 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] SkellParser.StatementContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.namespaceLoad"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNamespaceLoad([NotNull] SkellParser.NamespaceLoadContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.namespace"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

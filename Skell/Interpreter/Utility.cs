@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -77,6 +78,31 @@ namespace Skell.Interpreter
 
                 return returnValue;
             }
+        }
+
+        /// <summary>
+        /// Loads a namespace definition from file
+        /// </summary>
+        /// <remark>
+        /// Pass rename="" to load namespace with original name
+        /// </remark>
+        public static Namespace LoadNamespace(string path, string rename, Visitor visitor)
+        {
+            var pathFull = Path.GetFullPath(path);
+            var pathDir = Path.GetDirectoryName(pathFull);
+            // Read and prepare file
+            var src = Encoding.ASCII.GetString(File.ReadAllBytes(path));
+            if (src.Last() != '\n') {
+                src += '\n';
+            }
+
+            var charStream = CharStreams.fromstring(src);
+            var lexer = new SkellLexer(charStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            var parser = new SkellParser(tokenStream);
+            var tree = parser.@namespace();
+
+            return new Namespace(pathDir, tree, visitor);
         }
 
         /// <summary>

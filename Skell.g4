@@ -2,10 +2,19 @@ grammar Skell;
 
 // Language rules
 program : statement+ ; // start rule
-statement : EOL | namespace EOL | programExec EOL | declaration EOL | expression EOL | control ;
+statement : EOL
+          | namespaceLoad EOL
+          | namespace EOL
+          | programExec EOL
+          | declaration EOL
+          | expression EOL
+          | control
+          ;
+
+namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
 
 namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
-namespaceStmt : EOL | namespaceDecl EOL | namespace EOL ;
+namespaceStmt : EOL | namespaceDecl EOL | namespace EOL | namespaceLoad EOL ;
 namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
 
 programExec : SYM_DOLLAR ~EOL* ;
@@ -54,7 +63,7 @@ array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
 pair : STRING SYM_COLON term ;
 object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
-// Datatypes
+// Type specifiers
 typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
 usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
 
@@ -75,6 +84,8 @@ KW_LET : 'let' ;
 KW_FUN : 'fun' ;
 KW_IS : 'is' ;
 KW_NAMESPACE : 'namespace' ;
+KW_USING : 'using' ;
+KW_AS : 'as' ;
 // Typenames
 TYPE_OBJECT : 'object' ;
 TYPE_ARRAY : 'array' ;

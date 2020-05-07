@@ -44,12 +44,21 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// statement : EOL | namespace EOL | programExec EOL | declaration EOL | expression EOL | control ;
+        /// statement : EOL
+        ///           | namespaceLoad EOL
+        ///           | namespace EOL
+        ///           | programExec EOL
+        ///           | declaration EOL
+        ///           | expression EOL
+        ///           | control
+        ///           ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitStatement(SkellParser.StatementContext context)
         {
-            if (context.@namespace() != null) {
-                var ns = new Namespace(context.@namespace(), this);
+            if (context.namespaceLoad() != null) {
+                return VisitNamespaceLoad(context.namespaceLoad());
+            } else if (context.@namespace() != null) {
+                var ns = new Namespace(".", context.@namespace(), this);
                 state.RegisterNamespace(ns);
             } else if (context.expression() != null) {
                 return VisitExpression(context.expression());
@@ -60,6 +69,21 @@ namespace Skell.Interpreter
             } else if (context.programExec() != null) {
                 return VisitProgramExec(context.programExec());
             }
+            return defaultReturnValue;
+        }
+
+        /// <summary>
+        /// namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
+        /// </summary>
+        override public Skell.Types.ISkellReturnable VisitNamespaceLoad(SkellParser.NamespaceLoadContext context)
+        {
+            var name = Utility.GetString(context.STRING(), this);
+            var ns = Utility.LoadNamespace(
+                    name.contents,
+                    context.IDENTIFIER() != null ? context.IDENTIFIER().GetText() : "",
+                    this
+                );
+            state.RegisterNamespace(ns);
             return defaultReturnValue;
         }
 

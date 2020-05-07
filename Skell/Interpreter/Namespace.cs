@@ -5,24 +5,28 @@ namespace Skell.Interpreter
 {
     class Namespace : Skell.Types.ISkellNamedType
     {
+        public string definitionDirectory;
         public string name;
         private Dictionary<string, Skell.Types.ISkellNamedType> contents;
 
         /// <summary>
         /// namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
-        /// namespaceStmt : EOL | namespaceDecl EOL | namespace EOL ;
+        /// namespaceStmt : EOL | namespaceDecl EOL | namespace EOL | namespaceLoad EOL ;
         /// namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
+        /// namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
         /// </summary>
-        public Namespace(Skell.Generated.SkellParser.NamespaceContext context, Visitor visitor)
+        public Namespace(string from, Skell.Generated.SkellParser.NamespaceContext context, Visitor visitor)
         {
+            definitionDirectory = from;
             contents = new Dictionary<string, Types.ISkellNamedType>();
             name = context.IDENTIFIER().GetText();
             foreach (var stmt in context.namespaceStmt()) {
                 var nsContext = stmt.@namespace();
                 var nsDecl = stmt.namespaceDecl();
+                var nsLoad = stmt.namespaceLoad();
 
                 if (nsContext != null) {
-                    var ns = new Namespace(nsContext, visitor);
+                    var ns = new Namespace(definitionDirectory, nsContext, visitor);
                     Set(ns.name, ns);
                 } else if (nsDecl != null) {
                     string nm = nsDecl.IDENTIFIER().GetText();
@@ -47,6 +51,26 @@ namespace Skell.Interpreter
                             Set(nm, fn);
                         }
                     }
+                } else if (nsLoad != null) {
+                    var name = Utility.GetString(nsLoad.STRING(), visitor);
+                    string newPath;
+                    if (definitionDirectory == "." && name.contents.StartsWith("./")) {
+                        newPath = name.contents;
+                    } else if (definitionDirectory != "." && name.contents.StartsWith("/")) {
+                        newPath = name.contents;
+                    } else {
+                        if (!(definitionDirectory.EndsWith('/')) && name.contents.StartsWith("./")) {
+                            newPath = definitionDirectory + name.contents.Substring(1);
+                        } else {
+                            newPath = definitionDirectory + name.contents;
+                        }
+                    }
+                    var ns = Utility.LoadNamespace(
+                        name.contents,
+                        nsLoad.IDENTIFIER() != null ? nsLoad.IDENTIFIER().GetText() : "",
+                        visitor
+                    );
+                    Set(ns.name, ns);
                 }
             }
         }
