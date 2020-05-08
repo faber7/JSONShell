@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Linq;
 using Serilog;
 using Skell.Interpreter;
@@ -70,34 +68,11 @@ namespace Skell
 
             if (options.InputFile == null) {
                 logger.Information("No arguments specified, running in interpreter mode");
-                RunPrompt();
+                Exit(interpreter.RunPrompt());
             } else {
                 logger.Information($"Running interpreter on {options.InputFile}");
-                RunFile(options.InputFile);
+                Exit(interpreter.RunFile(options.InputFile));
             }
-        }
-
-        public static void RunFile(String path)
-        {
-            byte[] input = File.ReadAllBytes(path);
-            string inputStr = Encoding.ASCII.GetString(input);
-            if (inputStr.Last() != '\n') {
-                inputStr += '\n';
-            }
-            interpreter.Interprete(inputStr);
-        }
-
-        public static void RunPrompt()
-        {
-            Console.WriteLine("Press Ctrl+D to exit the prompt.");
-
-            string input;
-            Console.Write("> ");
-            while ((input = Console.In.ReadLine()) != null) {
-                interpreter.Interprete(input + '\n');
-                Console.Write("\n> ");
-            }
-            Exit(0);
         }
     }
 }
