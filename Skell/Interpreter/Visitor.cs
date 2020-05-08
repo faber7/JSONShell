@@ -77,7 +77,7 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitNamespaceLoad(SkellParser.NamespaceLoadContext context)
         {
-            var name = Utility.GetString(context.STRING(), this);
+            var name = Utility.GetString(context.STRING().GetText(), this);
             var ns = Utility.LoadNamespace(
                     name.contents,
                     context.IDENTIFIER() != null ? context.IDENTIFIER().GetText() : "",
@@ -111,9 +111,10 @@ namespace Skell.Interpreter
             process.StartInfo.FileName = argsList.First();
             argsList = argsList.Skip(1).Select(
                 str => {
-                    if (str.StartsWith('$')) {
-                        string name = str.Substring(1);
-                        return state.Variables.Get(name).ToString();
+                    if (str.StartsWith("$\"") && str.EndsWith("\"")) {
+                        return Utility.GetString(str, this).ToString();
+                    } else if (str.StartsWith('`') && str.EndsWith('`')) {
+                        return str.Substring(1, str.Length - 2);
                     }
                     return str;
                 }
@@ -644,7 +645,7 @@ namespace Skell.Interpreter
                 return VisitArray(context.array());
             }
             if (context.STRING() != null) {
-                return Utility.GetString(context.STRING(), this);
+                return Utility.GetString(context.STRING().GetText(), this);
             }
             if (context.NUMBER() != null) {
                 return new Skell.Types.Number(context.NUMBER().GetText());
@@ -684,7 +685,7 @@ namespace Skell.Interpreter
 
             for (int i = 0; i < context.pair().Length; i++) {
                 var pair = context.pair(i);
-                keys[i] = Utility.GetString(pair.STRING(), this);
+                keys[i] = Utility.GetString(pair.STRING().GetText(), this);
                 var value = VisitTerm(pair.term());
                 if (value is Skell.Types.ISkellType val) {
                     values[i] = val;

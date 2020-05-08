@@ -112,7 +112,7 @@ namespace Skell.Interpreter
         public static Skell.Types.ISkellType GetIndexFromPrimary(SkellParser.PrimaryContext primary, Visitor visitor, State state)
         {
             if (primary.STRING() != null) {
-                return Utility.GetString(primary.STRING(), visitor);
+                return Utility.GetString(primary.STRING().GetText(), visitor);
             } else if (primary.NUMBER() != null) {
                 return new Skell.Types.Number(primary.NUMBER().GetText());
             } else {
@@ -180,11 +180,10 @@ namespace Skell.Interpreter
         /// STRING : SYM_QUOTE (ESC | SAFECODEPOINT | SYM_DOLLAR LCURL ~[}]* RCURL)* SYM_QUOTE ;
         /// </remark>
         public static Skell.Types.String GetString(
-            Antlr4.Runtime.Tree.ITerminalNode context,
+            string contents,
             Visitor visitor
         )
         {
-            string contents = context.GetText();
             contents = contents.Remove(0, 1);
             contents = contents.Remove(contents.Length - 1, 1);
             contents = Regex.Replace(

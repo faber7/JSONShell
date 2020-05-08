@@ -71,7 +71,7 @@ namespace Skell.Types
                         }
                     }
                 } else if (nsLoad != null) {
-                    var name = Utility.GetString(nsLoad.STRING(), visitor);
+                    var name = Utility.GetString(nsLoad.STRING().GetText(), visitor);
                     string newPath;
                     if (definitionDirectory == "." && name.contents.StartsWith("./")) {
                         newPath = name.contents;
