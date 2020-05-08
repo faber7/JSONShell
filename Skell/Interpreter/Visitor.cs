@@ -526,10 +526,10 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// primary : term
+        /// primary : fnCall
         ///         | LPAREN expression RPAREN
         ///         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
-        ///         | fnCall
+        ///         | term
         ///         ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitPrimary(SkellParser.PrimaryContext context)

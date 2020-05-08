@@ -1564,11 +1564,11 @@ public partial class SkellParser : Parser {
 	}
 
 	public partial class PrimaryContext : ParserRuleContext {
-		public TermContext term() {
-			return GetRuleContext<TermContext>(0);
-		}
 		public FnCallContext fnCall() {
 			return GetRuleContext<FnCallContext>(0);
+		}
+		public TermContext term() {
+			return GetRuleContext<TermContext>(0);
 		}
 		public ITerminalNode LPAREN() { return GetToken(SkellParser.LPAREN, 0); }
 		public ExpressionContext expression() {
@@ -1617,12 +1617,12 @@ public partial class SkellParser : Parser {
 			switch ( Interpreter.AdaptivePredict(TokenStream,22,Context) ) {
 			case 1:
 				{
-				State = 238; term();
+				State = 238; fnCall();
 				}
 				break;
 			case 2:
 				{
-				State = 239; fnCall();
+				State = 239; term();
 				}
 				break;
 			case 3:
@@ -2557,8 +2557,8 @@ public partial class SkellParser : Parser {
 		'\xEE', '\x5', '.', '\x18', '\x2', '\xEC', '\xEE', '\x5', '\x30', '\x19', 
 		'\x2', '\xED', '\xEA', '\x3', '\x2', '\x2', '\x2', '\xED', '\xEC', '\x3', 
 		'\x2', '\x2', '\x2', '\xEE', '/', '\x3', '\x2', '\x2', '\x2', '\xEF', 
-		'\xF0', '\b', '\x19', '\x1', '\x2', '\xF0', '\xF7', '\x5', '\x34', '\x1B', 
-		'\x2', '\xF1', '\xF7', '\x5', '\x32', '\x1A', '\x2', '\xF2', '\xF3', '\a', 
+		'\xF0', '\b', '\x19', '\x1', '\x2', '\xF0', '\xF7', '\x5', '\x32', '\x1A', 
+		'\x2', '\xF1', '\xF7', '\x5', '\x34', '\x1B', '\x2', '\xF2', '\xF3', '\a', 
 		'\x1D', '\x2', '\x2', '\xF3', '\xF4', '\x5', '$', '\x13', '\x2', '\xF4', 
 		'\xF5', '\a', '\x1E', '\x2', '\x2', '\xF5', '\xF7', '\x3', '\x2', '\x2', 
 		'\x2', '\xF6', '\xEF', '\x3', '\x2', '\x2', '\x2', '\xF6', '\xF1', '\x3', 

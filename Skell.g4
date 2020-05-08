@@ -41,9 +41,9 @@ mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
 unary : (OP_NOT | OP_SUB) unary
       | primary
       ;
-primary : term
+primary : fnCall
         | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
-        | fnCall
+        | term
         | LPAREN expression RPAREN
         ;
 
