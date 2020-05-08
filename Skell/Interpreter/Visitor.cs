@@ -219,7 +219,7 @@ namespace Skell.Interpreter
                         );
                     }
                 } else {
-                    if (state.Names.Available(name)) {
+                    if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
                         var fn = Utility.Function.Get(state, name);
                         fn.AddUserDefinedLambda(context.function());
                     } else {
