@@ -32,14 +32,16 @@ namespace Skell.Types
                     foreach (var tokenPair in tokens) {
                         var lt = tokenPair.LambdaToken;
                         var dt = tokenPair.DefinitionToken;
-                        if (lt.Item2.Text == dt.Item2.Text) {
+                        string any = SkellParser.DefaultVocabulary.GetDisplayName(SkellLexer.TYPE_ANY);
+                        any = any.Substring(1, any.Length - 2);
+                        if (lt.Item2.Text == any || dt.Item2.Text == any || lt.Item2.Text == dt.Item2.Text) {
                             i++;
                         }
                     }
                     if (i == lambda.argList.Count) {
                         throw new Skell.Problems.InvalidFunctionDefinition(
                             new Interpreter.Source(ctx.Start, ctx.Stop),
-                            this, definition
+                            this, lambda
                         );
                     }
                 }
