@@ -104,8 +104,8 @@ namespace Skell.Problems
             Skell.Types.Lambda definition
         ) {
             StringBuilder msg = new StringBuilder();
-            msg.Append($"A definition of Function {function.name}");
-            msg.Append($" with the arguments: {definition.argString} already exists!\n");
+            msg.Append($"An existing definition of Function {function.name}");
+            msg.Append($" conflicts with the definition {definition.argString} at {src}\n");
             msg.Append("The following definitions are available:\n");
             foreach (var lambda in function.definitions) {
                 msg.Append($"\t {function.name}{lambda.argString}\n");
