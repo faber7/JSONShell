@@ -56,7 +56,7 @@ namespace Skell.Interpreter
             if (StartLine == EndLine) {
                 pos = $"line {StartLine}, columns {StartColumn}:{EndColumn}";
             } else {
-                pos = $"{StartLine}:{StartColumn} to {EndLine}:{EndColumn}";
+                pos = $"lines {StartLine}:{StartColumn} to {EndLine}:{EndColumn}";
             }
             
             if (source == "") {
