@@ -119,9 +119,9 @@ namespace Skell.Interpreter
 
                 continueInput = (stack.Count > 0) ? true : false ;
 
-                input = input + inp;
+                input = input + inp + '\n';
                 if (!continueInput) {
-                    Interprete(input + '\n');
+                    Interprete(input);
                     Console.Write("\n> ");
                 }
             }
