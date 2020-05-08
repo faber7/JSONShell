@@ -15,6 +15,12 @@ namespace Skell.Interpreter
 
         private bool flag_return;
         private bool flag_returned;
+
+        /// Backups of flag_return, current context, and the functions context
+        /// Created and restored during ENTER_RETURNABLE_CONTEXT and EXIT_RETURNABLE_CONTEXT
+        private Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>> temp_state;
+        /// Backup of functions context
+        /// Created and restored during DISABLE_GLOBAL_FUNCTIONS and ENABLE_GLOBAL_FUNCTIONS
         private Context<Skell.Types.Function> temp_functions;
 
         public State()
@@ -35,31 +41,37 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// Safely enter a new returnable context
-        /// The returned values must be passed back to EXIT_RETURNABLE_CONTEXT() to switch back
+        /// Any new functions created are lost on switching back
         /// </summary>
-        public Tuple<bool, Context<Skell.Types.ISkellType>> ENTER_RETURNABLE_CONTEXT(string name) {
-            var ret = flag_return;
+        public void ENTER_RETURNABLE_CONTEXT(string name) {
             var cont = new Context<Skell.Types.ISkellType>("{" + name + "}");
+            var new_functions = Context<Skell.Types.Function>.Copy(functions);
 
-            logger.Verbose($"Entering a new returnable context {cont.contextName} from {context.contextName}");
+            logger.Verbose($"Entering a new returnable context {cont.name} from {context.name}. Creating a copy of function declarations.");
+
+            // Create a backup of current context and function context
+            temp_state = new Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>(
+                flag_return,
+                this.context,
+                functions
+            );
 
             flag_return = true;
             contexts.Add(cont);
-            var last_context = this.context;
             context = cont;
-
-            return new Tuple<bool, Context<Skell.Types.ISkellType>>(ret, last_context);
+            functions = new_functions;
         }
 
         /// <summary>
-        /// Unsets flag_return
-        /// Pass the returned value of ENTER_RETURNABLE_STATE(), even if nothing was returned
+        /// Safely exit the context created by ENTER_RETURNABLE_CONTEXT()
         /// </summary>
-        public void EXIT_RETURNABLE_CONTEXT(Tuple<bool, Context<Skell.Types.ISkellType>> last) {
-            logger.Verbose($"Exiting from {context.contextName} to {last.Item2.contextName}");
-            flag_return = last.Item1;
+        public void EXIT_RETURNABLE_CONTEXT() {
+            logger.Verbose($"Exiting from {context.name} to {temp_state.Item2.name}. Restoring previous copy of function declarations");
+            flag_return = temp_state.Item1;
             contexts.Remove(context);
-            context = last.Item2;
+            context = temp_state.Item2;
+            functions = temp_state.Item3;
+            temp_state = null;
         }
 
         /// <summary>

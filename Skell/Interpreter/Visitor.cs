@@ -392,7 +392,7 @@ namespace Skell.Interpreter
                 string varName = context.IDENTIFIER().GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
 
-                var last = state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
+                state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.context.Set(varName, data);
@@ -405,7 +405,7 @@ namespace Skell.Interpreter
                     }
                 }
 
-                state.EXIT_RETURNABLE_CONTEXT(last);
+                state.EXIT_RETURNABLE_CONTEXT();
                 return defaultReturnValue;
             }
             throw new Skell.Problems.UnexpectedType(primary, typeof(Skell.Types.Array));
