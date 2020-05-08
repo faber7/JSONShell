@@ -106,12 +106,39 @@ namespace Skell.Interpreter
                 argsList.RemoveAt(0);
             }
 
+            List<string> nargs = new List<string>();
+
+            // Join any arguments if they are valid substitutions
+            for (int i = 0; i < argsList.Count; i++) {
+                bool added = false;
+                var arg = argsList[i];
+                for (int j = i + 1; j < argsList.Count; j++) {
+                    if (arg.StartsWith("\"") && argsList[j].EndsWith("\"")) {
+                        nargs.Add(String.Join(" ", argsList.GetRange(i, j)));
+                        i = j + 1;
+                        added = true;
+                        break;
+                    } else if (arg.StartsWith('`') && argsList[j].EndsWith('`')) {
+                        nargs.Add(String.Join(" ", argsList.GetRange(i, j)));
+                        i = j + 1;
+                        added = true;
+                        break;
+                    }
+                }
+                if (!added) {
+                    nargs.Add(arg);
+                }
+            }
+
+            argsList = nargs;
+
             Process process = new Process();
 
             process.StartInfo.FileName = argsList.First();
             argsList = argsList.Skip(1).Select(
                 str => {
-                    if (str.StartsWith("$\"") && str.EndsWith("\"")) {
+                    // perform any substitutions
+                    if (str.StartsWith("\"") && str.EndsWith("\"")) {
                         return Utility.GetString(str, this).ToString();
                     } else if (str.StartsWith('`') && str.EndsWith('`')) {
                         return str.Substring(1, str.Length - 2);

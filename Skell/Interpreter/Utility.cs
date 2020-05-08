@@ -173,7 +173,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns a Skell.Types.String for a STRING token
+        /// Returns a Skell.Types.String for a STRING token's text contents.
         /// Requires visitor to handle string substitution
         /// </summary>
         /// <remark>
