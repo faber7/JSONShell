@@ -36,16 +36,7 @@ namespace Skell.Interpreter
             logger.Debug($"In {this.name}, {name} = {data}");
         }
 
-        public T Get(string name)
-        {
-            if (!Exists(name)) {
-                Skell.Types.String index = new Skell.Types.String(name);
-                var indicesArray = mem.Keys.Select(str => (Skell.Types.ISkellType) new Skell.Types.String(str)).ToArray();
-                Skell.Types.Array indices = new Skell.Types.Array(indicesArray);
-                throw new Skell.Problems.IndexOutOfRange((Skell.Types.ISkellType) index, indices);
-            }
-            return mem[name];
-        }
+        public T Get(string name) => mem[name];
 
         public void Delete(string name)
         {

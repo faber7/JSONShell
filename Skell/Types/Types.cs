@@ -9,13 +9,13 @@ namespace Skell.Types
     {
     }
 
-    // Base type for all types allowed in namespaces
-    public interface ISkellNamedType : ISkellInternal
+    // Represents all named datatypes + None type, and is used by the visitor
+    public interface ISkellReturnable : ISkellInternal
     {
     }
 
-    // Represents all usable datatypes + None type
-    public interface ISkellReturnable : ISkellInternal
+    // Base type for all values that can be named
+    public interface ISkellNamedType : ISkellReturnable
     {
     }
 
@@ -25,12 +25,11 @@ namespace Skell.Types
     }
 
     // Represents all datatypes that have support for member access
-    public interface ISkellIndexableType : ISkellType
+    public interface ISkellIndexable : ISkellType
     {
         int Count();
 
-        ISkellType ThrowIndexOutOfRange(ISkellType index);
-
+        ISkellType[] ListIndices();
         bool Exists(ISkellType index);
         ISkellType GetMember(ISkellType index);
         void Replace(ISkellType index, ISkellType value);
@@ -42,7 +41,7 @@ namespace Skell.Types
     /// <summary>
     /// Represents executable lambdas(both user-defined and builtin)
     /// </summary>
-    public abstract class Lambda
+    public abstract class Lambda : ISkellInternal
     {
         public readonly List<Tuple<string, IToken>> argList = new List<Tuple<string, IToken>>();
         public string argString;

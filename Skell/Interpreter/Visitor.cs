@@ -58,8 +58,8 @@ namespace Skell.Interpreter
             if (context.namespaceLoad() != null) {
                 return VisitNamespaceLoad(context.namespaceLoad());
             } else if (context.@namespace() != null) {
-                var ns = new Namespace(".", context.@namespace(), this);
-                state.RegisterNamespace(ns);
+                var ns = new Skell.Types.Namespace(".", context.@namespace(), this);
+                state.Namespaces.Register(ns);
             } else if (context.expression() != null) {
                 return VisitExpression(context.expression());
             } else if (context.control() != null) {
@@ -83,7 +83,10 @@ namespace Skell.Interpreter
                     context.IDENTIFIER() != null ? context.IDENTIFIER().GetText() : "",
                     this
                 );
-            state.RegisterNamespace(ns);
+            if (state.Names.DefinedAs(ns.name, typeof(Skell.Types.Namespace))) {
+                logger.Debug($"Overwriting namespace {ns.name}");
+            }
+            state.Namespaces.Register(ns);
             return defaultReturnValue;
         }
 
@@ -110,7 +113,7 @@ namespace Skell.Interpreter
                 str => {
                     if (str.StartsWith('$')) {
                         string name = str.Substring(1);
-                        return state.context.Get(name).ToString();
+                        return state.Variables.Get(name).ToString();
                     }
                     return str;
                 }
@@ -122,6 +125,7 @@ namespace Skell.Interpreter
             process.WaitForExit();
 
             int exitCode = process.ExitCode;
+            logger.Information($"Process {process.StartInfo.FileName} exited with return code {exitCode}");
 
             return new Skell.Types.Number(exitCode);
         }
@@ -157,63 +161,91 @@ namespace Skell.Interpreter
         ///      | IDENTIFIER
         ///      ;
         /// </summary>
+        /// <remark>
+        /// Declarations using identifiers and indexed objects are handled here
+        /// </remark>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
             var primary = context.primary();
+            // if primary is a term, specifically an identifier, handle it here
+            // as VisitTerm will return the value of an identifier
             if (primary.term() != null && primary.term().IDENTIFIER() != null) {
                 string name = primary.term().IDENTIFIER().GetText();
 
                 if (context.expression() != null) {
-                    if (!state.functions.Exists(name)) {
-                        var exp = VisitExpression(context.expression());
+                    var exp = VisitExpression(context.expression());
+                    if (state.Names.Available(name)) {
                         if (exp is Skell.Types.ISkellType expdata) {
-                            state.context.Set(name, expdata);
+                            state.Variables.Set(name, expdata);
                         } else {
-                            throw new Skell.Problems.UnexpectedType(exp, typeof(Skell.Types.ISkellType));
+                            throw new Skell.Problems.UnexpectedType(
+                                new Source(context.expression().Start, context.expression().Stop),
+                                exp, typeof(Skell.Types.ISkellType)
+                            );
                         }
                     } else {
-                        throw new Skell.Problems.InvalidDefinition(name, state.functions.Get(name));
+                        throw new Skell.Problems.InvalidDefinition(
+                            new Source(context.expression().Start, context.expression().Stop),
+                            name,
+                            state
+                        );
                     }
                 } else {
-                    if (!state.context.Exists(name)) {
+                    if (state.Names.Available(name)) {
                         var fn = Utility.Function.Get(state, name);
                         fn.AddUserDefinedLambda(context.function());
                     } else {
-                        throw new Skell.Problems.InvalidDefinition(name, state.context.Get(name));
+                        throw new Skell.Problems.InvalidDefinition(
+                            new Source(context.function().Start, context.function().Stop),
+                            name,
+                            state
+                        );
                     }
                 }
             } else if (primary.primary() != null) {
+                // indexing operator is used
+                var obj = Visit(primary.primary());
+                Skell.Types.ISkellType index;
+                if (obj is Skell.Types.ISkellIndexable indexableObject) {
+                    index = Utility.GetIndexFromPrimary(primary, this, state);
+                } else {
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(primary.primary().Start, primary.primary().Stop),
+                        obj, typeof(Skell.Types.ISkellIndexable)
+                    );
+                }
+
                 Skell.Types.ISkellReturnable value;
                 if (context.expression() != null) {
                     value = Visit(context.expression());
-                } else {
-                    throw new Skell.Problems.InvalidDefinition(context);
-                }
-                if (!(value is Skell.Types.ISkellType)) {
-                    throw new Skell.Problems.UnexpectedType(value, typeof(Skell.Types.ISkellType));
-                }
-
-                var obj = Visit(primary.primary());
-                if (obj is Skell.Types.ISkellIndexableType indexableObject) {
-                    var index = Utility.GetIndexFromPrimary(primary, this, state);
-                    if (indexableObject.Exists(index)) {
-                        indexableObject.Replace(index, (Skell.Types.ISkellType) value);
-                    } else {
-                        indexableObject.Insert(index, (Skell.Types.ISkellType) value);
+                    if (!(value is Skell.Types.ISkellType)) {
+                        throw new Skell.Problems.UnexpectedType(
+                            new Source(context.expression().Start, context.expression().Stop),
+                            value, typeof(Skell.Types.ISkellType)
+                        );
                     }
                 } else {
-                    throw new Skell.Problems.UnexpectedType(obj, typeof(Skell.Types.ISkellIndexableType));
+                    throw new Skell.Problems.InvalidDefinition(
+                        new Source(context.function().Start, context.function().Stop),
+                        primary.GetText()
+                    );
                 }
-
+                if (indexableObject.Exists(index)) {
+                    indexableObject.Replace(index, (Skell.Types.ISkellType) value);
+                } else {
+                    indexableObject.Insert(index, (Skell.Types.ISkellType) value);
+                }
             } else {
-                throw new Skell.Problems.UnaccessibleLHS(primary);
+                throw new Skell.Problems.UnaccessibleLHS(
+                    new Source(primary.Start, primary.Stop)
+                );
             }
 
             return defaultReturnValue;
         }
 
         /// <summary>
-        /// expression : eqExpr KW_IS usableTypeSpecifier ;
+        /// expression : eqExpr (KW_IS usableTypeSpecifier)? ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
@@ -282,11 +314,17 @@ namespace Skell.Interpreter
             i++;
             while (context.mulExpr(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.mulExpr(i - 1).Start, context.mulExpr(i - 1).Stop),
+                        result, typeof(Skell.Types.Number)
+                    );
                 }
                 Skell.Types.ISkellReturnable next = VisitMulExpr(context.mulExpr(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new Skell.Problems.UnexpectedType(next, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.mulExpr(i).Start, context.mulExpr(i).Stop),
+                        next, typeof(Skell.Types.Number)
+                    );
                 }
                 var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
@@ -310,11 +348,17 @@ namespace Skell.Interpreter
             i++;
             while (context.unary(i) != null) {
                 if (!(result is Skell.Types.Number)) {
-                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.unary(i - 1).Start, context.unary(i - 1).Stop),
+                        result, typeof(Skell.Types.Number)
+                    );
                 }
                 Skell.Types.ISkellReturnable next = VisitUnary(context.unary(i));
                 if (!(next is Skell.Types.Number)) {
-                    throw new Skell.Problems.UnexpectedType(result, typeof(Skell.Types.Number));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.unary(i).Start, context.unary(i).Stop),
+                        result, typeof(Skell.Types.Number)
+                    );
                 }
                 var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV) {
@@ -395,7 +439,7 @@ namespace Skell.Interpreter
                 state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
 
                 foreach (Skell.Types.ISkellType data in arr) {
-                    state.context.Set(varName, data);
+                    state.Variables.Set(varName, data);
                     result = VisitStatementBlock(context.statementBlock());
                     if (state.has_returned())
                     {
@@ -408,7 +452,10 @@ namespace Skell.Interpreter
                 state.EXIT_RETURNABLE_CONTEXT();
                 return defaultReturnValue;
             }
-            throw new Skell.Problems.UnexpectedType(primary, typeof(Skell.Types.Array));
+            throw new Skell.Problems.UnexpectedType(
+                new Source(context.expression().Start, context.expression().Stop),
+                primary, typeof(Skell.Types.Array)
+            );
         }
 
         /// <summary>
@@ -467,7 +514,10 @@ namespace Skell.Interpreter
                 } else if (term is Skell.Types.Array arr) {
                     return arr.GetMember(index);
                 }
-                throw new Skell.Problems.UnexpectedType(term, typeof(Skell.Types.ISkellIndexableType));
+                throw new Skell.Problems.UnexpectedType(
+                    new Source(context.primary().Start, context.primary().Stop),
+                    term, typeof(Skell.Types.ISkellIndexable)
+                );
             } else if (context.term() != null) {
                 return VisitTerm(context.term());
             } else if (context.expression() != null) {
@@ -481,7 +531,7 @@ namespace Skell.Interpreter
         /// fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
         /// </summary>
         /// <remark>
-        /// If there is no argument, the call is seen as a term instead of a fnCall
+        /// If there is no argument, the call is parsed as a 'term' instead of a 'fnCall'
         /// </remark>
         override public Skell.Types.ISkellReturnable VisitFnCall(SkellParser.FnCallContext context)
         {
@@ -491,10 +541,13 @@ namespace Skell.Interpreter
                 id = Utility.GetNamespacedIdentifier(context.namespacedIdentifier(), state);
                 isNamespaced = true;
             } else {
-                id = state.functions.Get(context.IDENTIFIER().GetText());
+                id = state.Names.DefinitionOf(context.IDENTIFIER().GetText());
             }
             if (!(id is Skell.Types.Function)) {
-                throw new Skell.Problems.UnexpectedType(id, typeof(Skell.Types.Function));
+                throw new Skell.Problems.UnexpectedType(
+                    new Source(context.Start, context.Stop),
+                    id, typeof(Skell.Types.Function)
+                );
             }
             var fn = (Skell.Types.Function) id;
             var args = new List<Tuple<int, Skell.Types.ISkellType>>();
@@ -504,7 +557,10 @@ namespace Skell.Interpreter
                 if (a is Skell.Types.ISkellType ar) {
                     args.Add(new Tuple<int, Types.ISkellType>(i, ar));
                 } else {
-                    throw new Skell.Problems.UnexpectedType(a, typeof(Skell.Types.ISkellType));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(arg.Start, arg.Stop),
+                        a, typeof(Skell.Types.ISkellType)
+                    );
                 }
                 i++;
             }
@@ -537,7 +593,13 @@ namespace Skell.Interpreter
         {
             if (context.IDENTIFIER() != null) {
                 string name = context.IDENTIFIER().GetText();
-                if (state.functions.Exists(name)) {
+                if (state.Names.Available(name)) {
+                    throw new Skell.Problems.UndefinedIdentifer(
+                        new Source(context.IDENTIFIER().Symbol),
+                        name
+                    );
+                }
+                if (state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
                     var fn = Utility.Function.Get(state, name);
 
                     var args = new List<Tuple<int, Skell.Types.ISkellType>>();
@@ -546,9 +608,10 @@ namespace Skell.Interpreter
                         state,
                         fn,
                         args
-                    );   
+                    );
+                } else {
+                    return state.Names.DefinitionOf(name);
                 }
-                return state.context.Get(name);
             } else if (context.namespacedIdentifier() != null) {
                 var id = Utility.GetNamespacedIdentifier(context.namespacedIdentifier(), state);
                 if (id is Skell.Types.Function fn) {
@@ -563,8 +626,7 @@ namespace Skell.Interpreter
                     state.ENABLE_GLOBAL_FUNCTIONS(true);
                     return result;
                 } else {
-                    // GetNamespacedIDentifier will never return a namespace so this cast is safe
-                    return (Skell.Types.ISkellType) id;
+                    return id;
                 }
             }
             return VisitValue(context.value());
@@ -602,7 +664,10 @@ namespace Skell.Interpreter
                 if (value is Skell.Types.ISkellType val) {
                     contents[i] = val;
                 } else {
-                    throw new Skell.Problems.UnexpectedType(value, typeof(Skell.Types.ISkellType));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(values[i].Start, values[i].Stop),
+                        value, typeof(Skell.Types.ISkellType)
+                    );
                 }
             }
             return new Skell.Types.Array(contents);
@@ -624,7 +689,10 @@ namespace Skell.Interpreter
                 if (value is Skell.Types.ISkellType val) {
                     values[i] = val;
                 } else {
-                    throw new Skell.Problems.UnexpectedType(value, typeof(Skell.Types.ISkellType));
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(pair.Start, pair.Stop),
+                        value, typeof(Skell.Types.ISkellType)
+                    );
                 }
             }
 

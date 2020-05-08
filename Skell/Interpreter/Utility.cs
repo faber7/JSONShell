@@ -22,12 +22,12 @@ namespace Skell.Interpreter
             public static Skell.Types.Function Get(State state, string name)
             {
                 Skell.Types.Function fn;
-                if (state.functions.Exists(name)) {
-                    fn = (Skell.Types.Function) state.functions.Get(name);
+                if (state.Names.Exists(name) && state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
+                    fn = state.Functions.Get(name);
                     return fn;
                 }
                 fn = new Skell.Types.Function(name);
-                state.functions.Set(name, fn);
+                state.Functions.Set(name, fn);
                 return fn;
             }
 
@@ -39,11 +39,12 @@ namespace Skell.Interpreter
                 State state,
                 Skell.Types.Function function,
                 List<Tuple<int, Skell.Types.ISkellType>> unnamedArgs
-            ) {
+            )
+            {
                 Skell.Types.ISkellReturnable returnValue;
                 var lambda = function.SelectLambda(unnamedArgs);
                 var args = lambda.NameArguments(unnamedArgs);
-                
+
                 string argString = "";
                 if (args.Count > 0) {
                     var sb = new StringBuilder(" ");
@@ -60,7 +61,7 @@ namespace Skell.Interpreter
                 state.ENTER_RETURNABLE_CONTEXT($"{function.name}{argString}");
                 // set up state with arguments in context
                 foreach (var arg in args) {
-                    state.context.Set(arg.Item2, arg.Item3);
+                    state.Variables.Set(arg.Item2, arg.Item3);
                 }
                 
                 if (lambda is Skell.Types.UserDefinedLambda udLambda) {
@@ -86,7 +87,7 @@ namespace Skell.Interpreter
         /// <remark>
         /// Pass rename="" to load namespace with original name
         /// </remark>
-        public static Namespace LoadNamespace(string path, string rename, Visitor visitor)
+        public static Skell.Types.Namespace LoadNamespace(string path, string rename, Visitor visitor)
         {
             var pathFull = Path.GetFullPath(path);
             var pathDir = Path.GetDirectoryName(pathFull);
@@ -102,48 +103,72 @@ namespace Skell.Interpreter
             var parser = new SkellParser(tokenStream);
             var tree = parser.@namespace();
 
-            return new Namespace(pathDir, tree, visitor);
+            return new Skell.Types.Namespace(pathDir, tree, visitor);
         }
 
         /// <summary>
         /// Retrieve the index of an indexing operation
         /// </summary>
-        public static Skell.Types.ISkellType GetIndexFromPrimary(SkellParser.PrimaryContext primary, Visitor visitor, State state) {
+        public static Skell.Types.ISkellType GetIndexFromPrimary(SkellParser.PrimaryContext primary, Visitor visitor, State state)
+        {
             if (primary.STRING() != null) {
                 return Utility.GetString(primary.STRING(), visitor);
             } else if (primary.NUMBER() != null) {
                 return new Skell.Types.Number(primary.NUMBER().GetText());
             } else {
-                return state.context.Get(primary.IDENTIFIER().GetText());
-            }                    
+                return state.Variables.Get(primary.IDENTIFIER().GetText());
+            }
         }
 
         /// <summary>
-        /// Never returns a namespace. Will throw an exception if it refers to a namespace.
-        /// </summary>
-        /// <remark>
         /// namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
-        /// </remark>
+        /// </summary>
         public static Skell.Types.ISkellNamedType GetNamespacedIdentifier(
             SkellParser.NamespacedIdentifierContext context,
             State state
-        ) {
-            Namespace ns = state.GetNamespace(context.IDENTIFIER().First().GetText());
-            foreach (var id in context.IDENTIFIER().Skip(1).SkipLast(1)) {
-                ns = ns.GetNamespace(id.GetText());
+        )
+        {
+            var rootName = context.IDENTIFIER().First().GetText();
+
+            if (state.Names.Available(rootName)) {
+                throw new Skell.Problems.UndefinedIdentifer(
+                    new Source(context.IDENTIFIER().First().Symbol),
+                    rootName,
+                    typeof(Skell.Types.Namespace)
+                );
             }
+
+            var nst = state.Names.DefinitionOf(rootName);
+            if (!(nst is Skell.Types.Namespace)) {
+                throw new Skell.Problems.UnexpectedType(
+                    new Source(context.IDENTIFIER().First().Symbol),
+                    nst,
+                    typeof(Skell.Types.Namespace)
+                );
+            }
+            Skell.Types.Namespace ns = (Skell.Types.Namespace) nst;
+            var nsRoot = ns;
+            foreach (var id in context.IDENTIFIER().Skip(1).SkipLast(1)) {
+                nst = ns.Get(id.GetText());
+                if (!(nst is Skell.Types.Namespace)) {
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.IDENTIFIER().First().Symbol),
+                        nst,
+                        typeof(Skell.Types.Namespace)
+                    );
+                }
+                ns = (Skell.Types.Namespace) nst;
+            }
+            
             var name = context.IDENTIFIER().Last().GetText();
             if (ns.Exists(name)) {
                 var result = ns.Get(context.IDENTIFIER().Last().GetText());
-                if (result is Namespace) {
-                    throw new Skell.Problems.InvalidNamespacedIdentifier(
-                        context,
-                        ns.ListNames()
-                    );
-                }
                 return result;
             } else {
-                throw new Skell.Problems.InvalidNamespacedIdentifier(context, ns.ListNames());
+                throw new Skell.Problems.InvalidNamespacedIdentifier(
+                    new Source(context.IDENTIFIER().First().Symbol, context.IDENTIFIER().Last().Symbol),
+                    new Skell.Types.Array(nsRoot.ListNames())
+                );
             }
         }
 
@@ -157,7 +182,8 @@ namespace Skell.Interpreter
         public static Skell.Types.String GetString(
             Antlr4.Runtime.Tree.ITerminalNode context,
             Visitor visitor
-        ) {
+        )
+        {
             string contents = context.GetText();
             contents = contents.Remove(0, 1);
             contents = contents.Remove(contents.Length - 1, 1);
@@ -217,7 +243,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns true if the data matches the given token type
+        /// Returns true if the data matches the given type specifier token
         /// </summary>
         public static bool MatchType(Skell.Types.ISkellInternal data, Antlr4.Runtime.IToken token)
         {
@@ -244,7 +270,10 @@ namespace Skell.Interpreter
         {
             var expressionResult = parser.VisitExpression(context);
             if (!(expressionResult is Skell.Types.Boolean)) {
-                throw new Skell.Problems.UnexpectedType(expressionResult, typeof(Skell.Types.Boolean));
+                throw new Skell.Problems.UnexpectedType(
+                    new Source(context.Start, context.Stop),
+                    expressionResult, typeof(Skell.Types.Boolean)
+                );
             }
             return (Skell.Types.Boolean) expressionResult;
         }

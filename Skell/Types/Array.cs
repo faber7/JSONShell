@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Skell.Types
 {
-    public class Array : ISkellIndexableType, IEnumerator, IEnumerable
+    public class Array : ISkellIndexable, IEnumerator, IEnumerable
     {
         private readonly List<ISkellType> contents;
 
@@ -24,48 +24,18 @@ namespace Skell.Types
 
         public int Count() => contents.Count;
 
-        public ISkellType ThrowIndexOutOfRange(ISkellType index)
-        {
-            var indices = new Skell.Types.Array(
-                Enumerable.Range(0, contents.Count)
-                .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
-                .ToArray()
-            );
-            throw new Skell.Problems.IndexOutOfRange(index, indices);
-        }
-
-        public ISkellType ThrowIndexOutOfRange(ISkellType index, bool allowFinal)
-        {
-            var indices = new Skell.Types.Array(
-                Enumerable.Range(0, contents.Count + (allowFinal ? 1 : 0))
-                .Select(i => (Skell.Types.ISkellType) new Skell.Types.Number(i))
-                .ToArray()
-            );
-            throw new Skell.Problems.IndexOutOfRange(index, indices);
-        }
+        public ISkellType[] ListIndices() => contents.ToArray();
 
         public bool Exists(ISkellType index)
         {
             return (index is Number n && n.isInt && n.integerValue < contents.Count);
         }
 
-        public ISkellType GetMember(ISkellType index)
-        {
-            if (Exists(index)) {
-                return contents[((Number) index).integerValue];
-            } else {
-                return ThrowIndexOutOfRange(index);
-            }
-        }
+        public ISkellType GetMember(ISkellType index) => contents[((Number) index).integerValue];
 
         public void Replace(ISkellType index, ISkellType value)
         {
-            if (Exists(index)) {
-                var n = (Number) index;
-                contents[n.integerValue] = value;
-            } else {
-                ThrowIndexOutOfRange(index);
-            }
+            contents[((Number) value).integerValue] = value;
         }
 
         /// <summary>
@@ -76,24 +46,10 @@ namespace Skell.Types
         /// </remark>
         public void Insert(ISkellType index, ISkellType value)
         {
-            if (index is Skell.Types.Number n && n.isInt) {
-                if (n.integerValue > contents.Count) {
-                    ThrowIndexOutOfRange(index, true);
-                }
-                contents.Insert(n.integerValue, value);
-            } else {
-                throw new Skell.Problems.UnexpectedType(index, typeof(Number));
-            }
+            contents.Insert(((Skell.Types.Number) index).integerValue, value);
         }
 
-        public void Delete(ISkellType index)
-        {
-            if (Exists(index)) {
-                contents.RemoveAt(((Number) index).integerValue);
-            } else {
-                ThrowIndexOutOfRange(index);
-            }
-        }
+        public void Delete(ISkellType index) => contents.RemoveAt(((Number) index).integerValue);
 
         public ISkellReturnable IndexOf(ISkellType value)
         {

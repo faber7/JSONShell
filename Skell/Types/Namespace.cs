@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Skell.Interpreter;
 
-namespace Skell.Interpreter
+namespace Skell.Types
 {
     class Namespace : Skell.Types.ISkellNamedType
     {
+        public Namespace parent;
         public string definitionDirectory;
         public string name;
         private Dictionary<string, Skell.Types.ISkellNamedType> contents;
@@ -37,6 +39,7 @@ namespace Skell.Interpreter
 
                 if (nsContext != null) {
                     var ns = new Namespace(definitionDirectory, nsContext, visitor);
+                    ns.parent = this;
                     Set(ns.name, ns);
                 } else if (nsDecl != null) {
                     string nm = nsDecl.IDENTIFIER().GetText();
@@ -45,7 +48,10 @@ namespace Skell.Interpreter
                         if (value is Skell.Types.ISkellType val) {
                             Set(nm, val);
                         } else {
-                            throw new Skell.Problems.UnexpectedType(value, typeof(Skell.Types.ISkellType));
+                            throw new Skell.Problems.UnexpectedType(
+                                new Source(nsDecl.expression().Start, nsDecl.expression().Stop),
+                                value, typeof(Skell.Types.ISkellType)
+                            );
                         }
                     } else if (nsDecl.function() != null) {
                         if (Exists(nm)) {
@@ -53,7 +59,10 @@ namespace Skell.Interpreter
                             if (val is Skell.Types.Function fn) {
                                 fn.AddUserDefinedLambda(nsDecl.function());
                             } else {
-                                throw new Skell.Problems.InvalidDefinition(nm, val);
+                                throw new Skell.Problems.InvalidDefinition(
+                                    new Source(nsDecl.function().Start, nsDecl.function().Stop),
+                                    nm
+                                );
                             }
                         } else {
                             var fn = new Skell.Types.Function(nm);
@@ -80,8 +89,18 @@ namespace Skell.Interpreter
                         nsLoad.IDENTIFIER() != null ? nsLoad.IDENTIFIER().GetText() : "",
                         visitor
                     );
+                    ns.parent = this;
                     Set(ns.name, ns);
                 }
+            }
+        }
+
+        public string GetFullName()
+        {
+            if (parent == null) {
+                return name;
+            } else {
+                return $"{parent.GetFullName()}.{name}";
             }
         }
 
@@ -90,7 +109,15 @@ namespace Skell.Interpreter
             if (contents.Keys.Count == 0) {
                 return new Skell.Types.String[0];
             }
-            return contents.Keys.Select((a, b) => new Skell.Types.String(a)).ToArray();
+            var list = new List<Skell.Types.String>();
+            foreach (var pair in contents) {
+                if (pair.Value is Skell.Types.Namespace ns) {
+                    list.AddRange(ns.ListNames());
+                }
+                list.Add(new Skell.Types.String($"{GetFullName()}.{pair.Key}"));
+            }
+
+            return list.ToArray();
         }
 
         public bool Exists(string name) => contents.ContainsKey(name);
@@ -101,18 +128,5 @@ namespace Skell.Interpreter
         }
 
         public Skell.Types.ISkellNamedType Get(string name) => contents[name];
-        
-        public Namespace GetNamespace(string name)
-        {
-            if (Exists(name) && contents[name] is Namespace ns) {
-                return ns;
-            } else {
-                throw new Skell.Problems.InvalidNamespace(
-                    name,
-                    contents.Keys.Where((name) => contents[name] is Namespace)
-                        .Select((a, b) => new Skell.Types.String(a)).ToArray()
-                );
-            }
-        }
     }
 }

@@ -37,7 +37,10 @@ namespace Skell.Types
                         }
                     }
                     if (i == lambda.argList.Count) {
-                        throw new Skell.Problems.InvalidFunctionDefinition(this, definition);
+                        throw new Skell.Problems.InvalidFunctionDefinition(
+                            new Interpreter.Source(ctx.Start, ctx.Stop),
+                            this, definition
+                        );
                     }
                 }
             }

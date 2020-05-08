@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Skell.Types
 {
-    public class Object : ISkellIndexableType
+    public class Object : ISkellIndexable
     {
         private readonly Dictionary<String, ISkellType> dict;
 
@@ -30,53 +30,19 @@ namespace Skell.Types
 
         public int Count() => dict.Count;
 
-        public ISkellType ThrowIndexOutOfRange(ISkellType index)
-        {
-            var range = dict.Keys.Select(i => (Skell.Types.ISkellType) i).ToArray();
-            throw new Skell.Problems.IndexOutOfRange(index, new Skell.Types.Array(range));
-        }
-
+        public ISkellType[] ListIndices() => dict.Keys.ToArray();
         public bool Exists(ISkellType index)
         {
             return (index is String s && dict.ContainsKey(s));
         }
 
-        public ISkellType GetMember(ISkellType index)
-        {
-            if (Exists(index) && index is Skell.Types.String str) {
-                return dict[str];
-            } else {
-                return ThrowIndexOutOfRange(index);
-            }
-        }
+        public ISkellType GetMember(ISkellType index) => dict[(Skell.Types.String) index];
 
-        public void Replace(ISkellType index, ISkellType value)
-        {
-            if (Exists(index) && index is String str) {
-                dict[str] = value;
-            } else {
-                ThrowIndexOutOfRange(index);
-            }
-        }
+        public void Replace(ISkellType index, ISkellType value) => dict[(Skell.Types.String) index] = value;
 
-        public void Insert(ISkellType index, ISkellType value)
-        {
-            if (index is Skell.Types.String str) {
-                dict[str] = value;
-            } else {
-                throw new Skell.Problems.UnexpectedType(index, typeof(Skell.Types.String));
-            }
-        }
+        public void Insert(ISkellType index, ISkellType value) => dict[(Skell.Types.String) index] = value;
 
-        public void Delete(ISkellType index)
-        {
-            if (Exists(index) && index is Skell.Types.String str) {
-                dict.Remove(str);
-            } else {
-                ThrowIndexOutOfRange(index);
-            }
-        }
-
+        public void Delete(ISkellType index) => dict.Remove((Skell.Types.String) index);
         public ISkellReturnable IndexOf(ISkellType value)
         {
             foreach (var pair in dict) {
