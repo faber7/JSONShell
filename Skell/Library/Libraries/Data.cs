@@ -12,6 +12,10 @@ namespace Skell.Library
             lengthfn.AddBuiltinLambda(new Skell.Library.Functions.Data.Length());
             data_ns.Set(lengthfn.name, lengthfn);
 
+            var containsfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Data.Contains).Name);
+            containsfn.AddBuiltinLambda(new Skell.Library.Functions.Data.Contains());
+            data_ns.Set(containsfn.name, containsfn);
+
             return data_ns;
         }
     }
