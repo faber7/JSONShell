@@ -16,6 +16,10 @@ namespace Skell.Library
                 system.Set(library.name, library);
             }
 
+            var printfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Print).Name);
+            printfn.AddBuiltinLambda(new Skell.Library.Functions.Print());
+            system.Set(typeof(Skell.Library.Functions.Print).Name, printfn);
+
             return system;
         }
     }
