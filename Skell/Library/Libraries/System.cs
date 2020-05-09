@@ -39,6 +39,10 @@ namespace Skell.Library
             setpathfn.AddBuiltinLambda(new Skell.Library.Functions.SetPath());
             system.Set(typeof(Skell.Library.Functions.SetPath).Name, setpathfn);
 
+            var execfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Exec).Name);
+            execfn.AddBuiltinLambda(new Skell.Library.Functions.Exec());
+            system.Set(typeof(Skell.Library.Functions.Exec).Name, execfn);
+
             return system;
         }
 
