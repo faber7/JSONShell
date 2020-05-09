@@ -27,7 +27,7 @@ namespace Skell.Types
                 dict.Add(k[i], v[i]);
         }
 
-        public int Count() => dict.Count;
+        public Number Count() => new Number(dict.Count);
 
         public ISkellType[] ListIndices() => dict.Keys.ToArray();
         public bool Exists(ISkellType index)

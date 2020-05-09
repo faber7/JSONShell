@@ -36,7 +36,7 @@ namespace Skell.Types
     // Represents all datatypes that have support for member access
     public interface ISkellIndexable : ISkellType
     {
-        int Count();
+        Number Count();
 
         ISkellType[] ListIndices();
         bool Exists(ISkellType index);

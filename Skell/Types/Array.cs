@@ -27,7 +27,7 @@ namespace Skell.Types
                 contents.Add(value);
         }
 
-        public int Count() => contents.Count;
+        public Number Count() => new Number(contents.Count);
 
         public ISkellType[] ListIndices() => contents.ToArray();
 
