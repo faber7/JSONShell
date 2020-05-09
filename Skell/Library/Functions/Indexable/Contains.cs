@@ -10,17 +10,17 @@ namespace Skell.Library.Functions.Indexable
         public Contains()
         {
             argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("container", Skell.Types.Specifier.Any));
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("content", Skell.Types.Specifier.Any));
+            argList.Add(new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any));
+            argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
         }
 
         public override ISkellReturnable Execute(List<Tuple<int, string, Skell.Types.ISkellType>> args)
         {
-            var container = args.First().Item3;
-            var content = args.Skip(1).First().Item3;
+            var indexable1 = args.First().Item3;
+            var value = args.Skip(1).First().Item3;
 
-            if (container is Skell.Types.ISkellIndexable indexable)
-                return indexable.IndexOf(content);
+            if (indexable1 is Skell.Types.ISkellIndexable indexable)
+                return indexable.IndexOf(value);
             else
                 return new Skell.Types.None();
         }
