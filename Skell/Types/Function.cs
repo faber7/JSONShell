@@ -33,9 +33,7 @@ namespace Skell.Types
                     foreach (var tokenPair in tokens) {
                         var lt = tokenPair.LambdaToken;
                         var dt = tokenPair.DefinitionToken;
-                        string any = SkellParser.DefaultVocabulary.GetDisplayName(SkellLexer.TYPE_ANY);
-                        any = any.Substring(1, any.Length - 2);
-                        if (lt.Item2.Text == any || dt.Item2.Text == any || lt.Item2.Text == dt.Item2.Text)
+                        if (lt.Item2 == Specifier.Any || dt.Item2 == Specifier.Any || lt.Item2 == dt.Item2)
                             i++;
                     }
                     if (i == lambda.argList.Count)
@@ -48,12 +46,8 @@ namespace Skell.Types
             definitions.Add(lambda);
         }
 
-        public void AddBuiltinLambda(
-            List<Tuple<string, IToken>> args,
-            Func<ISkellReturnable> fn
-        )
+        public void AddBuiltinLambda(BuiltinLambda lambda)
         {
-            var lambda = new BuiltinLambda(args, fn);
             foreach(var definition in definitions) {
                 if (lambda.argList.Count == definition.argList.Count 
                     && !lambda.argList.Except(definition.argList).Any()

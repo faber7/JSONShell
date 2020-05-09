@@ -4,7 +4,7 @@ using Skell.Interpreter;
 
 namespace Skell.Types
 {
-    class Namespace : Skell.Types.ISkellNamedType
+    public class Namespace : Skell.Types.ISkellNamedType
     {
         public Namespace parent;
         public string definitionDirectory;

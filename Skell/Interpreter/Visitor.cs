@@ -8,7 +8,7 @@ using System;
 
 namespace Skell.Interpreter
 {
-    internal class Visitor : SkellBaseVisitor<Skell.Types.ISkellReturnable>
+    public class Visitor : SkellBaseVisitor<Skell.Types.ISkellReturnable>
     {
         private readonly Skell.Types.None defaultReturnValue = new Skell.Types.None();
         private static ILogger logger;
@@ -314,7 +314,7 @@ namespace Skell.Interpreter
 
                 var token = Utility.GetTokenOfUsableTypeSpecifier(ctx_uts);
                 // as there is no chance of a TYPE_ANY token
-                return new Skell.Types.Boolean(Utility.MatchType(value, token));
+                return new Skell.Types.Boolean(Utility.MatchType(value, Utility.GetSpecifier(token)));
             }
             return value;
         }

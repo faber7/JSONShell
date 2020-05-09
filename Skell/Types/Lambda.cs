@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Antlr4.Runtime;
 using Skell.Generated;
 
 namespace Skell.Types
@@ -15,9 +14,7 @@ namespace Skell.Types
         /// function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
         /// functionArg : typeSpecifier IDENTIFIER ;
         /// </remark>
-        public UserDefinedLambda(
-            SkellParser.FunctionContext ctx
-        )
+        public UserDefinedLambda(SkellParser.FunctionContext ctx)
         {
             context = ctx;
             statementBlock = context.statementBlock();
@@ -25,8 +22,9 @@ namespace Skell.Types
             for (int i = 0; i < context.functionArg().Length; i++) {
                 var arg = context.functionArg(i);
                 string name = arg.IDENTIFIER().GetText();
-                IToken token = Skell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.typeSpecifier());
-                argList.Add(new Tuple<string, IToken>(name, token));
+                var token = Skell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.typeSpecifier());
+
+                argList.Add(new Tuple<string, Specifier>(name, Skell.Interpreter.Utility.GetSpecifier(token)));
 
                 repr.Append($"{token.Text} {name}");
                 if (i + 1 != context.functionArg().Length)
@@ -49,29 +47,9 @@ namespace Skell.Types
         override public int Arity() => argList.Count;
     }
 
-    public class BuiltinLambda : Lambda
+    public abstract class BuiltinLambda : Lambda
     {
-        public Func<ISkellReturnable> Execute;
-
-        public BuiltinLambda(
-            List<Tuple<string, IToken>> args,
-            Func<ISkellReturnable> fn
-        )
-        {
-            var repr = new StringBuilder("(");
-            for (int i = 0; i < args.Count; i++) {
-                var pair = args[i];
-                argList.Add(pair);
-
-                repr.Append($"{pair.Item2.Text} {pair.Item1}");
-                if (i + 1 != args.Count)
-                    repr.Append(", ");
-            }
-            repr.Append(")");
-
-            argString = repr.ToString();
-            Execute = fn;
-        }
+        public abstract ISkellReturnable Execute(List<Tuple<int, string, ISkellType>> args);
 
         override public string ToString()
         {

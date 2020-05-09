@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Skell.Interpreter
 {
-    class State
+    public class State
     {
         private static ILogger logger;
 

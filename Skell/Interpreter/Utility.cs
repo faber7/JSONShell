@@ -70,7 +70,7 @@ namespace Skell.Interpreter
                 if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
                 else
-                    returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute();
+                    returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute(args);
 
                 //cleanup
                 if (state.has_returned()) {
@@ -392,24 +392,43 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Returns true if the data matches the given type specifier token
+        /// Returns true if the data matches the given type specifier
         /// </summary>
-        public static bool MatchType(Skell.Types.ISkellInternal data, Antlr4.Runtime.IToken token)
+        public static bool MatchType(Skell.Types.ISkellInternal data, Skell.Types.Specifier type)
         {
-            if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY)
+            if (data is Skell.Types.Array && type == Skell.Types.Specifier.Array)
                 return true;
-            else if (data is Skell.Types.Boolean && token.Type == SkellLexer.TYPE_BOOL)
+            else if (data is Skell.Types.Boolean && type == Skell.Types.Specifier.Bool)
                 return true;
-            else if (data is Skell.Types.Number && token.Type == SkellLexer.TYPE_NUMBER)
+            else if (data is Skell.Types.Number && type == Skell.Types.Specifier.Number)
                 return true;
-            else if (data is Skell.Types.Object && token.Type == SkellLexer.TYPE_OBJECT)
+            else if (data is Skell.Types.Object && type == Skell.Types.Specifier.Object)
                 return true;
-            else if (data is Skell.Types.String && token.Type == SkellLexer.TYPE_STRING)
+            else if (data is Skell.Types.String && type == Skell.Types.Specifier.String)
                 return true;
-            else if (data is Skell.Types.ISkellType && token.Type == SkellLexer.TYPE_ANY)
+            else if (data is Skell.Types.ISkellType && type == Skell.Types.Specifier.Any)
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns the enum Specifier value according to the token type
+        /// </summary>
+        public static Skell.Types.Specifier GetSpecifier(Antlr4.Runtime.IToken token)
+        {
+            if (token.Type == SkellLexer.TYPE_ARRAY)
+                return Skell.Types.Specifier.Array;
+            else if (token.Type == SkellLexer.TYPE_BOOL)
+                return Skell.Types.Specifier.Bool;
+            else if (token.Type == SkellLexer.TYPE_NUMBER)
+                return Skell.Types.Specifier.Number;
+            else if (token.Type == SkellLexer.TYPE_OBJECT)
+                return Skell.Types.Specifier.Object;
+            else if (token.Type == SkellLexer.TYPE_STRING)
+                return Skell.Types.Specifier.String;
+            else
+                return Skell.Types.Specifier.Any;
         }
 
         /// <summary>

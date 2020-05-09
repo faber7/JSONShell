@@ -1,9 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Antlr4.Runtime;
 
 namespace Skell.Types
 {
+    public enum Specifier
+    {
+        Any,
+        Bool,
+        Number,
+        String,
+        Object,
+        Array
+    }
+
     // Base type for all internal datatypes
     public interface ISkellInternal
     {
@@ -43,7 +52,7 @@ namespace Skell.Types
     /// </summary>
     public abstract class Lambda : ISkellInternal
     {
-        public readonly List<Tuple<string, IToken>> argList = new List<Tuple<string, IToken>>();
+        public List<Tuple<string, Specifier>> argList = new List<Tuple<string, Specifier>>();
         public string argString;
         
         /// <summary>
@@ -91,15 +100,15 @@ namespace Skell.Types
         /// Retrieves the arguments that do not have the same type.
         /// Use with GetExtraArgs().
         /// </summary>
-        public List<Tuple<int, string, Antlr4.Runtime.IToken>> GetInvalidArgs(
+        public List<Tuple<int, string, Skell.Types.Specifier>> GetInvalidArgs(
             List<Tuple<int, string, Skell.Types.ISkellType>> args
         )
         {
-            var ret = new List<Tuple<int, string, Antlr4.Runtime.IToken>>();
+            var ret = new List<Tuple<int, string, Specifier>>();
             int i = 0;
             foreach (var arg in argList) {
                 if (i < args.Count && !Skell.Interpreter.Utility.MatchType(args[i].Item3, arg.Item2))
-                    ret.Add(new Tuple<int, string, Antlr4.Runtime.IToken>(i, arg.Item1, arg.Item2));
+                    ret.Add(new Tuple<int, string, Specifier>(i, arg.Item1, arg.Item2));
                     
                 i++;
             }
