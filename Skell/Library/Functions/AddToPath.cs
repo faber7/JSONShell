@@ -21,8 +21,11 @@ namespace Skell.Library.Functions
             var system = state.Namespaces.Get(typeof(Skell.Library.System).Name);
 
             if (path is Skell.Types.String strPath && system.Get("Path") is Skell.Types.Array arrPath) 
-                if (File.Exists(strPath.contents) && File.GetAttributes(strPath.contents).HasFlag(FileAttributes.Directory))
+                if (File.Exists(strPath.contents) && File.GetAttributes(strPath.contents).HasFlag(FileAttributes.Directory)) {
                     arrPath.Insert(arrPath.Count(), strPath);
+                    var pathstr = string.Join(':', arrPath);
+                    Environment.SetEnvironmentVariable("PATH", pathstr);
+                }
             
             return new Skell.Types.None();
         }

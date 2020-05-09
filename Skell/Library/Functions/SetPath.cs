@@ -30,6 +30,9 @@ namespace Skell.Library.Functions
                 }
 
                 system.Set("Path", new Skell.Types.Array(arrPath.ToArray()));
+
+                var pathstr = string.Join(':', arrPath);
+                Environment.SetEnvironmentVariable("PATH", pathstr);
             }
             
             return new Skell.Types.None();
