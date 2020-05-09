@@ -53,17 +53,15 @@ namespace Skell.Interpreter
         override public string ToString()
         {
             string pos;
-            if (StartLine == EndLine) {
+            if (StartLine == EndLine)
                 pos = $"line {StartLine}, columns {StartColumn}:{EndColumn}";
-            } else {
+            else
                 pos = $"lines {StartLine}:{StartColumn} to {EndLine}:{EndColumn}";
-            }
             
-            if (source == "") {
+            if (source == "")
                 return pos;
-            } else {
+            else
                 return $"{source}, {pos}";
-            }
         }
     }
 }

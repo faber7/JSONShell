@@ -9,14 +9,13 @@ namespace Skell.Interpreter
         public static void InitializeConsoleLogger(bool Debug, bool Verbose)
         {
             var config = new LoggerConfiguration();
-            if (!Debug && !Verbose) {
+            if (!Debug && !Verbose)
                 config = config.MinimumLevel.Information();
-            } else if (Debug) {
+            else if (Debug)
                 config = config.MinimumLevel.Debug();
-            } else if (Verbose) {
+            else if (Verbose)
                 config = config.MinimumLevel.Verbose();
-            }
-
+            
             Log.Logger = config
                 .WriteTo.Console(
                     outputTemplate: outputTemplate

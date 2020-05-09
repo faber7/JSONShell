@@ -17,7 +17,8 @@ namespace Skell.Types
         /// </remark>
         public UserDefinedLambda(
             SkellParser.FunctionContext ctx
-        ) {
+        )
+        {
             context = ctx;
             statementBlock = context.statementBlock();
             var repr = new StringBuilder("(");
@@ -28,9 +29,8 @@ namespace Skell.Types
                 argList.Add(new Tuple<string, IToken>(name, token));
 
                 repr.Append($"{token.Text} {name}");
-                if (i + 1 != context.functionArg().Length) {
+                if (i + 1 != context.functionArg().Length)
                     repr.Append(", ");
-                }
             }
             repr.Append(")");
             argString = repr.ToString();
@@ -56,16 +56,16 @@ namespace Skell.Types
         public BuiltinLambda(
             List<Tuple<string, IToken>> args,
             Func<ISkellReturnable> fn
-        ) {
+        )
+        {
             var repr = new StringBuilder("(");
             for (int i = 0; i < args.Count; i++) {
                 var pair = args[i];
                 argList.Add(pair);
 
                 repr.Append($"{pair.Item2.Text} {pair.Item1}");
-                if (i + 1 != args.Count) {
+                if (i + 1 != args.Count)
                     repr.Append(", ");
-                }
             }
             repr.Append(")");
 

@@ -23,9 +23,8 @@ namespace Skell.Types
         public Array(ISkellType[] values)
         {
             contents = new List<ISkellType>();
-            foreach (var value in values) {
+            foreach (var value in values)
                 contents.Add(value);
-            }
         }
 
         public int Count() => contents.Count;
@@ -123,9 +122,9 @@ namespace Skell.Types
         public override int GetHashCode() => contents.GetHashCode();
         public override bool Equals(object obj)
         {
-            if (obj is Skell.Types.Array arr) {
+            if (obj is Skell.Types.Array arr)
                 return contents.Count == arr.contents.Count && contents.SequenceEqual(arr.contents);
-            }
+
             return false;
         }
     }

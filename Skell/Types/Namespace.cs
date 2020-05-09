@@ -97,23 +97,22 @@ namespace Skell.Types
 
         public string GetFullName()
         {
-            if (parent == null) {
+            if (parent == null)
                 return name;
-            } else {
+            else
                 return $"{parent.GetFullName()}.{name}";
-            }
         }
 
         public Skell.Types.String[] ListNames()
         {
-            if (contents.Keys.Count == 0) {
+            if (contents.Keys.Count == 0)
                 return new Skell.Types.String[0];
-            }
+
             var list = new List<Skell.Types.String>();
             foreach (var pair in contents) {
-                if (pair.Value is Skell.Types.Namespace ns) {
+                if (pair.Value is Skell.Types.Namespace ns)
                     list.AddRange(ns.ListNames());
-                }
+
                 list.Add(new Skell.Types.String($"{GetFullName()}.{pair.Key}"));
             }
 

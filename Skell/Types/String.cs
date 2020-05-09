@@ -38,9 +38,9 @@ namespace Skell.Types
         public override int GetHashCode() => contents.GetHashCode();
         public override bool Equals(object obj)
         {
-            if (obj is String s) {
+            if (obj is String s)
                 return contents == s.contents;
-            }
+                
             return false;
         }
     }

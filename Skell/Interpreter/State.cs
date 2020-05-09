@@ -93,9 +93,9 @@ namespace Skell.Interpreter
         /// as well as any locally defined functions after this call
         /// </summary>
         public void DISABLE_GLOBAL_FUNCTIONS(bool log = false) {
-            if (log) {
+            if (log)
                 logger.Verbose("Disabling all existing functions");
-            }
+
             temp_functions = current_functions;
             current_functions = new Context<Types.Function>("TEMP_FUNCTIONS");
         }
@@ -104,9 +104,9 @@ namespace Skell.Interpreter
         /// Enable user-defined functions.
         /// </summary>
         public void ENABLE_GLOBAL_FUNCTIONS(bool log = false) {
-            if (log) {
+            if (log)
                 logger.Verbose("Restoring global functions");
-            }
+
             current_functions = temp_functions;
             temp_functions = new Context<Types.Function>("TEMP_FUNCTIONS");
         }
@@ -148,16 +148,16 @@ namespace Skell.Interpreter
             /// </summary>
             public bool DefinedAs(string s, System.Type type)
             {
-                if (Available(s)) {
+                if (Available(s))
                     return false;
-                }
-                if (variables.Exists(s) && variables.Get(s).GetType() == type) {
+
+                if (variables.Exists(s) && variables.Get(s).GetType() == type)
                     return true;
-                } else if (functions.Exists(s) && functions.Get(s).GetType() == type) {
+                else if (functions.Exists(s) && functions.Get(s).GetType() == type)
                     return true;
-                } else if (namespaces.Exists(s) && namespaces.Get(s).GetType() == type) {
+                else if (namespaces.Exists(s) && namespaces.Get(s).GetType() == type)
                     return true;
-                }
+
                 return false;
             }
 
@@ -170,13 +170,13 @@ namespace Skell.Interpreter
                     logger.Error("Attempted to read a name that was invalid");
                     throw new System.Exception(error_not_found);
                 }
-                if (variables.Exists(s)) {
+                
+                if (variables.Exists(s))
                     return variables.Get(s);
-                } else if (functions.Exists(s)) {
+                else if (functions.Exists(s))
                     return functions.Get(s);
-                } else {
+                else
                     return namespaces.Get(s);
-                }
             }
 
             /// <summary>
@@ -184,13 +184,12 @@ namespace Skell.Interpreter
             /// </summary>
             public void Clear(string s)
             {
-                if (variables.Exists(s)) {
+                if (variables.Exists(s))
                     variables.Delete(s);
-                } else if (functions.Exists(s)) {
+                else if (functions.Exists(s))
                     functions.Delete(s);
-                } else if (namespaces.Exists(s)) {
+                else if (namespaces.Exists(s))
                     namespaces.Delete(s);
-                }
             }
 
         }

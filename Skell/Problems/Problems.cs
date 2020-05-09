@@ -75,16 +75,17 @@ namespace Skell.Problems
         public InvalidDefinition(
             Source src,
             string name
-        ) {
+        )
+        {
             Log.Error($"Attempted to redefine {name} at {src}");
         }
 
         public InvalidDefinition(
             Source src,
             string name,
-            Skell.Interpreter.State state
-            
-        ) {
+            Skell.Interpreter.State state    
+        )
+        {
             var from = state.Names.DefinitionOf(name);
             Log.Error($"Attempted to redefine the {from.GetType()} {name} at {src}");
         }
@@ -101,7 +102,8 @@ namespace Skell.Problems
             Source src,
             Skell.Types.Function function,
             Skell.Types.Lambda definition
-        ) {
+        )
+        {
             StringBuilder msg = new StringBuilder();
             msg.Append($"An existing definition of Function {function.name}");
             msg.Append($" conflicts with the definition {definition.argString} at {src}\n");
@@ -116,7 +118,8 @@ namespace Skell.Problems
         public InvalidFunctionDefinition(
             Skell.Types.Function function,
             Skell.Types.BuiltinLambda definition
-        ) {
+        )
+        {
             StringBuilder msg = new StringBuilder();
             msg.Append($"A definition of Function {function.name}");
             msg.Append($" with the arguments: {definition.argString} already exists!\n");
@@ -135,7 +138,8 @@ namespace Skell.Problems
             Source src,
             Skell.Types.Function function,
             List<Tuple<int, Skell.Types.ISkellType>> arguments
-        ) {
+        )
+        {
             StringBuilder msg = new StringBuilder();
             msg.Append($"At {src},\n");
             msg.Append($"Could not match a definition of Function {function.name} with the following arguments:\n");
@@ -157,7 +161,8 @@ namespace Skell.Problems
         public InvalidFunctionCall(
             Skell.Types.Function function,
             List<Tuple<int, Skell.Types.ISkellType>> arguments
-        ) {
+        )
+        {
             StringBuilder msg = new StringBuilder();
             msg.Append($"Could not match a definition of Function {function.name} with the following arguments:\n");
             foreach (var arg in arguments) {

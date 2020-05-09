@@ -42,9 +42,9 @@ namespace Skell.Interpreter
             )
             {
                 Skell.Types.ISkellReturnable returnValue;
-                if (unnamedArgs == null) {
+                if (unnamedArgs == null)
                     unnamedArgs = new List<Tuple<int, Types.ISkellType>>();
-                }
+
                 var lambda = function.SelectLambda(unnamedArgs);
                 if (lambda == null)
                     throw new Skell.Problems.InvalidFunctionCall(function, unnamedArgs);
@@ -55,9 +55,8 @@ namespace Skell.Interpreter
                     var sb = new StringBuilder(" ");
                     for (int i = 0; i < args.Count; i++) {
                         sb.Append($"{args[i].Item2}:{args[i].Item3}");
-                        if (i + 1 != args.Count) {
+                        if (i + 1 != args.Count)
                             sb.Append(" ");
-                        }
                     }
                     argString = sb.ToString();
                 }
@@ -65,15 +64,13 @@ namespace Skell.Interpreter
                 // pre-setup for state
                 state.ENTER_RETURNABLE_CONTEXT($"{function.name}{argString}");
                 // set up state with arguments in context
-                foreach (var arg in args) {
+                foreach (var arg in args)
                     state.Variables.Set(arg.Item2, arg.Item3);
-                }
                 
-                if (lambda is Skell.Types.UserDefinedLambda udLambda) {
+                if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
-                } else {
+                else
                     returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute();
-                }
 
                 //cleanup
                 if (state.has_returned()) {
@@ -120,9 +117,8 @@ namespace Skell.Interpreter
             var pathDir = Path.GetDirectoryName(pathFull);
             // Read and prepare file
             var src = Encoding.ASCII.GetString(File.ReadAllBytes(path));
-            if (src.Last() != '\n') {
+            if (src.Last() != '\n')
                 src += '\n';
-            }
 
             var charStream = CharStreams.fromstring(src);
             var lexer = new SkellLexer(charStream);
@@ -230,7 +226,7 @@ namespace Skell.Interpreter
                         fn,
                         null
                     );
-                    return Utility.GetSkellType(src, result);
+                return Utility.GetSkellType(src, result);
             } else 
                 throw new Skell.Problems.UnexpectedType(
                     src, named,
@@ -287,33 +283,32 @@ namespace Skell.Interpreter
         {
             var rootName = context.IDENTIFIER().First().GetText();
 
-            if (state.Names.Available(rootName)) {
+            if (state.Names.Available(rootName))
                 throw new Skell.Problems.UndefinedIdentifer(
                     new Source(context.IDENTIFIER().First().Symbol),
                     rootName,
                     typeof(Skell.Types.Namespace)
                 );
-            }
 
             var nst = state.Names.DefinitionOf(rootName);
-            if (!(nst is Skell.Types.Namespace)) {
+            if (!(nst is Skell.Types.Namespace))
                 throw new Skell.Problems.UnexpectedType(
                     new Source(context.IDENTIFIER().First().Symbol),
                     nst,
                     typeof(Skell.Types.Namespace)
                 );
-            }
-            Skell.Types.Namespace ns = (Skell.Types.Namespace) nst;
+
+            var ns = (Skell.Types.Namespace) nst;
             var nsRoot = ns;
             foreach (var id in context.IDENTIFIER().Skip(1).SkipLast(1)) {
                 nst = ns.Get(id.GetText());
-                if (!(nst is Skell.Types.Namespace)) {
+                if (!(nst is Skell.Types.Namespace))
                     throw new Skell.Problems.UnexpectedType(
                         new Source(context.IDENTIFIER().First().Symbol),
                         nst,
                         typeof(Skell.Types.Namespace)
                     );
-                }
+
                 ns = (Skell.Types.Namespace) nst;
             }
             
@@ -321,12 +316,11 @@ namespace Skell.Interpreter
             if (ns.Exists(name)) {
                 var result = ns.Get(context.IDENTIFIER().Last().GetText());
                 return result;
-            } else {
+            } else
                 throw new Skell.Problems.InvalidNamespacedIdentifier(
                     new Source(context.IDENTIFIER().First().Symbol, context.IDENTIFIER().Last().Symbol),
                     new Skell.Types.Array(nsRoot.ListNames())
                 );
-            }
         }
 
         /// <summary>
@@ -361,11 +355,10 @@ namespace Skell.Interpreter
                     var value = visitor.VisitExpression(tree);
                     visitor.tokenSource = dupSrc;
 
-                    if (value is Skell.Types.ISkellType) {
+                    if (value is Skell.Types.ISkellType)
                         return value.ToString();
-                    } else {
+                    else
                         return "";
-                    }
                 }
             );
             return new Skell.Types.String(contents);
@@ -380,9 +373,9 @@ namespace Skell.Interpreter
         /// </remark>
         public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(SkellParser.TypeSpecifierContext context)
         {
-            if (context.usableTypeSpecifier() != null) {
+            if (context.usableTypeSpecifier() != null)
                 return Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
-            }
+            
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
         
@@ -403,19 +396,19 @@ namespace Skell.Interpreter
         /// </summary>
         public static bool MatchType(Skell.Types.ISkellInternal data, Antlr4.Runtime.IToken token)
         {
-            if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY) {
+            if (data is Skell.Types.Array && token.Type == SkellLexer.TYPE_ARRAY)
                 return true;
-            } else if (data is Skell.Types.Boolean && token.Type == SkellLexer.TYPE_BOOL) {
+            else if (data is Skell.Types.Boolean && token.Type == SkellLexer.TYPE_BOOL)
                 return true;
-            } else if (data is Skell.Types.Number && token.Type == SkellLexer.TYPE_NUMBER) {
+            else if (data is Skell.Types.Number && token.Type == SkellLexer.TYPE_NUMBER)
                 return true;
-            } else if (data is Skell.Types.Object && token.Type == SkellLexer.TYPE_OBJECT) {
+            else if (data is Skell.Types.Object && token.Type == SkellLexer.TYPE_OBJECT)
                 return true;
-            } else if (data is Skell.Types.String && token.Type == SkellLexer.TYPE_STRING) {
+            else if (data is Skell.Types.String && token.Type == SkellLexer.TYPE_STRING)
                 return true;
-            } else if (data is Skell.Types.ISkellType && token.Type == SkellLexer.TYPE_ANY) {
+            else if (data is Skell.Types.ISkellType && token.Type == SkellLexer.TYPE_ANY)
                 return true;
-            }
+
             return false;
         }
 
@@ -425,12 +418,12 @@ namespace Skell.Interpreter
         public static Skell.Types.Boolean EvaluateExpr(Visitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
-            if (!(expressionResult is Skell.Types.Boolean)) {
+            if (!(expressionResult is Skell.Types.Boolean))
                 throw new Skell.Problems.UnexpectedType(
                     new Source(context.Start, context.Stop),
                     expressionResult, typeof(Skell.Types.Boolean)
                 );
-            }
+
             return (Skell.Types.Boolean) expressionResult;
         }
 
@@ -474,11 +467,9 @@ namespace Skell.Interpreter
             if (parent == null)
                 return -1;
 
-            for (int i = 0; i < parent.ChildCount; i++) {
-                if (parent.GetChild(i) == context) {
+            for (int i = 0; i < parent.ChildCount; i++)
+                if (parent.GetChild(i) == context)
                     return i;
-                }
-            }
 
             return -1;
         }

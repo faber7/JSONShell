@@ -32,15 +32,14 @@ namespace Skell.Interpreter
             Skell.Types.ISkellReturnable lastResult = defaultReturnValue;
             foreach (var statement in statements) {
                 lastResult = VisitProgramStatement(statement);
-                if (lastResult is Skell.Types.String str) {
+                if (lastResult is Skell.Types.String str)
                     logger.Debug($"Result: \"{lastResult}\" of type {lastResult.GetType()}");
-                } else if (lastResult is Skell.Types.Array arr) {
+                else if (lastResult is Skell.Types.Array arr)
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()} and length {arr.Count()}");
-                } else if (lastResult is Skell.Types.Object obj) {
+                else if (lastResult is Skell.Types.Object obj)
                     logger.Debug($"Result is an object:\n {obj}");
-                } else if (!(lastResult is Skell.Types.None)) {
+                else if (!(lastResult is Skell.Types.None))
                     logger.Debug($"Result: {lastResult} of type {lastResult.GetType()}");
-                }
             }
             return lastResult;
         }
@@ -82,15 +81,15 @@ namespace Skell.Interpreter
             var ctx_expr = context.expression();
             var ctx_ctrl = context.control();
 
-            if (ctx_progExec != null) {
+            if (ctx_progExec != null)
                 return VisitProgramExec(ctx_progExec);
-            } else if (ctx_decl != null) {
+            else if (ctx_decl != null)
                 return VisitDeclaration(ctx_decl);
-            } else if (ctx_expr != null) {
+            else if (ctx_expr != null)
                 return VisitExpression(ctx_expr);
-            } else if (ctx_ctrl != null) {
+            else if (ctx_ctrl != null)
                 return VisitControl(ctx_ctrl);
-            }
+
             return defaultReturnValue;
         }
 
@@ -99,15 +98,18 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitNamespaceLoad(SkellParser.NamespaceLoadContext context)
         {
-            var name = Utility.GetString(context.STRING().GetText(), this);
+            var ctx_str = context.STRING();
+            var ctx_id = context.IDENTIFIER();
+
+            var name = Utility.GetString(ctx_str.GetText(), this);
             var ns = Utility.LoadNamespace(
                     name.contents,
-                    context.IDENTIFIER() != null ? context.IDENTIFIER().GetText() : "",
+                    ctx_id != null ? ctx_id.GetText() : "",
                     this
                 );
-            if (state.Names.DefinedAs(ns.name, typeof(Skell.Types.Namespace))) {
+            if (state.Names.DefinedAs(ns.name, typeof(Skell.Types.Namespace)))
                 logger.Debug($"Overwriting namespace {ns.name}");
-            }
+
             state.Namespaces.Register(ns);
             return defaultReturnValue;
         }
@@ -124,9 +126,8 @@ namespace Skell.Interpreter
                 )
                 .Substring(1);
             List<string> argsList = execString.Split(' ').ToList();
-            if (argsList.First().Length == 0) {
+            if (argsList.First().Length == 0)
                 argsList.RemoveAt(0);
-            }
 
             List<string> nargs = new List<string>();
 
@@ -147,9 +148,8 @@ namespace Skell.Interpreter
                         break;
                     }
                 }
-                if (!added) {
+                if (!added)
                     nargs.Add(arg);
-                }
             }
 
             argsList = nargs;
@@ -160,11 +160,11 @@ namespace Skell.Interpreter
             argsList = argsList.Skip(1).Select(
                 str => {
                     // perform any substitutions
-                    if (str.StartsWith("\"") && str.EndsWith("\"")) {
+                    if (str.StartsWith("\"") && str.EndsWith("\""))
                         return Utility.GetString(str, this).ToString();
-                    } else if (str.StartsWith('`') && str.EndsWith('`')) {
+                    else if (str.StartsWith('`') && str.EndsWith('`'))
                         return str.Substring(1, str.Length - 2);
-                    }
+
                     return str;
                 }
             ).ToList();
@@ -185,12 +185,12 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitStatementBlock(SkellParser.StatementBlockContext context)
         {
-            for (int i = 0; i < context.statement().Length; i++) {
-                var result = VisitStatement(context.statement(i));
-                if (state.has_returned()) {
+            var statements = context.statement();
+            foreach (var statement in statements) {
+                var result = VisitStatement(statement);
+                if (state.has_returned())
                     // do not unset state.has_returned() here as it is the caller's job
                     return result;
-                }
             }
             return defaultReturnValue;
         }
@@ -305,9 +305,14 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
-            var value = VisitEqExpr(context.eqExpr());
-            if (context.KW_IS() != null) {
-                var token = Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
+            var ctx_eqExpr = context.eqExpr();
+            var ctx_is = context.KW_IS();
+
+            var value = VisitEqExpr(ctx_eqExpr);
+            if (ctx_is != null) {
+                var ctx_uts = context.usableTypeSpecifier();
+
+                var token = Utility.GetTokenOfUsableTypeSpecifier(ctx_uts);
                 // as there is no chance of a TYPE_ANY token
                 return new Skell.Types.Boolean(Utility.MatchType(value, token));
             }
@@ -319,15 +324,17 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitEqExpr(SkellParser.EqExprContext context)
         {
-            Skell.Types.ISkellReturnable result = VisitRelExpr(context.relExpr(0));
+            var ctx_curr = context.relExpr(0);
+            Skell.Types.ISkellReturnable result = VisitRelExpr(ctx_curr);
 
-            if (context.relExpr(1) != null) {
-                Skell.Types.ISkellReturnable next = VisitRelExpr(context.relExpr(1));
-                var op = (Antlr4.Runtime.IToken) context.relExpr(1).GetLeftSibling().Payload;
+            var ctx_next = context.relExpr(1);
+            if (ctx_next != null) {
+                Skell.Types.ISkellReturnable next = VisitRelExpr(ctx_next);
+                var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 bool ret = result.Equals(next);
-                if (op.Type == SkellLexer.OP_NE) {
+                if (op.Type == SkellLexer.OP_NE)
                     ret = !ret;
-                }
+
                 return new Skell.Types.Boolean(ret);
             }
             return result;
@@ -338,12 +345,14 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitRelExpr(SkellParser.RelExprContext context)
         {
-            Skell.Types.ISkellReturnable result = VisitAddExpr(context.addExpr(0));
+            var ctx_curr = context.addExpr(0);
+            Skell.Types.ISkellReturnable result = VisitAddExpr(ctx_curr);
 
-            if (context.addExpr(1) != null) {
-                Skell.Types.ISkellReturnable next = VisitAddExpr(context.addExpr(1));
-                var op = (Antlr4.Runtime.IToken) context.addExpr(1).GetLeftSibling().Payload;
-                if (result is Skell.Types.Number r && next is Skell.Types.Number n) {
+            var ctx_next = context.addExpr(1);
+            if (ctx_next != null) {
+                Skell.Types.ISkellReturnable next = VisitAddExpr(ctx_next);
+                var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
+                if (result is Skell.Types.Number r && next is Skell.Types.Number n)
                     switch (op.Type) {
                         case SkellLexer.OP_GE:
                             return r >= n;
@@ -354,7 +363,6 @@ namespace Skell.Interpreter
                         case SkellLexer.OP_LT:
                             return r <= n;
                     }
-                }
             }
             return result;
         }
@@ -365,30 +373,35 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellReturnable VisitAddExpr(SkellParser.AddExprContext context)
         {
             int i = 0;
-            Skell.Types.ISkellReturnable result = VisitMulExpr(context.mulExpr(i));
+            var ctx_curr = context.mulExpr(i);
+            Skell.Types.ISkellReturnable result = VisitMulExpr(ctx_curr);
 
             i++;
-            while (context.mulExpr(i) != null) {
-                if (!(result is Skell.Types.Number)) {
+            var ctx_next = context.mulExpr(i);
+            while (ctx_next != null) {
+                if (!(result is Skell.Types.Number))
                     throw new Skell.Problems.UnexpectedType(
-                        new Source(context.mulExpr(i - 1).Start, context.mulExpr(i - 1).Stop),
+                        new Source(context.mulExpr(0).Start, ctx_curr.Stop),
                         result, typeof(Skell.Types.Number)
                     );
-                }
-                Skell.Types.ISkellReturnable next = VisitMulExpr(context.mulExpr(i));
-                if (!(next is Skell.Types.Number)) {
+
+                Skell.Types.ISkellReturnable next = VisitMulExpr(ctx_next);
+                if (!(next is Skell.Types.Number))
                     throw new Skell.Problems.UnexpectedType(
-                        new Source(context.mulExpr(i).Start, context.mulExpr(i).Stop),
+                        new Source(ctx_next.Start, ctx_next.Stop),
                         next, typeof(Skell.Types.Number)
                     );
-                }
-                var op = (Antlr4.Runtime.IToken) context.mulExpr(i).GetLeftSibling().Payload;
+
+                var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_SUB) {
                     result = (Skell.Types.Number) result - (Skell.Types.Number) next;
                 } else {
                     result = (Skell.Types.Number) result + (Skell.Types.Number) next;
                 }
+
                 i++;
+                ctx_curr = ctx_next;
+                ctx_next = context.mulExpr(i);
             }
             return result;
         }
@@ -399,30 +412,34 @@ namespace Skell.Interpreter
         override public Skell.Types.ISkellReturnable VisitMulExpr(SkellParser.MulExprContext context)
         {
             int i = 0;
-            Skell.Types.ISkellReturnable result = VisitUnary(context.unary(i));
+            var ctx_curr = context.unary(i);
+            Skell.Types.ISkellReturnable result = VisitUnary(ctx_curr);
 
             i++;
-            while (context.unary(i) != null) {
-                if (!(result is Skell.Types.Number)) {
+            var ctx_next = context.unary(i);
+            while (ctx_next != null) {
+                if (!(result is Skell.Types.Number))
                     throw new Skell.Problems.UnexpectedType(
-                        new Source(context.unary(i - 1).Start, context.unary(i - 1).Stop),
+                        new Source(context.unary(0).Start, ctx_curr.Stop),
                         result, typeof(Skell.Types.Number)
                     );
-                }
-                Skell.Types.ISkellReturnable next = VisitUnary(context.unary(i));
-                if (!(next is Skell.Types.Number)) {
+
+                Skell.Types.ISkellReturnable next = VisitUnary(ctx_next);
+                if (!(next is Skell.Types.Number))
                     throw new Skell.Problems.UnexpectedType(
-                        new Source(context.unary(i).Start, context.unary(i).Stop),
+                        new Source(ctx_next.Start, ctx_next.Stop),
                         result, typeof(Skell.Types.Number)
                     );
-                }
-                var op = (Antlr4.Runtime.IToken) context.unary(i).GetLeftSibling().Payload;
-                if (op.Type == SkellLexer.OP_DIV) {
+
+                var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
+                if (op.Type == SkellLexer.OP_DIV)
                     result = (Skell.Types.Number) result / (Skell.Types.Number) next;
-                } else {
+                else
                     result = (Skell.Types.Number) result * (Skell.Types.Number) next;
-                }
+
                 i++;
+                ctx_curr = ctx_next;
+                ctx_next = context.unary(i);
             }
             return result;
         }
@@ -432,12 +449,16 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitControl(SkellParser.ControlContext context)
         {
-            if (context.ifControl() != null) {
-                return VisitIfControl(context.ifControl());
-            } else if (context.forControl() != null) {
-                return VisitForControl(context.forControl());
-            }
-            return VisitReturnControl(context.returnControl());
+            var ctx_if = context.ifControl();
+            var ctx_for = context.forControl();
+            var ctx_ret = context.returnControl();
+
+            if (ctx_if != null)
+                return VisitIfControl(ctx_if);
+            else if (ctx_for != null)
+                return VisitForControl(ctx_for);
+
+            return VisitReturnControl(ctx_ret);
         }
 
         /// <summary>
@@ -445,11 +466,13 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitIfControl(SkellParser.IfControlContext context)
         {
-            if (context.ifThenControl() != null) {
-                return VisitIfThenControl(context.ifThenControl());
-            } else {
-                return VisitIfThenElseControl(context.ifThenElseControl());
-            }
+            var ctx_ifthen = context.ifThenControl();
+            var ctx_ifthenelse = context.ifThenElseControl();
+
+            if (ctx_ifthen != null)
+                return VisitIfThenControl(ctx_ifthen);
+            else
+                return VisitIfThenElseControl(ctx_ifthenelse);
         }
 
         /// <summary>
@@ -457,10 +480,13 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
-            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.expression());
-            if (cont.value) {
-                return VisitStatementBlock(context.statementBlock());
-            }
+            var condition = context.expression();
+            var stmts = context.statementBlock();
+
+            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, condition);
+            if (cont.value)
+                return VisitStatementBlock(stmts);
+
             return defaultReturnValue;
         }
 
@@ -469,17 +495,22 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitIfThenElseControl(SkellParser.IfThenElseControlContext context)
         {
+            var ifthen = context.ifThenControl();
+            var condition = ifthen.expression();
+            var ifthenstmts = ifthen.statementBlock();
+            var elsestmts = context.statementBlock();
+            var elif = context.ifControl();
+
             // Evaluate the expression separately
             // Do not use VisitIfThenControl as the statementBlock in the
             // ifThenControl can return a false value
-            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, context.ifThenControl().expression());
-            if (cont.value) {
-                return VisitStatementBlock(context.ifThenControl().statementBlock());
-            } else if (context.statementBlock() != null) {
-                return VisitStatementBlock(context.statementBlock());
-            } else {
-                return VisitIfControl(context.ifControl());
-            }
+            Skell.Types.Boolean cont = Utility.EvaluateExpr(this, condition);
+            if (cont.value)
+                return VisitStatementBlock(ifthenstmts);
+            else if (context.statementBlock() != null)
+                return VisitStatementBlock(elsestmts);
+            else
+                return VisitIfControl(elif);
         }
 
         /// <summary>
@@ -487,16 +518,20 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitForControl(SkellParser.ForControlContext context)
         {
-            var primary = VisitExpression(context.expression());
+            var id = context.IDENTIFIER();
+            var expr = context.expression();
+            var stmts = context.statementBlock();
+
+            var primary = VisitExpression(expr);
             if (primary is Skell.Types.Array arr) {
-                string varName = context.IDENTIFIER().GetText();
+                string varName = id.GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
 
                 state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.Variables.Set(varName, data);
-                    result = VisitStatementBlock(context.statementBlock());
+                    result = VisitStatementBlock(stmts);
                     if (state.has_returned())
                     {
                         logger.Debug("For loop returned with " + result);
@@ -509,7 +544,7 @@ namespace Skell.Interpreter
                 return defaultReturnValue;
             }
             throw new Skell.Problems.UnexpectedType(
-                new Source(context.expression().Start, context.expression().Stop),
+                new Source(expr.Start, expr.Stop),
                 primary, typeof(Skell.Types.Array)
             );
         }
@@ -522,14 +557,15 @@ namespace Skell.Interpreter
         /// </remark>
         override public Skell.Types.ISkellReturnable VisitReturnControl(SkellParser.ReturnControlContext context)
         {
+            var expr = context.expression();
+
             if (!state.can_return()) {
                 logger.Warning("Tried to return from non-returnable area");
                 throw new System.NotImplementedException();
             }
             Skell.Types.ISkellReturnable retval = defaultReturnValue;
-            if (context.expression() != null) {
-                retval = VisitExpression(context.expression());
-            }
+            if (expr != null)
+                retval = VisitExpression(expr);
             state.start_return();
             return retval;
         }
@@ -541,13 +577,16 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitUnary(SkellParser.UnaryContext context)
         {
-            if (context.unary() != null) {
-                var op = (Antlr4.Runtime.IToken) context.unary().GetLeftSibling().Payload;
+            var unary = context.unary();
+            var primary = context.primary();
+
+            if (unary != null) {
+                var op = (Antlr4.Runtime.IToken) unary.GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_NOT) {
-                    Skell.Types.Boolean boolUnary = new Skell.Types.Boolean(VisitUnary(context.unary()).ToString());
+                    Skell.Types.Boolean boolUnary = new Skell.Types.Boolean(VisitUnary(unary).ToString());
                     return !boolUnary;
                 }
-                Skell.Types.Number numUnary = new Skell.Types.Number(VisitUnary(context.unary()).ToString());
+                Skell.Types.Number numUnary = new Skell.Types.Number(VisitUnary(unary).ToString());
                 return -numUnary;
             }
             return VisitPrimary(context.primary());
@@ -560,13 +599,16 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitPrimary(SkellParser.PrimaryContext context)
         {
-            if (context.term() != null) {
-                return VisitTerm(context.term());
-            } else if (context.expression() != null) {
-                return VisitExpression(context.expression());
-            } else {
-                return VisitFnCall(context.fnCall());
-            }
+            var term = context.term();
+            var fnCall = context.fnCall();
+            var expr = context.expression();
+
+            if (term != null)
+                return VisitTerm(term);
+            else if (expr != null)
+                return VisitExpression(expr);
+            else
+                return VisitFnCall(fnCall);
         }
 
         /// <summary>
@@ -577,48 +619,53 @@ namespace Skell.Interpreter
         /// </remark>
         override public Skell.Types.ISkellReturnable VisitFnCall(SkellParser.FnCallContext context)
         {
+            var namespacedIdentifier = context.namespacedIdentifier();
+            var identifier = context.IDENTIFIER();
+
             Skell.Types.ISkellNamedType id;
             bool isNamespaced = false;
-            if (context.namespacedIdentifier() != null) {
-                id = Utility.GetNamespacedIdentifier(context.namespacedIdentifier(), state);
+            if (namespacedIdentifier != null) {
+                id = Utility.GetNamespacedIdentifier(namespacedIdentifier, state);
                 isNamespaced = true;
-            } else {
-                id = state.Names.DefinitionOf(context.IDENTIFIER().GetText());
-            }
-            if (!(id is Skell.Types.Function)) {
+            } else
+                id = state.Names.DefinitionOf(identifier.GetText());
+            
+            if (!(id is Skell.Types.Function))
                 throw new Skell.Problems.UnexpectedType(
                     new Source(context.Start, context.Stop),
                     id, typeof(Skell.Types.Function)
                 );
-            }
+
             var fn = (Skell.Types.Function) id;
+
             var args = new List<Tuple<int, Skell.Types.ISkellType>>();
             int i = 0;
             foreach (var arg in context.expression()) {
                 var a = VisitExpression(arg);
-                if (a is Skell.Types.ISkellType ar) {
+                if (a is Skell.Types.ISkellType ar)
                     args.Add(new Tuple<int, Types.ISkellType>(i, ar));
-                } else {
+                else
                     throw new Skell.Problems.UnexpectedType(
                         new Source(arg.Start, arg.Stop),
                         a, typeof(Skell.Types.ISkellType)
                     );
-                }
+
                 i++;
             }
 
-            if (isNamespaced) {
+            if (isNamespaced)
                 state.DISABLE_GLOBAL_FUNCTIONS(true);
-            }
+
             var result = Utility.Function.ExecuteFunction(
                 this,
                 state,
                 fn,
                 args
             );
-            if (isNamespaced) {
+
+            if (isNamespaced)
                 state.ENABLE_GLOBAL_FUNCTIONS(true);
-            }
+
             return result;
         }
 
@@ -709,19 +756,25 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitValue(SkellParser.ValueContext context)
         {
-            if (context.@object() != null) {
-                return VisitObject(context.@object());
-            }
-            if (context.array() != null) {
-                return VisitArray(context.array());
-            }
-            if (context.STRING() != null) {
-                return Utility.GetString(context.STRING().GetText(), this);
-            }
-            if (context.NUMBER() != null) {
-                return new Skell.Types.Number(context.NUMBER().GetText());
-            }
-            return new Skell.Types.Boolean(context.@bool().GetText());
+            var ctx_ob = context.@object();
+            var ctx_ar = context.array();
+            var ctx_st = context.STRING();
+            var ctx_nm = context.NUMBER();
+            var ctx_bl = context.@bool(); 
+
+            if (ctx_ob != null)
+                return VisitObject(ctx_ob);
+
+            if (ctx_ar != null)
+                return VisitArray(ctx_ar);
+
+            if (ctx_st != null)
+                return Utility.GetString(ctx_st.GetText(), this);
+
+            if (ctx_nm != null)
+                return new Skell.Types.Number(ctx_nm.GetText());
+
+            return new Skell.Types.Boolean(ctx_bl.GetText());
         }
 
         /// <summary>
@@ -729,18 +782,18 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitArray(SkellParser.ArrayContext context)
         {
-            SkellParser.TermContext[] values = context.term();
-            Skell.Types.ISkellType[] contents = new Skell.Types.ISkellType[values.Length];
+            var values = context.term();
+            var contents = new Skell.Types.ISkellType[values.Length];
+
             for (int i = 0; i < values.Length; i++) {
                 var value = VisitTerm(values[i]);
-                if (value is Skell.Types.ISkellType val) {
+                if (value is Skell.Types.ISkellType val)
                     contents[i] = val;
-                } else {
+                else
                     throw new Skell.Problems.UnexpectedType(
                         new Source(values[i].Start, values[i].Stop),
                         value, typeof(Skell.Types.ISkellType)
                     );
-                }
             }
             return new Skell.Types.Array(contents);
         }
@@ -751,21 +804,24 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitObject(SkellParser.ObjectContext context)
         {
-            Skell.Types.String[] keys = new Skell.Types.String[context.pair().Length];
-            Skell.Types.ISkellType[] values = new Skell.Types.ISkellType[context.pair().Length];
+            var pairs = context.pair();
+            var keys = new Skell.Types.String[pairs.Length];
+            var values = new Skell.Types.ISkellType[pairs.Length];
 
-            for (int i = 0; i < context.pair().Length; i++) {
-                var pair = context.pair(i);
-                keys[i] = Utility.GetString(pair.STRING().GetText(), this);
-                var value = VisitTerm(pair.term());
-                if (value is Skell.Types.ISkellType val) {
-                    values[i] = val;
-                } else {
+            for (int i = 0; i < pairs.Length; i++) {
+                var pair = pairs[i];
+                var str = pair.STRING();
+                var val = pair.term();
+
+                keys[i] = Utility.GetString(str.GetText(), this);
+                var value = VisitTerm(val);
+                if (value is Skell.Types.ISkellType data)
+                    values[i] = data;
+                else
                     throw new Skell.Problems.UnexpectedType(
                         new Source(pair.Start, pair.Stop),
                         value, typeof(Skell.Types.ISkellType)
                     );
-                }
             }
 
             return new Skell.Types.Object(keys, values);

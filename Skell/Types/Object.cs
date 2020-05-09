@@ -19,13 +19,12 @@ namespace Skell.Types
         /// </summary>
         public Object(String[] k, ISkellType[] v)
         {
-            if (k.Length != v.Length) {
+            if (k.Length != v.Length)
                 throw new System.IndexOutOfRangeException();
-            }
+
             dict = new Dictionary<String, ISkellType>();
-            for (int i = 0; i < k.Length; i++) {
+            for (int i = 0; i < k.Length; i++)
                 dict.Add(k[i], v[i]);
-            }
         }
 
         public int Count() => dict.Count;
@@ -45,11 +44,10 @@ namespace Skell.Types
         public void Delete(ISkellType index) => dict.Remove((Skell.Types.String) index);
         public ISkellReturnable IndexOf(ISkellType value)
         {
-            foreach (var pair in dict) {
-                if (pair.Value == value) {
+            foreach (var pair in dict)
+                if (pair.Value == value)
                     return pair.Key;
-                }
-            }
+            
             return new Skell.Types.None();
         }
 
@@ -77,18 +75,17 @@ namespace Skell.Types
                 var key = item.Key;
                 var value = item.Value;
                 s.Append(key).Append(" : ").Append(value);
-                if (i != dict.Count - 1) {
+                if (i != dict.Count - 1)
                     s.Append(", ");
-                }
             }
             s.Append(" }");
             return s.ToString();
         }
         public override bool Equals(object obj)
         {
-            if (obj is Object ob) {
+            if (obj is Object ob)
                 return dict.Count == ob.dict.Count && !dict.Except(ob.dict).Any();
-            }
+
             return false;
         }
         public override int GetHashCode() => dict.GetHashCode();

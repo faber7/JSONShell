@@ -38,23 +38,23 @@ namespace Skell
                 .WithParsed(RunWithOptions)
                 .WithNotParsed(e => {
                     if (e.First() is CommandLine.VersionRequestedError ||
-                        e.First() is CommandLine.HelpRequestedError) {
+                        e.First() is CommandLine.HelpRequestedError)
                             return;
-                    }
-                    foreach(var i in e) {
+
+                    foreach(var i in e)
                         Console.WriteLine("Error: " + i);
-                    }
+
                     throw new ArgumentException("Invalid Argument(s).");
                 });
         }
 
         private static void Exit(int exitCode)
         {
-            if (exitCode == 0) {
+            if (exitCode == 0)
                 logger.Information("Exiting normally...");
-            } else {
+            else
                 logger.Information($"Exiting with error code {exitCode}");
-            }
+
             Logger.TerminateConsoleLogger();
             Environment.Exit(exitCode);
         }

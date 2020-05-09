@@ -56,19 +56,18 @@ namespace Skell.Types
         /// </summary>
         public List<Tuple<int, string, ISkellType>> NameArguments(
             List<Tuple<int, ISkellType>> args
-        ) {
-            if (args.Count != argList.Count) {
+        )
+        {
+            if (args.Count != argList.Count)
                 return null;
-            }
 
             var result = new List<Tuple<int, string, ISkellType>>();
-            for (int i = 0; i < args.Count; i++) {
+            for (int i = 0; i < args.Count; i++)
                 result.Add(new Tuple<int, string, ISkellType>(
                     args[i].Item1,
                     argList[i].Item1,
                     args[i].Item2
                 ));
-            }
 
             return result;
         }
@@ -82,9 +81,9 @@ namespace Skell.Types
         )  
         {
             var extra = new List<Tuple<int, Skell.Types.ISkellType>>();
-            for (int i = argList.Count; i < args.Count; i++) {
+            for (int i = argList.Count; i < args.Count; i++)
                 extra.Add(new Tuple<int, Types.ISkellType>(i, args[i].Item3));
-            }
+
             return extra;
         }
 
@@ -99,9 +98,9 @@ namespace Skell.Types
             var ret = new List<Tuple<int, string, Antlr4.Runtime.IToken>>();
             int i = 0;
             foreach (var arg in argList) {
-                if (i < args.Count && !Skell.Interpreter.Utility.MatchType(args[i].Item3, arg.Item2)) {
+                if (i < args.Count && !Skell.Interpreter.Utility.MatchType(args[i].Item3, arg.Item2))
                     ret.Add(new Tuple<int, string, Antlr4.Runtime.IToken>(i, arg.Item1, arg.Item2));
-                }
+                    
                 i++;
             }
             return ret;

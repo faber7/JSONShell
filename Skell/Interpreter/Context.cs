@@ -22,9 +22,8 @@ namespace Skell.Interpreter
         public static Context<T> Copy(Context<T> context)
         {
             var ct = new Context<T>(context.name);
-            foreach (var pair in context.pairs) {
+            foreach (var pair in context.pairs)
                 ct.Set(pair.Key, pair.Value);
-            }
             return ct;
         }
 
