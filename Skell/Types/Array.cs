@@ -14,6 +14,12 @@ namespace Skell.Types
             contents = new List<ISkellType>();
         }
 
+        public Array(ISkellType value)
+        {
+            contents = new List<ISkellType>();
+            contents.Add(value);
+        }
+
         public Array(ISkellType[] values)
         {
             contents = new List<ISkellType>();
@@ -35,7 +41,7 @@ namespace Skell.Types
 
         public void Replace(ISkellType index, ISkellType value)
         {
-            contents[((Number) value).integerValue] = value;
+            contents[((Number) index).integerValue] = value;
         }
 
         /// <summary>
