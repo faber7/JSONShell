@@ -10,6 +10,7 @@ namespace Skell.Library
 
             var libraries = new List<Skell.Types.Namespace>();
             libraries.Add((new Skell.Library.Indexable()).AsNamespace());
+            libraries.Add((new Skell.Library.Name()).AsNamespace());
 
             foreach (var library in libraries) {
                 library.parent = system;
