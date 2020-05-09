@@ -712,10 +712,14 @@ namespace Skell.Interpreter
             }
             
             // term : namespacedIdentifier ;
-            if (ctx_nid != null)
-                // return the value, do not call it if it is a function
-                // as it is handled as in member access
-                return Utility.GetNamespacedIdentifier(ctx_nid, state);
+            if (ctx_nid != null) {
+                var ret = Utility.GetNamespacedIdentifier(ctx_nid, state);
+                if (ret is Skell.Types.Function func)
+                    return Utility.Function.ExecuteNamespacedFunction(
+                        this, state, func, null
+                    );
+                return ret;
+            }
 
             // term : term LSQR (STRING | NUMBER | IDENTIFIER) RSQR ;
             // note : could be a function call, or a member access
