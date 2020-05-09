@@ -42,7 +42,12 @@ namespace Skell.Interpreter
             )
             {
                 Skell.Types.ISkellReturnable returnValue;
+                if (unnamedArgs == null) {
+                    unnamedArgs = new List<Tuple<int, Types.ISkellType>>();
+                }
                 var lambda = function.SelectLambda(unnamedArgs);
+                if (lambda == null)
+                    throw new Skell.Problems.InvalidFunctionCall(function, unnamedArgs);
                 var args = lambda.NameArguments(unnamedArgs);
 
                 string argString = "";
@@ -79,6 +84,28 @@ namespace Skell.Interpreter
 
                 return returnValue;
             }
+
+            /// <summary>
+            /// Sets up, executes, and then cleans up namespaced function calls
+            /// </summary>
+            public static Skell.Types.ISkellReturnable ExecuteNamespacedFunction(
+                SkellBaseVisitor<Skell.Types.ISkellReturnable> visitor,
+                State state,
+                Skell.Types.Function function,
+                List<Tuple<int, Skell.Types.ISkellType>> unnamedArgs
+            )
+            {
+                state.DISABLE_GLOBAL_FUNCTIONS(true);
+                var result = Utility.Function.ExecuteFunction(
+                    visitor,
+                    state,
+                    function,
+                    null
+                );
+                state.ENABLE_GLOBAL_FUNCTIONS(false);
+
+                return result;
+            }
         }
 
         /// <summary>
@@ -107,17 +134,147 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// Retrieve the index of an indexing operation
+        /// Safely set the value of an indexed variable with an index
         /// </summary>
-        public static Skell.Types.ISkellType GetIndexFromPrimary(SkellParser.PrimaryContext primary, Visitor visitor, State state)
+        /// <remark>
+        /// source should refer to the index' source
+        /// </remark>
+        public static void SetIndex(
+            Source source,
+            Skell.Types.ISkellIndexable indexable,
+            Skell.Types.ISkellType index,
+            Skell.Types.ISkellType value
+        )
         {
-            if (primary.STRING() != null) {
-                return Utility.GetString(primary.STRING().GetText(), visitor);
-            } else if (primary.NUMBER() != null) {
-                return new Skell.Types.Number(primary.NUMBER().GetText());
-            } else {
-                return state.Variables.Get(primary.IDENTIFIER().GetText());
-            }
+            if (indexable is Skell.Types.Array)
+                if (index is Skell.Types.Number num && num.isInt)
+                    indexable.Replace(index, value);
+                else
+                    throw new Skell.Problems.UnexpectedType(
+                        source,
+                        index,
+                        typeof(Skell.Types.Number)
+                    );
+            else
+                if (index is Skell.Types.String)
+                    indexable.Replace(index, value);
+                else
+                    throw new Skell.Problems.UnexpectedType(
+                        source,
+                        index,
+                        typeof(Skell.Types.String)
+                    );
+        }
+
+        /// <summary>
+        /// Safely index into an indexable object, checking types
+        /// Source should be source of index
+        /// </summary>
+        public static Skell.Types.ISkellType GetIndex(
+            Source source,
+            Skell.Types.ISkellIndexable indexable,
+            Skell.Types.ISkellType index
+        )
+        {
+            if (indexable is Skell.Types.Array)
+                if (!(index is Skell.Types.Number num && num.isInt))
+                    throw new Skell.Problems.UnexpectedType(
+                        source,
+                        index,
+                        typeof(Skell.Types.Number)
+                    );
+            else
+                if (!(index is Skell.Types.String))
+                    throw new Skell.Problems.UnexpectedType(
+                        source,
+                        index,
+                        typeof(Skell.Types.String)
+                    );
+
+            if (indexable.ListIndices().Contains(index))
+                return indexable.GetMember(index);
+            else
+                throw new Skell.Problems.IndexOutOfRange(source, index, indexable);
+        }
+
+        /// <summary>
+        /// Returns the value pointed to by the name, without calling it
+        /// </summary>
+        public static Skell.Types.ISkellNamedType GetIdentifer(
+            Source src, string name,
+            State state
+        )
+        {
+            if (state.Names.Available(name))
+                throw new Skell.Problems.UndefinedIdentifer(
+                    src,
+                    name
+                );
+                    
+            return state.Names.DefinitionOf(name);
+        }
+
+        /// <summary>
+        /// Wrapper over GetIdentifier, calling the returned value with no args if it is a function
+        /// </summary>
+        public static Skell.Types.ISkellType GetIdentifer(
+            Source src, string name,
+            Visitor visitor, State state
+        )
+        {
+            var named = Utility.GetIdentifer(src, name, state);
+            if (named is Skell.Types.Function fn) {
+                var result = Utility.Function.ExecuteFunction(
+                        visitor,
+                        state,
+                        fn,
+                        null
+                    );
+                    return Utility.GetSkellType(src, result);
+            } else 
+                throw new Skell.Problems.UnexpectedType(
+                    src, named,
+                    typeof(Skell.Types.ISkellType),
+                    typeof(Skell.Types.Function)
+                );
+            
+        }
+
+        /// <summary>
+        /// Small wrapper over Utility.GetNamespacedIdentifier to call the return value if it is a function
+        /// </summary>
+        public static Skell.Types.ISkellReturnable GetNamespacedIdentifier(
+            SkellParser.NamespacedIdentifierContext context,
+            Visitor visitor,
+            State state
+        )
+        {
+            var named = Utility.GetNamespacedIdentifier(context, state);
+
+            if (named is Skell.Types.Function fn)
+                return Utility.Function.ExecuteNamespacedFunction(
+                    visitor,
+                    state,
+                    fn,
+                    null
+                );
+            
+            return named;
+        }
+
+        /// <summary>
+        /// Error out if the returnable is None
+        /// </summary>
+        public static Skell.Types.ISkellType GetSkellType(Source src, Skell.Types.ISkellReturnable returnable)
+        {
+            if (returnable is Skell.Types.ISkellType rdata)
+                return rdata;
+            else
+                throw new Skell.Problems.UnexpectedType(
+                    src,
+                    returnable,
+                    typeof(Skell.Types.ISkellType)
+                );
         }
 
         /// <summary>

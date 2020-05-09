@@ -76,7 +76,7 @@ namespace Skell.Types
                     return lambda;
                 }
             }
-            throw new Skell.Problems.InvalidFunctionCall(this, unnamedArgs);
+            return null;
         }
     }
 }

@@ -41,9 +41,7 @@ mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
 unary : (OP_NOT | OP_SUB) unary
       | primary
       ;
-primary : fnCall
-        | primary LSQR (STRING | NUMBER | IDENTIFIER) RSQR
-        | term
+primary : (term | fnCall)
         | LPAREN expression RPAREN
         ;
 
@@ -53,6 +51,7 @@ fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
 term : value
      | IDENTIFIER
      | namespacedIdentifier
+     | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
      ;
 
 namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;

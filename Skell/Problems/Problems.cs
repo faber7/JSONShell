@@ -32,12 +32,12 @@ namespace Skell.Problems
     {
         public UnexpectedType(Source src, Skell.Types.ISkellInternal got, System.Type expected)
         {
-            Log.Error($"Expected {expected}, got {got} of type {got.GetType()}");
+            Log.Error($"At {src}, expected {expected}, got {got} of type {got.GetType()}");
         }
 
         public UnexpectedType(Source src, Skell.Types.ISkellInternal got, System.Type expected1, System.Type expected2)
         {
-            Log.Error($"Expected {expected1} or {expected2}, got {got} of type {got.GetType()}");
+            Log.Error($"At {src}, expected {expected1} or {expected2}, got {got} of type {got.GetType()}");
         }
     }
 
@@ -45,8 +45,7 @@ namespace Skell.Problems
     {
         public IndexOutOfRange(Source src, Skell.Types.ISkellType index, Skell.Types.ISkellIndexable obj)
         {
-            
-            Log.Error($"Expected an index from {obj.ListIndices()} at {src}, got {index}");
+            Log.Error($"Expected an index from {new Skell.Types.Array(obj.ListIndices())} at {src}, got {index}");
         }
     }
 

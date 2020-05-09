@@ -122,6 +122,8 @@ namespace Skell.Interpreter
                 input = input + inp + '\n';
                 if (!continueInput) {
                     Interprete(input);
+                    input = "";
+                    continueInput = false;
                     Console.Write("\n> ");
                 }
             }
