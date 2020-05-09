@@ -23,13 +23,15 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// program : statement+ ;
+        /// program : programStatement+ ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitProgram(SkellParser.ProgramContext context)
         {
+            var statements = context.programStatement();
+
             Skell.Types.ISkellReturnable lastResult = defaultReturnValue;
-            foreach (var statement in context.statement()) {
-                lastResult = VisitStatement(statement);
+            foreach (var statement in statements) {
+                lastResult = VisitProgramStatement(statement);
                 if (lastResult is Skell.Types.String str) {
                     logger.Debug($"Result: \"{lastResult}\" of type {lastResult.GetType()}");
                 } else if (lastResult is Skell.Types.Array arr) {
@@ -44,9 +46,29 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
+        /// programStatement : namespaceLoad EOL
+        ///                  | namespace EOL
+        ///                  | statement
+        ///                  ;
+        /// </summary>
+        override public Skell.Types.ISkellReturnable VisitProgramStatement(SkellParser.ProgramStatementContext context)
+        {
+            var ctx_nsLoad = context.namespaceLoad();
+            var ctx_ns = context.@namespace();
+            var ctx_stmt = context.statement();
+
+            if (ctx_nsLoad != null)
+                return VisitNamespaceLoad(ctx_nsLoad);
+            else if (ctx_ns != null) {
+                var ns = new Skell.Types.Namespace(".", ctx_ns, this);
+                state.Namespaces.Register(ns);
+                return defaultReturnValue;
+            } else
+                return VisitStatement(ctx_stmt);
+        }
+
+        /// <summary>
         /// statement : EOL
-        ///           | namespaceLoad EOL
-        ///           | namespace EOL
         ///           | programExec EOL
         ///           | declaration EOL
         ///           | expression EOL
@@ -55,19 +77,19 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitStatement(SkellParser.StatementContext context)
         {
-            if (context.namespaceLoad() != null) {
-                return VisitNamespaceLoad(context.namespaceLoad());
-            } else if (context.@namespace() != null) {
-                var ns = new Skell.Types.Namespace(".", context.@namespace(), this);
-                state.Namespaces.Register(ns);
-            } else if (context.expression() != null) {
-                return VisitExpression(context.expression());
-            } else if (context.control() != null) {
-                return VisitControl(context.control());
-            } else if (context.declaration() != null) {
-                return VisitDeclaration(context.declaration());
-            } else if (context.programExec() != null) {
-                return VisitProgramExec(context.programExec());
+            var ctx_progExec = context.programExec();
+            var ctx_decl = context.declaration();
+            var ctx_expr = context.expression();
+            var ctx_ctrl = context.control();
+
+            if (ctx_progExec != null) {
+                return VisitProgramExec(ctx_progExec);
+            } else if (ctx_decl != null) {
+                return VisitDeclaration(ctx_decl);
+            } else if (ctx_expr != null) {
+                return VisitExpression(ctx_expr);
+            } else if (ctx_ctrl != null) {
+                return VisitControl(ctx_ctrl);
             }
             return defaultReturnValue;
         }

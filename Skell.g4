@@ -1,10 +1,12 @@
 grammar Skell;
 
 // Language rules
-program : statement+ ; // start rule
+program : programStatement+ ; // start rule
+programStatement : namespaceLoad EOL
+                 | namespace EOL
+                 | statement
+                 ;
 statement : EOL
-          | namespaceLoad EOL
-          | namespace EOL
           | programExec EOL
           | declaration EOL
           | expression EOL

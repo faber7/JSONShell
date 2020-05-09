@@ -38,6 +38,12 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitProgram([NotNull] SkellParser.ProgramContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.programStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitProgramStatement([NotNull] SkellParser.ProgramStatementContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
