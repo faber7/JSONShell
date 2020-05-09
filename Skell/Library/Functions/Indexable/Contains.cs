@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Skell.Types;
 
-namespace Skell.Library.Functions.Data
+namespace Skell.Library.Functions.Indexable
 {
     public class Contains : Skell.Types.BuiltinLambda
     {
