@@ -64,7 +64,7 @@ namespace Skell.Types
         /// Allows insertion at an index.
         /// </summary>
         /// <remark>
-        /// Insertion at Count + 1 => appending to the array
+        /// Insertion at Count => appending to the array
         /// </remark>
         public void Insert(ISkellType index, ISkellType value)
         {

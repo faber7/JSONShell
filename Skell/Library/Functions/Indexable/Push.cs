@@ -21,9 +21,9 @@ namespace Skell.Library.Functions.Indexable
             var value = args.Skip(1).First().Item3;
 
             if (indexable is Skell.Types.Array arr)
-                arr.Insert(new Skell.Types.Number(0), value);
+                arr.Insert(arr.Count(), value);
             else if (indexable is Skell.Types.Property prop && prop.value is Skell.Types.Array array) {
-                array.Insert(new Skell.Types.Number(0), value);
+                array.Insert(array.Count(), value);
                 prop.value = new Skell.Types.Array(array.ListValues());
             }
             
