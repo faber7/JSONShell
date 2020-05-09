@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Skell.Generated;
+using Skell.Interpreter;
 
 namespace Skell.Types
 {
@@ -49,7 +50,7 @@ namespace Skell.Types
 
     public abstract class BuiltinLambda : Lambda
     {
-        public abstract ISkellReturnable Execute(List<Tuple<int, string, ISkellType>> args);
+        public abstract ISkellReturnable Execute(State state,List<Tuple<int, string, ISkellType>> args);
 
         override public string ToString()
         {

@@ -13,7 +13,7 @@ namespace Skell.Library.Functions
             argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
         }
 
-        public override ISkellReturnable Execute(List<Tuple<int, string, ISkellType>> args)
+        public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
         {
             return new Skell.Types.String(args.First().Item3.ToString());
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Skell.Interpreter;
 using Skell.Types;
 
 namespace Skell.Library.Functions.Indexable
@@ -14,7 +15,7 @@ namespace Skell.Library.Functions.Indexable
             argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
         }
 
-        public override ISkellReturnable Execute(List<Tuple<int, string, Skell.Types.ISkellType>> args)
+        public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
         {
             var indexable1 = args.First().Item3;
             var value = args.Skip(1).First().Item3;

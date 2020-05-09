@@ -70,7 +70,7 @@ namespace Skell.Interpreter
                 if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
                 else
-                    returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute(args);
+                    returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute(state, args);
 
                 //cleanup
                 if (state.has_returned()) {
