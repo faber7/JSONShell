@@ -15,6 +15,7 @@ namespace Skell.Library
             var libraries = new List<Skell.Types.Namespace>();
             libraries.Add((new Skell.Library.Indexable()).AsNamespace());
             libraries.Add((new Skell.Library.Name()).AsNamespace());
+            libraries.Add((new Skell.Library.Directory()).AsNamespace());
 
             foreach (var library in libraries) {
                 library.parent = system;
@@ -23,25 +24,25 @@ namespace Skell.Library
 
             var printfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Print).Name);
             printfn.AddBuiltinLambda(new Skell.Library.Functions.Print());
-            system.Set(typeof(Skell.Library.Functions.Print).Name, printfn);
+            system.Set(printfn.name, printfn);
 
             system.Set("Path", getPath());
 
             var addtopathfn = new Skell.Types.Function(typeof(Skell.Library.Functions.AddToPath).Name);
             addtopathfn.AddBuiltinLambda(new Skell.Library.Functions.AddToPath());
-            system.Set(typeof(Skell.Library.Functions.AddToPath).Name, addtopathfn);
+            system.Set(addtopathfn.name, addtopathfn);
 
             var removefrompathfn = new Skell.Types.Function(typeof(Skell.Library.Functions.RemoveFromPath).Name);
             removefrompathfn.AddBuiltinLambda(new Skell.Library.Functions.RemoveFromPath());
-            system.Set(typeof(Skell.Library.Functions.RemoveFromPath).Name, removefrompathfn);
+            system.Set(removefrompathfn.name, removefrompathfn);
 
             var setpathfn = new Skell.Types.Function(typeof(Skell.Library.Functions.SetPath).Name);
             setpathfn.AddBuiltinLambda(new Skell.Library.Functions.SetPath());
-            system.Set(typeof(Skell.Library.Functions.SetPath).Name, setpathfn);
+            system.Set(setpathfn.name, setpathfn);
 
             var execfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Exec).Name);
             execfn.AddBuiltinLambda(new Skell.Library.Functions.Exec());
-            system.Set(typeof(Skell.Library.Functions.Exec).Name, execfn);
+            system.Set(execfn.name, execfn);
 
             return system;
         }
