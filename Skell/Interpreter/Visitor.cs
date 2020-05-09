@@ -16,10 +16,10 @@ namespace Skell.Interpreter
 
         private State state;
 
-        public Visitor()
+        public Visitor(State st)
         {
             logger = Log.ForContext<Visitor>();
-            state = new State();
+            state = st;
         }
 
         /// <summary>

@@ -50,11 +50,14 @@ namespace Skell.Interpreter
         private ITokenSource lexer;
         private SkellParser parser;
         private readonly Visitor visitor;
+        private State state;
 
         public Interpreter()
         {
             logger = Log.ForContext<Interpreter>();
-            visitor = new Visitor();
+            state = new State();
+            Skell.Library.Loader.Load(state);
+            visitor = new Visitor(state);
         }
 
         public int Interprete(string src)
