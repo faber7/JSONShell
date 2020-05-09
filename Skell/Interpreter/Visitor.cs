@@ -702,47 +702,6 @@ namespace Skell.Interpreter
                     term, typeof(Skell.Types.ISkellIndexable)
                 );
             }
-            /*
-            ctx_id = ctx_term.IDENTIFIER();
-            ctx_nid = ctx_term.namespacedIdentifier();
-            var src_term = new Source(ctx_term.Start, ctx_term.Stop);
-            Skell.Types.ISkellNamedType named;
-            if (ctx_id != null || ctx_nid != null) {
-                // if it is an identifier/namespaced id, check if it refers to an indexable or a function
-                if (ctx_id != null)
-                    named = Utility.GetIdentifer(src_term, ctx_id.GetText(), state);
-                else
-                    named = Utility.GetNamespacedIdentifier(ctx_nid, state);
-                    
-                var args = new List<Tuple<int, Skell.Types.ISkellType>>();
-                args.Add(new Tuple<int, Types.ISkellType>(0, new Skell.Types.Array(index)));
-
-                if (named is Skell.Types.ISkellIndexable indexable)
-                    return Utility.GetIndex(src, indexable, index);
-                else if (named is Skell.Types.Function fn)
-                    if (ctx_id != null)
-                        return Utility.Function.ExecuteFunction(this, state, fn, args);
-                    else
-                        return Utility.Function.ExecuteNamespacedFunction(this, state, fn, args);
-                else
-                    throw new Skell.Problems.UnexpectedType(
-                        src_term, named,
-                        typeof(Skell.Types.ISkellIndexable),
-                        typeof(Skell.Types.Function)
-                    );
-            } else {
-                // term is another term => member access => no chance of it being a function
-                var term = VisitTerm(ctx_term);
-                if (term is Skell.Types.ISkellIndexable indexable) {
-                    return Utility.GetIndex(src, indexable, index);
-                } else {
-                    throw new Skell.Problems.UnexpectedType(
-                        src_term,
-                        term, typeof(Skell.Types.ISkellIndexable)
-                    );
-                }
-            }
-            */
         }
 
         /// <summary>
