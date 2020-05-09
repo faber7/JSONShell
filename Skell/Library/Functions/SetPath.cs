@@ -29,7 +29,8 @@ namespace Skell.Library.Functions
                         arrPath.Insert(arrPath.Count(), (Skell.Types.String) strPath);
                 }
 
-                system.Set("Path", new Skell.Types.Array(arrPath.ToArray()));
+                var pathprop = (Skell.Types.Property) system.Get("Path");
+                pathprop.value = new Skell.Types.Array(arrPath.ToArray());
 
                 var pathstr = string.Join(':', arrPath);
                 Environment.SetEnvironmentVariable("PATH", pathstr);

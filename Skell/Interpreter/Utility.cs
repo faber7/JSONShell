@@ -65,7 +65,13 @@ namespace Skell.Interpreter
                 state.ENTER_RETURNABLE_CONTEXT($"{function.name}{argString}");
                 // set up state with arguments in context
                 foreach (var arg in args)
-                    state.Variables.Set(arg.Item2, arg.Item3);
+                    if (arg.Item3 is Skell.Types.Property prop)
+                        if (lambda is Skell.Types.BuiltinLambda)
+                            state.Variables.Set(arg.Item2, prop);
+                        else
+                            state.Variables.Set(arg.Item2, prop.value);
+                    else 
+                        state.Variables.Set(arg.Item2, arg.Item3);
                 
                 if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
@@ -437,6 +443,8 @@ namespace Skell.Interpreter
         public static Skell.Types.Boolean EvaluateExpr(Visitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
+            if (expressionResult is Skell.Types.Property prop)
+                expressionResult = prop.value;
             if (!(expressionResult is Skell.Types.Boolean))
                 throw new Skell.Problems.UnexpectedType(
                     new Source(context.Start, context.Stop),

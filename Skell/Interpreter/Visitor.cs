@@ -85,9 +85,12 @@ namespace Skell.Interpreter
                 return VisitProgramExec(ctx_progExec);
             else if (ctx_decl != null)
                 return VisitDeclaration(ctx_decl);
-            else if (ctx_expr != null)
-                return VisitExpression(ctx_expr);
-            else if (ctx_ctrl != null)
+            else if (ctx_expr != null) {
+                var ret = VisitExpression(ctx_expr);
+                if (ret is Skell.Types.Property)
+                    return ((Skell.Types.Property) ret).value;
+                return ret;
+            } else if (ctx_ctrl != null)
                 return VisitControl(ctx_ctrl);
 
             return defaultReturnValue;
@@ -231,6 +234,8 @@ namespace Skell.Interpreter
                     string name = ctx_id.GetText();
                     if (ctx_expression != null) {
                         Skell.Types.ISkellReturnable expression = VisitExpression(ctx_expression);
+                        if (expression is Skell.Types.Property prop)
+                            expression = prop.value;
                         Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
 
                         if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.ISkellType)))
@@ -523,6 +528,8 @@ namespace Skell.Interpreter
             var stmts = context.statementBlock();
 
             var primary = VisitExpression(expr);
+            if (primary is Skell.Types.Property prop)
+                primary = prop.value;
             if (primary is Skell.Types.Array arr) {
                 string varName = id.GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
@@ -567,6 +574,8 @@ namespace Skell.Interpreter
             if (expr != null)
                 retval = VisitExpression(expr);
             state.start_return();
+            if (retval is Skell.Types.Property prop)
+                return prop.value;
             return retval;
         }
 
@@ -605,9 +614,12 @@ namespace Skell.Interpreter
 
             if (term != null)
                 return VisitTerm(term);
-            else if (expr != null)
-                return VisitExpression(expr);
-            else
+            else if (expr != null) {
+                var ret = VisitExpression(expr);
+                if (ret is Skell.Types.Property prop)
+                    return prop.value;
+                return ret;
+            } else
                 return VisitFnCall(fnCall);
         }
 

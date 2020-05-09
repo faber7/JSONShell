@@ -20,11 +20,13 @@ namespace Skell.Library.Functions
             var path = args.First().Item3;
             var system = state.Namespaces.Get(typeof(Skell.Library.System).Name);
 
-            if (path is Skell.Types.String strPath && system.Get("Path") is Skell.Types.Array arrPath) 
+            var arr = (Skell.Types.Property) system.Get("Path");
+            var arrPath = (Skell.Types.Array) arr.value;
+
+            if (path is Skell.Types.String strPath) 
                 if (arrPath.IndexOf(strPath) is Skell.Types.ISkellType index) {
                     arrPath.Delete(index);
-                    var pathstr = string.Join(':', arrPath);
-                    Environment.SetEnvironmentVariable("PATH", pathstr);
+                    arr.value = new Skell.Types.Array(arrPath.ListValues());
                 }
             
             return new Skell.Types.None();

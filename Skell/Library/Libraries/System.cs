@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Serilog;
 
 namespace Skell.Library
 {
@@ -40,11 +42,19 @@ namespace Skell.Library
             return system;
         }
 
-        private Skell.Types.Array getPath()
+        private Skell.Types.Property getPath()
         {
             var sysPath = Environment.GetEnvironmentVariable("PATH");
             var array = sysPath.Split(':').Select((str) => new Skell.Types.String(str)).ToArray();
-            return new Skell.Types.Array(array);
+            var skellArr = new Skell.Types.Array(array);
+            var prop = new Skell.Types.Property((arr) => {
+                var array = ((Skell.Types.Array) arr).ListValues().Select((str) => ((Skell.Types.String) str).contents);
+                var pathstr = string.Join(':', array);
+                Environment.SetEnvironmentVariable("PATH", pathstr);
+                Log.Verbose($"Set $PATH: {pathstr}");
+            });
+            prop.value = skellArr;
+            return prop;
         }
     }
 }

@@ -22,6 +22,10 @@ namespace Skell.Library.Functions.Indexable
 
             if (indexable is Skell.Types.Array arr)
                 arr.Insert(new Skell.Types.Number(0), value);
+            else if (indexable is Skell.Types.Property prop && prop.value is Skell.Types.Array array) {
+                array.Insert(new Skell.Types.Number(0), value);
+                prop.value = new Skell.Types.Array(array.ListValues());
+            }
             
             return new Skell.Types.None();
         }

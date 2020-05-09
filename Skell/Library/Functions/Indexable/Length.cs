@@ -17,6 +17,8 @@ namespace Skell.Library.Functions.Indexable
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
         {
             var value = args.First().Item3;
+            if (value is Skell.Types.Property prop)
+                value = prop.value;
 
             if (value is Skell.Types.ISkellIndexable indexable)
                 return indexable.Count();

@@ -49,6 +49,28 @@ namespace Skell.Types
         ISkellReturnable IndexOf(ISkellType value);
     }
 
+    // Only for builtin library use, so appears as a namespaced identifier only
+    public class Property : Skell.Types.ISkellType
+    {
+        public Action<ISkellType> action;
+        private ISkellType _value;
+
+        public ISkellType value
+        {
+            get { return _value; }
+            set
+            {
+                _value = value;
+                action(_value);
+            }
+        }
+
+        public Property(Action<ISkellType> onChange)
+        {
+            action = onChange;
+        }
+    }
+
     /// <summary>
     /// Represents executable lambdas(both user-defined and builtin)
     /// </summary>
