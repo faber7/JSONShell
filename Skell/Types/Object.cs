@@ -30,9 +30,20 @@ namespace Skell.Types
         public Number Count() => new Number(dict.Count);
 
         public ISkellType[] ListIndices() => dict.Keys.ToArray();
+        public ISkellType[] ListValues() => dict.Values.ToArray();
+
         public bool Exists(ISkellType index)
         {
             return (index is String s && dict.ContainsKey(s));
+        }
+
+        public bool IsHomogeneous(Specifier type)
+        {
+            foreach (var pair in dict)
+                if (!Skell.Interpreter.Utility.MatchType(pair.Value, type))
+                    return false;
+            
+            return true;
         }
 
         public ISkellType GetMember(ISkellType index) => dict[(Skell.Types.String) index];

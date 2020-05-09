@@ -38,7 +38,9 @@ namespace Skell.Types
     {
         Number Count();
 
+        bool IsHomogeneous(Specifier type);
         ISkellType[] ListIndices();
+        ISkellType[] ListValues();
         bool Exists(ISkellType index);
         ISkellType GetMember(ISkellType index);
         void Replace(ISkellType index, ISkellType value);

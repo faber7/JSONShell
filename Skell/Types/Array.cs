@@ -29,7 +29,15 @@ namespace Skell.Types
 
         public Number Count() => new Number(contents.Count);
 
-        public ISkellType[] ListIndices() => contents.ToArray();
+        public ISkellType[] ListIndices()
+        {
+            return Enumerable.Range(0, contents.Count)
+                    .ToList()
+                    .Select((i) => new Skell.Types.Number(i))
+                    .ToArray();
+        }
+
+        public ISkellType[] ListValues() => contents.ToArray();
 
         public bool Exists(ISkellType index)
         {
@@ -41,6 +49,15 @@ namespace Skell.Types
         public void Replace(ISkellType index, ISkellType value)
         {
             contents[((Number) index).integerValue] = value;
+        }
+
+        public bool IsHomogeneous(Specifier type)
+        {
+            foreach (var element in contents)
+                if (!Skell.Interpreter.Utility.MatchType(element, type))
+                    return false;
+            
+            return true;
         }
 
         /// <summary>
