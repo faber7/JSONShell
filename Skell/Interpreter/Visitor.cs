@@ -45,20 +45,16 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// programStatement : namespaceLoad EOL
-        ///                  | namespace EOL
+        /// programStatement : namespace EOL
         ///                  | statement
         ///                  ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitProgramStatement(SkellParser.ProgramStatementContext context)
         {
-            var ctx_nsLoad = context.namespaceLoad();
             var ctx_ns = context.@namespace();
             var ctx_stmt = context.statement();
 
-            if (ctx_nsLoad != null)
-                return VisitNamespaceLoad(ctx_nsLoad);
-            else if (ctx_ns != null) {
+            if (ctx_ns != null) {
                 var ns = new Skell.Types.Namespace(".", ctx_ns, this);
                 state.Namespaces.Register(ns);
                 return defaultReturnValue;
@@ -68,6 +64,7 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// statement : EOL
+        ///           | namespaceLoad EOL
         ///           | programExec EOL
         ///           | declaration EOL
         ///           | expression EOL
@@ -76,12 +73,15 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitStatement(SkellParser.StatementContext context)
         {
+            var ctx_nsLoad = context.namespaceLoad();
             var ctx_progExec = context.programExec();
             var ctx_decl = context.declaration();
             var ctx_expr = context.expression();
             var ctx_ctrl = context.control();
 
-            if (ctx_progExec != null)
+            if (ctx_nsLoad != null)
+                return VisitNamespaceLoad(ctx_nsLoad);
+            else if (ctx_progExec != null)
                 return VisitProgramExec(ctx_progExec);
             else if (ctx_decl != null)
                 return VisitDeclaration(ctx_decl);
