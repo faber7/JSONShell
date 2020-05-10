@@ -19,6 +19,11 @@ namespace Skell.Types
             name = n;
         }
 
+        public Skell.Types.String[] GetStringDefinitions()
+        {
+            return definitions.Select((lambda) => new Skell.Types.String(lambda.argString)).ToArray();
+        }
+
         public void AddUserDefinedLambda(
             SkellParser.FunctionContext ctx
         )

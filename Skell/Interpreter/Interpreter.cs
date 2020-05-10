@@ -60,7 +60,7 @@ namespace Skell.Interpreter
             visitor = new Visitor(state);
         }
 
-        public int Interprete(string src)
+        public int Interprete(string src, bool program)
         {
             try {
                 logger.Verbose($"Source:\n{src.Trim()}");
@@ -73,11 +73,39 @@ namespace Skell.Interpreter
                 };
                 parser.RemoveErrorListeners();
                 parser.AddErrorListener(new SyntaxErrorListener());
-                IParseTree tree = parser.program(); // Since program is our start rule
+                IParseTree tree;
+                
+                // select the appropriate start rule
+                if (program)
+                    tree = parser.program();
+                else
+                    tree = parser.statement();
+
                 logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
 
                 visitor.tokenSource = lexer.InputStream;
-                visitor.Visit(tree);
+                var ret = visitor.Visit(tree);
+
+                if (!program)
+                    if (ret is Skell.Types.Function fn) {
+                        Console.Write($"Function {fn.name} has the following definitions:\n");
+                        var defns = fn.GetStringDefinitions();
+                        for (int i = 0; i < defns.Length; i++) {
+                            Console.Write($"\t{defns[i]}");
+                            if (i + 1 != defns.Length)
+                                Console.Write("\n");
+                        }
+                    } else if (ret is Skell.Types.Namespace ns) {
+                        Console.Write($"Namespace {ns.GetFullName()} has the following definitions:\n");
+                        var defns = ns.ListNames();
+                        for (int i = 0; i < defns.Length; i++) {
+                            Console.Write($"\t{defns[i]}");
+                            if (i + 1 != defns.Length)
+                                Console.Write("\n");
+                        }
+                    } else if (ret is Skell.Types.ISkellType data) {
+                        Console.Write($"{data}");
+                    }
             } catch (ParseFailure e) {
                 logger.Fatal(e.Message);
                 return 1;
@@ -92,7 +120,7 @@ namespace Skell.Interpreter
             if (inputStr.Last() != '\n') {
                 inputStr += '\n';
             }
-            return Interprete(inputStr);
+            return Interprete(inputStr, true);
         }
 
         public int RunPrompt()
@@ -124,7 +152,7 @@ namespace Skell.Interpreter
 
                 input = input + inp + '\n';
                 if (!continueInput) {
-                    Interprete(input);
+                    Interprete(input, false);
                     input = "";
                     continueInput = false;
                     Console.Write("\n> ");
