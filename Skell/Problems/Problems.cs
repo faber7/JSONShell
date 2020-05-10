@@ -8,23 +8,24 @@ namespace Skell.Problems
 {
     abstract class Exception : System.Exception
     {
+        public new string Message;
     }
 
     internal class UndefinedIdentifer : Exception
     {
         public UndefinedIdentifer(string name)
         {
-            Log.Error($"Tried to access {name}");
+            Message = $"Tried to access {name}";
         }
 
         public UndefinedIdentifer(Source src, string name)
         {
-            Log.Error($"Identifier {name} at {src} does not exist");
+            Message = $"Identifier {name} at {src} does not exist";
         }
 
         public UndefinedIdentifer(Source src, string name, System.Type expected)
         {
-            Log.Error($"Identifier {name} at {src} does not exist, expected {expected}");
+            Message = $"Identifier {name} at {src} does not exist, expected {expected}";
         }
     }
 
@@ -32,12 +33,12 @@ namespace Skell.Problems
     {
         public UnexpectedType(Source src, Skell.Types.ISkellInternal got, System.Type expected)
         {
-            Log.Error($"At {src}, expected {expected}, got {got} of type {got.GetType()}");
+            Message = $"At {src}, expected {expected}, got {got} of type {got.GetType()}";
         }
 
         public UnexpectedType(Source src, Skell.Types.ISkellInternal got, System.Type expected1, System.Type expected2)
         {
-            Log.Error($"At {src}, expected {expected1} or {expected2}, got {got} of type {got.GetType()}");
+            Message = $"At {src}, expected {expected1} or {expected2}, got {got} of type {got.GetType()}";
         }
     }
 
@@ -45,7 +46,7 @@ namespace Skell.Problems
     {
         public IndexOutOfRange(Source src, Skell.Types.ISkellType index, Skell.Types.ISkellIndexable obj)
         {
-            Log.Error($"Expected an index from {new Skell.Types.Array(obj.ListIndices())} at {src}, got {index}");
+            Message = $"Expected an index from \n{new Skell.Types.Array(obj.ListIndices())}\n at {src}, got {index}";
         }
     }
 
@@ -53,12 +54,12 @@ namespace Skell.Problems
     {
         public InvalidOperation(string operation, Skell.Types.ISkellReturnable operand)
         {
-            Log.Error($"Operation {operation} cannot be performed on {operand}");
+            Message = $"Operation {operation} cannot be performed on {operand}";
         }
 
         public InvalidOperation(string operation, Skell.Types.ISkellReturnable operand1, Skell.Types.ISkellReturnable operand2)
         {
-            Log.Error($"Cannot perform operation {operand1} {operation} {operand2}");
+            Message = $"Cannot perform operation {operand1} {operation} {operand2}";
         }
     }
 
@@ -66,7 +67,7 @@ namespace Skell.Problems
     {
         public UnaccessibleLHS(Source src)
         {
-            Log.Error($"Attempted to declare an unaccessible expression at {src}");
+            Message = $"Attempted to declare an unaccessible expression at {src}";
         }
     }
 
@@ -77,7 +78,7 @@ namespace Skell.Problems
             string name
         )
         {
-            Log.Error($"Attempted to redefine {name} at {src}");
+            Message = $"Attempted to redefine {name} at {src}";
         }
 
         public InvalidDefinition(
@@ -87,12 +88,12 @@ namespace Skell.Problems
         )
         {
             var from = state.Names.DefinitionOf(name);
-            Log.Error($"Attempted to redefine the {from.GetType()} {name} at {src}");
+            Message = $"Attempted to redefine the {from.GetType()} {name} at {src}";
         }
 
         public InvalidDefinition(Source src)
         {
-            Log.Error($"Invalid definition at {src}");
+            Message = "Invalid definition at {src}";
         }
     }
 
@@ -112,7 +113,7 @@ namespace Skell.Problems
                 msg.Append($"\t {function.name}{lambda}\n");
             }
 
-            Log.Information(msg.ToString());
+            Message = msg.ToString();
         }
 
         public InvalidFunctionDefinition(
@@ -128,7 +129,7 @@ namespace Skell.Problems
                 msg.Append($"\t {function.name}{lambda}\n");
             }
 
-            Log.Information(msg.ToString());
+            Message = msg.ToString();
         }
     }
 
@@ -155,7 +156,7 @@ namespace Skell.Problems
                 msg.Append($"\t {function.name}{lambda}\n");
             }
 
-            Log.Information(msg.ToString());
+            Message = msg.ToString();
         }
 
         public InvalidFunctionCall(
@@ -177,7 +178,7 @@ namespace Skell.Problems
                 msg.Append($"\t {function.name}{lambda}\n");
             }
 
-            Log.Information(msg.ToString());
+            Message = msg.ToString();
         }
     }
 
@@ -189,7 +190,7 @@ namespace Skell.Problems
             Skell.Types.Array namespaces
         )
         {
-            Log.Error($"Namespace \"{ns}\" not found. Valid namespaces are {namespaces}");
+            Message = $"Namespace \"{ns}\" not found. Valid namespaces are \n{namespaces}\n";
         }
     }
 
@@ -200,7 +201,7 @@ namespace Skell.Problems
             Skell.Types.Array names
         )
         {
-            Log.Error($"Namespaced identifier at {src} is invalid, expected one of {names}");
+            Message = $"Namespaced identifier at {src} is invalid, expected one of \n{names}\n";
         }
     }
 }

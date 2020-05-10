@@ -108,7 +108,11 @@ namespace Skell.Interpreter
                     }
             } catch (ParseFailure e) {
                 logger.Fatal(e.Message);
+                Console.WriteLine(e.Message);
                 return 1;
+            } catch (Skell.Problems.Exception e) {
+                logger.Warning(e.Message);
+                Console.WriteLine(e.Message);
             }
             return 0;
         }
