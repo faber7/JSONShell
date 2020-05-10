@@ -612,9 +612,18 @@ namespace Skell.Interpreter
             var fnCall = context.fnCall();
             var expr = context.expression();
 
-            if (term != null)
-                return VisitTerm(term);
-            else if (expr != null) {
+            if (term != null) {
+                var ret = VisitTerm(term);
+                // if term is a function and it is possible to call it without any arguments, call it
+                if (ret is Skell.Types.Function fn) {
+                    var lambda = fn.SelectLambda(new List<Tuple<int, Types.ISkellType>>());
+                    if (lambda != null)
+                        return Utility.Function.ExecuteFunction(
+                            this, state, fn, null
+                        );
+                }
+                return ret;
+            }else if (expr != null) {
                 var ret = VisitExpression(expr);
                 if (ret is Skell.Types.Property prop)
                     return prop.value;
@@ -706,18 +715,22 @@ namespace Skell.Interpreter
             // term : IDENTIFIER ;
             if (ctx_id != null) {
                 var name = context.IDENTIFIER().GetText();
-                // return the value, do not call it if it is a function
-                // as it is handled as in member access
+                // if it is a function, it is handled in VisitPrimary()
                 return Utility.GetIdentifer(new Source(ctx_id.Symbol), name, state);
             }
             
             // term : namespacedIdentifier ;
             if (ctx_nid != null) {
                 var ret = Utility.GetNamespacedIdentifier(ctx_nid, state);
-                if (ret is Skell.Types.Function func)
-                    return Utility.Function.ExecuteNamespacedFunction(
-                        this, state, func, null
-                    );
+                // handle the function case here because VisitPrimary() will not know if
+                // VisitTerm() returned a namespaced function or not
+                if (ret is Skell.Types.Function func) {
+                    var lambda = func.SelectLambda(new List<Tuple<int, Types.ISkellType>>());
+                    if (lambda != null)
+                        return Utility.Function.ExecuteNamespacedFunction(
+                            this, state, func, null
+                        );
+                }
                 return ret;
             }
 
