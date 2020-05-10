@@ -106,10 +106,10 @@ namespace Skell.Problems
         {
             StringBuilder msg = new StringBuilder();
             msg.Append($"An existing definition of Function {function.name}");
-            msg.Append($" conflicts with the definition {definition.argString} at {src}\n");
+            msg.Append($" conflicts with the definition {definition} at {src}\n");
             msg.Append("The following definitions are available:\n");
             foreach (var lambda in function.definitions) {
-                msg.Append($"\t {function.name}{lambda.argString}\n");
+                msg.Append($"\t {function.name}{lambda}\n");
             }
 
             Log.Information(msg.ToString());
@@ -122,10 +122,10 @@ namespace Skell.Problems
         {
             StringBuilder msg = new StringBuilder();
             msg.Append($"A definition of Function {function.name}");
-            msg.Append($" with the arguments: {definition.argString} already exists!\n");
+            msg.Append($" with the arguments: {definition} already exists!\n");
             msg.Append("The following definitions are available:\n");
             foreach (var lambda in function.definitions) {
-                msg.Append($"\t {function.name}{lambda.argString}\n");
+                msg.Append($"\t {function.name}{lambda}\n");
             }
 
             Log.Information(msg.ToString());
@@ -152,7 +152,7 @@ namespace Skell.Problems
                 msg.Append("The following definitions are available:\n");
             }
             foreach (var lambda in function.definitions) {
-                msg.Append($"\t {function.name}{lambda.argString}\n");
+                msg.Append($"\t {function.name}{lambda}\n");
             }
 
             Log.Information(msg.ToString());
@@ -174,7 +174,7 @@ namespace Skell.Problems
                 msg.Append("The following definitions are available:\n");
             }
             foreach (var lambda in function.definitions) {
-                msg.Append($"\t {function.name}{lambda.argString}\n");
+                msg.Append($"\t {function.name}{lambda}\n");
             }
 
             Log.Information(msg.ToString());

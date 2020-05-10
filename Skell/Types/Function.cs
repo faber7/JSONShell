@@ -21,7 +21,7 @@ namespace Skell.Types
 
         public Skell.Types.String[] GetStringDefinitions()
         {
-            return definitions.Select((lambda) => new Skell.Types.String(lambda.argString)).ToArray();
+            return definitions.Select((lambda) => new Skell.Types.String(lambda.ToString())).ToArray();
         }
 
         public void AddUserDefinedLambda(

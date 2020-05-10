@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Skell.Types
 {
@@ -77,12 +78,25 @@ namespace Skell.Types
     public abstract class Lambda : ISkellInternal
     {
         public List<Tuple<string, Specifier>> argList = new List<Tuple<string, Specifier>>();
-        public string argString;
         
         /// <summary>
         /// Returns the number of arguments expected by this lambda
         /// </summary>
         public abstract int Arity();
+
+        override public string ToString()
+        {
+            var repr = new StringBuilder("(");
+            for (int i = 0; i < argList.Count; i++)
+            {
+                var arg = argList[i];
+                repr.Append($"{arg.Item2} {arg.Item1}");
+                if (i + 1 != argList.Count)
+                    repr.Append(", ");
+            }
+            repr.Append(")");
+            return repr.ToString();
+        }
 
         /// <summary>
         /// Names the arguments according to the lambda's arguments
