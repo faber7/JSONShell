@@ -35,7 +35,7 @@ ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
 forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
 returnControl : KW_RETURN expression? ;
 
-expression : eqExpr (KW_IS usableTypeSpecifier)? ;
+expression : eqExpr (KW_IS usableTypeSpecifier)? | fnCall ;
 eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
 relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
 addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
@@ -43,12 +43,12 @@ mulExpr : unary ((OP_DIV | OP_MUL | OP_MOD) unary)* ;
 unary : (OP_NOT | OP_SUB) unary
       | primary
       ;
-primary : (term | fnCall)
+primary : term
         | LPAREN expression RPAREN
         ;
 
 // If there is no argument, the function is identified as a term instead and executed directly
-fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
+fnCall : (namespacedIdentifier | IDENTIFIER) expression* ;
 
 term : value
      | IDENTIFIER

@@ -205,7 +205,7 @@ namespace Skell.Interpreter
         ///          ;
         /// functionArg : TypeSpecifier IDENTIFIER ;
         ///
-        /// primary : (term | fnCall)
+        /// primary : term
         ///         | LPAREN expression RPAREN
         ///         ;
         /// term : value
@@ -306,22 +306,27 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// expression : eqExpr (KW_IS usableTypeSpecifier)? ;
+        /// expression : eqExpr (KW_IS usableTypeSpecifier)? | fnCall ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
             var ctx_eqExpr = context.eqExpr();
             var ctx_is = context.KW_IS();
+            var ctx_fnCall = context.fnCall();
 
-            var value = VisitEqExpr(ctx_eqExpr);
-            if (ctx_is != null) {
-                var ctx_uts = context.usableTypeSpecifier();
+            if (ctx_eqExpr != null) {
+                var value = VisitEqExpr(ctx_eqExpr);
+                if (ctx_is != null) {
+                    var ctx_uts = context.usableTypeSpecifier();
 
-                var token = Utility.GetTokenOfUsableTypeSpecifier(ctx_uts);
-                // as there is no chance of a TYPE_ANY token
-                return new Skell.Types.Boolean(Utility.MatchType(value, Utility.GetSpecifier(token)));
+                    var token = Utility.GetTokenOfUsableTypeSpecifier(ctx_uts);
+                    // as there is no chance of a TYPE_ANY token
+                    return new Skell.Types.Boolean(Utility.MatchType(value, Utility.GetSpecifier(token)));
+                }
+                return value;
+            } else {
+                return VisitFnCall(ctx_fnCall);
             }
-            return value;
         }
 
         /// <summary>
@@ -608,14 +613,13 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// primary : (term | fnCall)
+        /// primary : term
         ///         | LPAREN expression RPAREN
         ///         ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitPrimary(SkellParser.PrimaryContext context)
         {
             var term = context.term();
-            var fnCall = context.fnCall();
             var expr = context.expression();
 
             if (term != null) {
@@ -629,21 +633,17 @@ namespace Skell.Interpreter
                         );
                 }
                 return ret;
-            }else if (expr != null) {
+            } else {
                 var ret = VisitExpression(expr);
                 if (ret is Skell.Types.Property prop)
                     return prop.value;
                 return ret;
-            } else
-                return VisitFnCall(fnCall);
+            }
         }
 
         /// <summary>
-        /// fnCall : (namespacedIdentifier | IDENTIFIER) expression+ ;
+        /// fnCall : (namespacedIdentifier | IDENTIFIER) expression* ;
         /// </summary>
-        /// <remark>
-        /// If there is no argument, the call is parsed as a 'term' instead of a 'fnCall'
-        /// </remark>
         override public Skell.Types.ISkellReturnable VisitFnCall(SkellParser.FnCallContext context)
         {
             var namespacedIdentifier = context.namespacedIdentifier();
