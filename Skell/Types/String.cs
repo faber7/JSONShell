@@ -33,7 +33,7 @@ namespace Skell.Types
 
         public override string ToString()
         {
-            return contents;
+            return $"\"{contents}\"";
         }
         public override int GetHashCode() => contents.GetHashCode();
         public override bool Equals(object obj)
