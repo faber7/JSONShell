@@ -576,7 +576,7 @@ namespace Skell.Interpreter
                 logger.Warning("Tried to return from non-returnable area");
                 throw new System.NotImplementedException();
             }
-            Skell.Types.ISkellReturnable retval = defaultReturnValue;
+            Skell.Types.ISkellReturnable retval = new Skell.Types.Null();
             if (expr != null)
                 retval = VisitExpression(expr);
             state.start_return();
