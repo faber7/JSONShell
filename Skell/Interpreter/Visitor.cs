@@ -241,7 +241,7 @@ namespace Skell.Interpreter
                     }
 
                     var lastIndex = (Skell.Types.ISkellType) VisitIndex(context.index().Last());
-                    current.Insert(lastIndex, Utility.GetSkellType(
+                    current.Replace(lastIndex, Utility.GetSkellType(
                         new Source(ctx_id.Symbol, context.index().Last().Stop),
                         VisitExpression(ctx_expression)
                     ));
