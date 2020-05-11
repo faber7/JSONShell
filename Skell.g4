@@ -58,7 +58,7 @@ term : value
 
 namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 
-value : object | array | STRING | NUMBER | bool ;
+value : object | array | STRING | NUMBER | bool | KW_NULL ;
 bool : KW_TRUE | KW_FALSE ;
 array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
 pair : STRING SYM_COLON term ;
@@ -84,6 +84,7 @@ KW_RETURN : 'return' ;
 KW_LET : 'let' ;
 KW_FUN : 'fun' ;
 KW_IS : 'is' ;
+KW_NULL : 'null' ;
 KW_NAMESPACE : 'namespace' ;
 KW_USING : 'using' ;
 KW_AS : 'as' ;

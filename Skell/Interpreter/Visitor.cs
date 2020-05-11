@@ -787,7 +787,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// value : object | array | STRING | NUMBER | bool ;
+        /// value : object | array | STRING | NUMBER | bool | KW_NULL ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitValue(SkellParser.ValueContext context)
         {
@@ -796,6 +796,7 @@ namespace Skell.Interpreter
             var ctx_st = context.STRING();
             var ctx_nm = context.NUMBER();
             var ctx_bl = context.@bool(); 
+            var ctx_null = context.KW_NULL();
 
             if (ctx_ob != null)
                 return VisitObject(ctx_ob);
@@ -809,7 +810,10 @@ namespace Skell.Interpreter
             if (ctx_nm != null)
                 return new Skell.Types.Number(ctx_nm.GetText());
 
-            return new Skell.Types.Boolean(ctx_bl.GetText());
+            if  (ctx_bl != null)
+                return new Skell.Types.Boolean(ctx_bl.GetText());
+            
+            return new Skell.Types.Null();
         }
 
         /// <summary>
