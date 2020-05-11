@@ -162,6 +162,20 @@ namespace Skell.Interpreter
             }
 
             /// <summary>
+            /// Use to check if the name is defined as a variable
+            /// </summary>
+            public bool DefinedAsVariable(string s)
+            {
+                if (Available(s))
+                    return false;
+
+                if (variables.Exists(s) && variables.Get(s) is Skell.Types.ISkellType)
+                    return true;
+
+                return false;
+            }
+
+            /// <summary>
             /// Use to check if the name is defined as an indexable
             /// </summary>
             public bool DefinedAsIndexable(string s)

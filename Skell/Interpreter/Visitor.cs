@@ -259,7 +259,7 @@ namespace Skell.Interpreter
                     
                     Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
 
-                    if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.ISkellType)))
+                    if (state.Names.Available(name) || state.Names.DefinedAsVariable(name))
                         state.Variables.Set(name, Utility.GetSkellType(src_expression, value));
                     else
                         throw new Skell.Problems.InvalidDefinition(src_expression, name, state);
