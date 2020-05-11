@@ -25,6 +25,10 @@ namespace Skell.Library
             var printfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Print).Name);
             printfn.AddBuiltinLambda(new Skell.Library.Functions.Print());
             system.Set(printfn.name, printfn);
+            
+            var printlnnfn = new Skell.Types.Function(typeof(Skell.Library.Functions.PrintLine).Name);
+            printlnnfn.AddBuiltinLambda(new Skell.Library.Functions.PrintLine());
+            system.Set(printlnnfn.name, printlnnfn);
 
             system.Set("Path", getPath());
 
