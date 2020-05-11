@@ -11,6 +11,14 @@ namespace Skell.Problems
         public new string Message;
     }
 
+    internal class DivisionByZero : Exception
+    {
+        public DivisionByZero(Source src)
+        {
+            Message = $"Attempted to divide by zero at {src}";
+        }
+    }
+
     internal class UndefinedIdentifer : Exception
     {
         public UndefinedIdentifer(string name)

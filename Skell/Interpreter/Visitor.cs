@@ -438,7 +438,11 @@ namespace Skell.Interpreter
 
                 var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 if (op.Type == SkellLexer.OP_DIV)
-                    result = (Skell.Types.Number) result / (Skell.Types.Number) next;
+                    try {
+                        result = (Skell.Types.Number) result / (Skell.Types.Number) next;
+                    } catch (System.DivideByZeroException) {
+                        throw new Skell.Problems.DivisionByZero(new Source(op));
+                    }
                 else
                     result = (Skell.Types.Number) result * (Skell.Types.Number) next;
 
