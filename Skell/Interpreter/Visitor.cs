@@ -412,7 +412,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// mulExpr : unary ((OP_DIV | OP_MUL) unary)* ;
+        /// mulExpr : unary ((OP_DIV | OP_MUL | OP_MOD) unary)* ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitMulExpr(SkellParser.MulExprContext context)
         {
@@ -443,8 +443,10 @@ namespace Skell.Interpreter
                     } catch (System.DivideByZeroException) {
                         throw new Skell.Problems.DivisionByZero(new Source(op));
                     }
-                else
+                else if (op.Type == SkellLexer.OP_MUL)
                     result = (Skell.Types.Number) result * (Skell.Types.Number) next;
+                else
+                    result = (Skell.Types.Number) result % (Skell.Types.Number) next;
 
                 i++;
                 ctx_curr = ctx_next;

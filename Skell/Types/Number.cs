@@ -99,6 +99,17 @@ namespace Skell.Types
             else
                 return new Number(a.decimalValue / b.decimalValue);
         }
+        public static Number operator %(Number a, Number b)
+        {
+            if (a.isInt && b.isInt)
+                return new Number(a.integerValue % b.integerValue);
+            else if (a.isInt && !b.isInt)
+                return new Number(a.integerValue % b.decimalValue);
+            else if (!a.isInt && b.isInt)
+                return new Number(a.decimalValue % b.integerValue);
+            else
+                return new Number(a.decimalValue % b.decimalValue);
+        }
 
         public static Boolean operator !(Number a) => throw new Skell.Problems.InvalidOperation("!", a);
         public static Boolean operator ==(Number a, Number b) => new Boolean(a.Equals(b));

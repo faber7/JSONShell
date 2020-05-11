@@ -1492,6 +1492,10 @@ public partial class SkellParser : Parser {
 		public ITerminalNode OP_MUL(int i) {
 			return GetToken(SkellParser.OP_MUL, i);
 		}
+		public ITerminalNode[] OP_MOD() { return GetTokens(SkellParser.OP_MOD); }
+		public ITerminalNode OP_MOD(int i) {
+			return GetToken(SkellParser.OP_MOD, i);
+		}
 		public MulExprContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1523,7 +1527,7 @@ public partial class SkellParser : Parser {
 					{
 					State = 230;
 					_la = TokenStream.LA(1);
-					if ( !(_la==OP_DIV || _la==OP_MUL) ) {
+					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << OP_DIV) | (1L << OP_MUL) | (1L << OP_MOD))) != 0)) ) {
 					ErrorHandler.RecoverInline(this);
 					}
 					else {
@@ -2498,7 +2502,7 @@ public partial class SkellParser : Parser {
 		'&', '(', '*', ',', '.', '\x30', '\x32', '\x34', '\x36', '\x38', ':', 
 		'<', '>', '@', '\x42', '\x44', '\x46', '\x2', '\v', '\x3', '\x2', '\x3', 
 		'\x3', '\x3', '\x2', '%', '&', '\x3', '\x2', '\'', '*', '\x3', '\x2', 
-		'.', '/', '\x3', '\x2', '\x30', '\x31', '\x4', '\x2', '+', '+', '/', '/', 
+		'.', '/', '\x3', '\x2', '\x30', '\x32', '\x4', '\x2', '+', '+', '/', '/', 
 		'\x3', '\x2', '\x33', '\x35', '\x3', '\x2', '\x5', '\x6', '\x3', '\x2', 
 		'\x13', '\x17', '\x2', '\x167', '\x2', 'I', '\x3', '\x2', '\x2', '\x2', 
 		'\x4', 'Q', '\x3', '\x2', '\x2', '\x2', '\x6', '\x61', '\x3', '\x2', '\x2', 
