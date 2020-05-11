@@ -185,7 +185,7 @@ namespace Skell.Interpreter
                         index,
                         typeof(Skell.Types.Number)
                     );
-            else
+            else if (indexable is Skell.Types.Object)
                 if (!(index is Skell.Types.String))
                     throw new Skell.Problems.UnexpectedType(
                         source,
