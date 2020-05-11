@@ -44,7 +44,7 @@ namespace Skell.Interpreter
         }
     }
 
-    internal class Interpreter
+    public class Interpreter
     {
         private static ILogger logger;
         private ITokenSource lexer;
