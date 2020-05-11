@@ -16,7 +16,10 @@ namespace Skell.Library.Functions
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
         {
-            return new Skell.Types.String(args.First().Item3.ToString());
+            var result = new Skell.Types.String(args.First().Item3.ToString());
+            Console.Write(result.contents);
+
+            return new Skell.Types.None();
         }
     }
 }
