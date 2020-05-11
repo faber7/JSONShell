@@ -162,6 +162,20 @@ namespace Skell.Interpreter
             }
 
             /// <summary>
+            /// Use to check if the name is defined as an indexable
+            /// </summary>
+            public bool DefinedAsIndexable(string s)
+            {
+                if (Available(s))
+                    return false;
+
+                if (variables.Exists(s) && variables.Get(s) is Skell.Types.ISkellIndexable)
+                    return true;
+
+                return false;
+            }
+
+            /// <summary>
             /// Use with DefinedAs to get the value of a name.
             /// </summary>
             public Skell.Types.ISkellNamedType DefinitionOf(string s)

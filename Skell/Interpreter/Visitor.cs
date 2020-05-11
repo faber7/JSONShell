@@ -199,107 +199,80 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : KW_LET primary OP_ASSGN (expression | function);
+        /// declaration : KW_LET IDENTIFIER (LSQR index RSQR)* OP_ASSGN (expression | function);
         /// function : LPAREN RPAREN statementBlock
         ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
         ///          ;
         /// functionArg : TypeSpecifier IDENTIFIER ;
-        ///
-        /// primary : term
-        ///         | LPAREN expression RPAREN
-        ///         ;
-        /// term : value
-        ///      | IDENTIFIER
-        ///      | namespacedIdentifier
-        ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
-        ///      ;
         /// </summary>
-        /// <remark>
-        /// Declarations using identifiers and indexed objects are handled here
-        /// </remark>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
             var ctx_expression = context.expression();
             var ctx_function = context.function();
+            var ctx_id = context.IDENTIFIER();
+            string name = ctx_id.GetText();
 
-            var ctx_primary = context.primary();
-            var ctx_LHS = ctx_primary.term();
+            var isMember = context.LSQR().Length != 0;
 
-            // if primary is a term, handle it here as there is no way to get the reference to an object
-            if (ctx_LHS != null) {
-                var ctx_id = ctx_LHS.IDENTIFIER();
-                var ctx_indexable = ctx_LHS.term();
+            if (isMember) {
+                if (state.Names.Available(name))
+                    throw new Skell.Problems.UndefinedIdentifer(new Source(ctx_id.Symbol), name);
 
-                if (ctx_id != null) {
-                    string name = ctx_id.GetText();
-                    if (ctx_expression != null) {
-                        Skell.Types.ISkellReturnable expression = VisitExpression(ctx_expression);
-                        if (expression is Skell.Types.Property prop)
-                            expression = prop.value;
-                        Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
+                Skell.Types.ISkellIndexable current;
+                // first ensure that identifier is referring to an indexable
+                if (state.Names.DefinedAsIndexable(name)) {
+                    current = (Skell.Types.ISkellIndexable) state.Names.DefinitionOf(name);
 
-                        if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.ISkellType)))
-                            state.Variables.Set(name, Utility.GetSkellType(src_expression, expression));
-                        else
-                            throw new Skell.Problems.InvalidDefinition(src_expression, name, state);
-                    } else {
-                        Skell.Types.UserDefinedLambda lambda = new Skell.Types.UserDefinedLambda(ctx_function);
-                        Source src_function = new Source(ctx_function.Start, ctx_function.Stop);
-
-                        if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
-                            var fn = Utility.Function.Get(state, name);
-                            fn.AddUserDefinedLambda(ctx_function);
-                        } else
-                            throw new Skell.Problems.InvalidDefinition(src_function, name, state);
-                    }
-                } else if (ctx_indexable != null) {
-                    // This block is almost similar to VisitTerm()'s ctx_term != null block
-                    // id is the child of ctx_term here instead of context
-                    // instead of returning the value we replace the value at the index instead
-                    // if the indexable is a function it is not executed
-                    // if the RHS is a function an error is thrown
-
-                    var id = (Antlr4.Runtime.Tree.ITerminalNode) ctx_LHS.GetChild(2);
-                    var text = id.Symbol.Text;
-                    var src = new Source(id.Symbol);
-
-                    Skell.Types.ISkellType index;
-
-                    if (id.Symbol.Type == SkellLexer.STRING)
-                        index = Utility.GetString(text, this);
-                    else if (id.Symbol.Type == SkellLexer.NUMBER)
-                        index = new Skell.Types.Number(text);
-                    else 
-                        index = Utility.GetIdentifer(src, text, this, state);
-                    
-                    var term = VisitTerm(ctx_indexable);
-
-                    // if term appears to be a member access
-                    if (term is Skell.Types.ISkellIndexable indexable)
-                        if (ctx_expression != null) {
-                            Skell.Types.ISkellReturnable expression = VisitExpression(ctx_expression);
-                            Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
-                            Utility.SetIndex(
-                                src,
-                                indexable,
-                                index,
-                                Utility.GetSkellType(src_expression, expression)
-                            );
-                        } else if (ctx_function != null) {
-                            Skell.Types.UserDefinedLambda lambda = new Skell.Types.UserDefinedLambda(ctx_function);
+                    foreach (var index in context.index().SkipLast(1)) {
+                        var result = Utility.GetIndex(
+                            new Source(index.Start, index.Stop),
+                            current,
+                            (Skell.Types.ISkellType) VisitIndex(index)
+                        );
+                        
+                        if (!(result is Skell.Types.ISkellIndexable))
                             throw new Skell.Problems.UnexpectedType(
-                                new Source(ctx_function.Start, ctx_function.Stop),
-                                lambda,
+                                new Source(ctx_id.Symbol, index.Stop),
+                                result,
                                 typeof(Skell.Types.ISkellIndexable)
                             );
-                        }
-                    else
-                        throw new Skell.Problems.UnexpectedType(src, term, typeof(Skell.Types.ISkellIndexable));
-                }
+                        
+                        current = (Skell.Types.ISkellIndexable) result;
+                    }
+
+                    var lastIndex = (Skell.Types.ISkellType) VisitIndex(context.index().Last());
+                    current.Insert(lastIndex, Utility.GetSkellType(
+                        new Source(ctx_id.Symbol, context.index().Last().Stop),
+                        VisitExpression(ctx_expression)
+                    ));
+                } else
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(ctx_id.Symbol),
+                        state.Names.DefinitionOf(name),
+                        typeof(Skell.Types.ISkellIndexable)
+                    );
             } else {
-                throw new Skell.Problems.UnaccessibleLHS(
-                    new Source(ctx_primary.Start, ctx_primary.Stop)
-                );
+                if (ctx_expression != null) {
+                    var value = VisitExpression(ctx_expression);
+                    if (value is Skell.Types.Property prop)
+                        value = prop.value;
+                    
+                    Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
+
+                    if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.ISkellType)))
+                        state.Variables.Set(name, Utility.GetSkellType(src_expression, value));
+                    else
+                        throw new Skell.Problems.InvalidDefinition(src_expression, name, state);
+                } else {
+                    Skell.Types.UserDefinedLambda lambda = new Skell.Types.UserDefinedLambda(ctx_function);
+                    Source src_function = new Source(ctx_function.Start, ctx_function.Stop);
+
+                    if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
+                        var fn = Utility.Function.Get(state, name);
+                        fn.AddUserDefinedLambda(ctx_function);
+                    } else
+                        throw new Skell.Problems.InvalidDefinition(src_function, name, state);
+                }
             }
 
             return defaultReturnValue;
@@ -700,7 +673,7 @@ namespace Skell.Interpreter
         /// term : value
         ///      | IDENTIFIER
         ///      | namespacedIdentifier
-        ///      | term LSQR (STRING | NUMBER | IDENTIFIER) RSQR
+        ///      | term LSQR index RSQR
         ///      ;
         /// </summary>
         /// <remark>
@@ -712,6 +685,7 @@ namespace Skell.Interpreter
             var ctx_term = context.term();
             var ctx_id = context.IDENTIFIER();
             var ctx_nid = context.namespacedIdentifier();
+            var ctx_index = context.index();
 
             // term : value ;
             if (ctx_value != null) {
@@ -740,20 +714,11 @@ namespace Skell.Interpreter
                 return ret;
             }
 
-            // term : term LSQR (STRING | NUMBER | IDENTIFIER) RSQR ;
+            // term : term LSQR index RSQR ;
             // note : could be a function call, or a member access
-            var id = (Antlr4.Runtime.Tree.ITerminalNode) context.GetChild(2);
-            var text = id.Symbol.Text;
-            var src = new Source(id.Symbol);
+            var src = new Source(ctx_index.Start, ctx_index.Stop);
 
-            Skell.Types.ISkellType index;
-
-            if (id.Symbol.Type == SkellLexer.STRING)
-                index = Utility.GetString(text, this);
-            else if (id.Symbol.Type == SkellLexer.NUMBER)
-                index = new Skell.Types.Number(text);
-            else 
-                index = Utility.GetIdentifer(src, text, this, state);
+            var index = (Skell.Types.ISkellType) VisitIndex(ctx_index);
 
             var term = VisitTerm(ctx_term);
             if (term is Skell.Types.Function fn) {
@@ -814,6 +779,23 @@ namespace Skell.Interpreter
                 return new Skell.Types.Boolean(ctx_bl.GetText());
             
             return new Skell.Types.Null();
+        }
+
+        /// <summary>
+        /// index : STRING | NUMBER | IDENTIFIER ;
+        /// </summary>
+        override public Skell.Types.ISkellReturnable VisitIndex(SkellParser.IndexContext context)
+        {
+            var ctx_st = context.STRING();
+            var ctx_nm = context.NUMBER();
+            var ctx_id = context.IDENTIFIER();
+
+            if (ctx_st != null)
+                return Utility.GetString(ctx_st.GetText(), this);
+            else if (ctx_nm != null)
+                return new Skell.Types.Number(ctx_nm.GetText());
+            else
+                return Utility.GetIdentifer(new Source(ctx_id.Symbol), ctx_id.GetText(), state);
         }
 
         /// <summary>
