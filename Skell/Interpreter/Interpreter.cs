@@ -60,31 +60,36 @@ namespace Skell.Interpreter
             visitor = new Visitor(state);
         }
 
+        public Skell.Types.ISkellReturnable ResultOf(string src, bool program)
+        {
+            logger.Verbose($"Source:\n{src.Trim()}");
+            ICharStream charStream = CharStreams.fromstring(src);
+            lexer = new SkellLexer(charStream);
+            ITokenStream tokenStream = new CommonTokenStream(lexer);
+            parser = new SkellParser(tokenStream) {
+                BuildParseTree = true,
+                ErrorHandler = new BailErrorStrategy()
+            };
+            parser.RemoveErrorListeners();
+            parser.AddErrorListener(new SyntaxErrorListener());
+            IParseTree tree;
+                
+            // select the appropriate start rule
+            if (program)
+                tree = parser.program();
+            else
+                tree = parser.statement();
+            
+            logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
+            visitor.tokenSource = lexer.InputStream;
+
+            return visitor.Visit(tree);
+        }
+
         public int Interprete(string src, bool program)
         {
             try {
-                logger.Verbose($"Source:\n{src.Trim()}");
-                ICharStream charStream = CharStreams.fromstring(src);
-                lexer = new SkellLexer(charStream);
-                ITokenStream tokenStream = new CommonTokenStream(lexer);
-                parser = new SkellParser(tokenStream) {
-                    BuildParseTree = true,
-                    ErrorHandler = new BailErrorStrategy()
-                };
-                parser.RemoveErrorListeners();
-                parser.AddErrorListener(new SyntaxErrorListener());
-                IParseTree tree;
-                
-                // select the appropriate start rule
-                if (program)
-                    tree = parser.program();
-                else
-                    tree = parser.statement();
-
-                logger.Debug($"Parse tree:\n{tree.ToStringTree(parser)}");
-
-                visitor.tokenSource = lexer.InputStream;
-                var ret = visitor.Visit(tree);
+                var ret = ResultOf(src, program);
 
                 if (!program)
                     if (ret is Skell.Types.Function fn) {
