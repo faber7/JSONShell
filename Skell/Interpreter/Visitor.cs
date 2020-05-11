@@ -87,8 +87,7 @@ namespace Skell.Interpreter
                 return VisitDeclaration(ctx_decl);
             else if (ctx_expr != null) {
                 var ret = VisitExpression(ctx_expr);
-                if (ret is Skell.Types.Property)
-                    return ((Skell.Types.Property) ret).value;
+                ret = Utility.GetReturnableValue(ret);
                 return ret;
             } else if (ctx_ctrl != null)
                 return VisitControl(ctx_ctrl);
@@ -254,8 +253,7 @@ namespace Skell.Interpreter
             } else {
                 if (ctx_expression != null) {
                     var value = VisitExpression(ctx_expression);
-                    if (value is Skell.Types.Property prop)
-                        value = prop.value;
+                    value = Utility.GetReturnableValue(value);
                     
                     Source src_expression = new Source(ctx_expression.Start, ctx_expression.Stop);
 
@@ -512,8 +510,7 @@ namespace Skell.Interpreter
             var stmts = context.statementBlock();
 
             var primary = VisitExpression(expr);
-            if (primary is Skell.Types.Property prop)
-                primary = prop.value;
+            primary = Utility.GetReturnableValue(primary);
             if (primary is Skell.Types.Array arr) {
                 string varName = id.GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
@@ -558,8 +555,7 @@ namespace Skell.Interpreter
             if (expr != null)
                 retval = VisitExpression(expr);
             state.start_return();
-            if (retval is Skell.Types.Property prop)
-                return prop.value;
+            retval = Utility.GetReturnableValue(retval);
             return retval;
         }
 
@@ -608,8 +604,7 @@ namespace Skell.Interpreter
                 return ret;
             } else {
                 var ret = VisitExpression(expr);
-                if (ret is Skell.Types.Property prop)
-                    return prop.value;
+                ret = Utility.GetReturnableValue(ret);
                 return ret;
             }
         }

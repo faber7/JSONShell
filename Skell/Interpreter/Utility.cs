@@ -443,8 +443,7 @@ namespace Skell.Interpreter
         public static Skell.Types.Boolean EvaluateExpr(Visitor parser, SkellParser.ExpressionContext context)
         {
             var expressionResult = parser.VisitExpression(context);
-            if (expressionResult is Skell.Types.Property prop)
-                expressionResult = prop.value;
+            expressionResult = Utility.GetReturnableValue(expressionResult);
             if (!(expressionResult is Skell.Types.Boolean))
                 throw new Skell.Problems.UnexpectedType(
                     new Source(context.Start, context.Stop),
@@ -452,6 +451,17 @@ namespace Skell.Interpreter
                 );
 
             return (Skell.Types.Boolean) expressionResult;
+        }
+
+        /// <summary>
+        /// If the ISkellReturnable is a Property, unboxes it
+        /// </summary>
+        public static Skell.Types.ISkellReturnable GetReturnableValue(Skell.Types.ISkellReturnable returnable)
+        {
+            if (returnable is Skell.Types.Property prop)
+                return prop.value;
+
+            return returnable;
         }
 
         /// <summary>
