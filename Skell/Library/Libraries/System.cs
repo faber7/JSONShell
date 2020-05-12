@@ -17,7 +17,8 @@ namespace Skell.Library
                 (new Skell.Library.Indexable()).AsNamespace(),
                 (new Skell.Library.Name()).AsNamespace(),
                 (new Skell.Library.Directory()).AsNamespace(),
-                (new Skell.Library.Array()).AsNamespace()
+                (new Skell.Library.Array()).AsNamespace(),
+                (new Skell.Library.String()).AsNamespace()
             };
 
             foreach (var library in libraries) {
