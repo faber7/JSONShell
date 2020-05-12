@@ -58,7 +58,8 @@ namespace Skell.Library.Functions.Name
                 return new Skell.Types.None();
             }
             
-            var tup = state.contexts.First();
+            // set the alias in the calling context
+            var tup = state.contexts.SkipLast(1).Last();
 
             tup.Item2.Set(name.contents, (Skell.Types.Function) result);
 
