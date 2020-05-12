@@ -556,20 +556,28 @@ namespace Skell.Interpreter
                 string varName = id.GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
 
-                state.ENTER_CONTEXT($"for {varName} in {arr}");
+                // Shadow the name if it already exists
+                Skell.Types.ISkellNamedType backup = null;
+                if (state.Names.Exists(varName)) {
+                    backup = state.Names.DefinitionOf(varName);
+                    state.Names.Clear(varName);
+                }
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.Variables.Set(varName, data);
-                    result = VisitStatementBlock(stmts);
-                    if (state.has_returned())
-                    {
-                        logger.Debug("For loop returned with " + result);
-                        state.end_return();
-                        return result;
-                    }
+                    VisitStatementBlock(stmts);
                 }
 
-                state.EXIT_CONTEXT();
+                // restore the name if it existed prior to the loop
+                if (backup != null) {
+                    if (backup is Skell.Types.Namespace ns)
+                        state.Namespaces.Set(varName, ns);
+                    else if (backup is Skell.Types.Function fn)
+                        state.Functions.Set(varName, fn);
+                    else
+                        state.Variables.Set(varName, (Skell.Types.ISkellType) backup);
+                }
+
                 return defaultReturnValue;
             }
             throw new Skell.Problems.UnexpectedType(
