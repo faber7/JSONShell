@@ -67,6 +67,9 @@ namespace Skell.Interpreter
                 // pre-setup for state
                 state.ENTER_CONTEXT($"{function.name}{argString}");
 
+                // allow the function to call itself through its own identifier
+                state.Functions.Set(function.name, function);
+
                 // set up state with arguments in context
                 foreach (var arg in args)
                     if (arg.Item3 is Skell.Types.Property prop)
@@ -76,9 +79,6 @@ namespace Skell.Interpreter
                             state.Variables.Set(arg.Item2, prop.Value);
                     else 
                         state.Variables.Set(arg.Item2, arg.Item3);
-
-                // allow the function to call itself through its own identifier
-                state.Functions.Set(function.name, function);
                 
                 if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
