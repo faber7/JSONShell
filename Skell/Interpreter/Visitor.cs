@@ -206,10 +206,13 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
-            var ctx_expression = context.expression().Last();
+            SkellParser.ExpressionContext ctx_expression = null;
+            // if there are no expressions context.expression() is not null but an empty array
+            if (context.expression().Count() != 0)
+                ctx_expression = context.expression().Last();
+            var indices = context.expression().SkipLast(1);
             var ctx_function = context.function();
             var ctx_id = context.IDENTIFIER();
-            var indices = context.expression().SkipLast(1);
             string name = ctx_id.GetText();
 
             var isMember = context.LSQR().Length != 0;
