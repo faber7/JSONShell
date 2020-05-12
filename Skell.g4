@@ -35,7 +35,8 @@ ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
 forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
 returnControl : KW_RETURN expression? ;
 
-expression : eqExpr (KW_IS usableTypeSpecifier)? | fnCall ;
+expression : logExpr (KW_IS usableTypeSpecifier)? | fnCall ;
+logExpr : eqExpr ((OP_AND eqExpr)* | (OP_OR eqExpr)*) ;
 eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
 relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
 addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;

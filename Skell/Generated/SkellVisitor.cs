@@ -146,6 +146,12 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpression([NotNull] SkellParser.ExpressionContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="SkellParser.logExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLogExpr([NotNull] SkellParser.LogExprContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.eqExpr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
