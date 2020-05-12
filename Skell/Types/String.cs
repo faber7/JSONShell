@@ -16,6 +16,10 @@ namespace Skell.Types
             contents = token;
         }
 
+        public Number Length() => new Number(contents.Length);
+
+        public String Substring(Number start, Number stop) => new String(contents[start.integerValue..stop.integerValue]);
+
         public static Number operator +(String a) => throw new Skell.Problems.InvalidOperation("+", a);
         public static Number operator -(String a) => throw new Skell.Problems.InvalidOperation("-", a);
         public static Number operator +(String a, String b) => throw new Skell.Problems.InvalidOperation("+", a, b);
