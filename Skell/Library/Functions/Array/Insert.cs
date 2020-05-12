@@ -23,19 +23,21 @@ namespace Skell.Library.Functions.Array
             var indexable = args.First().Item3;
             var index = (Types.Number) args.Skip(1).First().Item3;
             var value = args.Last().Item3;
+            Skell.Types.Array arr = (Skell.Types.Array) indexable;
+            if (indexable is Skell.Types.Property prop)
+                arr = (Skell.Types.Array) prop.Value;
 
             if (!index.isInt) {
                 Console.WriteLine("Index must be an integer value!");
                 return new Skell.Types.Null();
             }
 
-            if (indexable is Skell.Types.Array arr) {
+            if (arr.ListIndices().Contains(index) || index.integerValue == arr.Count().integerValue) {
                 arr.Insert(index, value);
-                return value;
-            } else if (indexable is Skell.Types.Property prop && prop.Value is Skell.Types.Array array) {
-                array.Insert(index, value);
-                prop.Value = new Skell.Types.Array(array.ListValues());
-                return value;
+                if (indexable is Skell.Types.Property prop1)
+                    prop1.Value = new Skell.Types.Array(arr.ListValues());
+            } else {
+                Console.WriteLine("Invalid index!");
             }
             
             return new Skell.Types.Null();

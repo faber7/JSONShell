@@ -27,7 +27,8 @@ namespace Skell.Library.Functions.Array
                 if (arr.ListIndices().Contains(index)) {
                     result = arr.GetMember(index);
                     arr.Delete(index);
-                }
+                } else
+                    Console.WriteLine("Invalid Index!");
             } else if (indexable is Skell.Types.Property prop && prop.Value is Skell.Types.Array array) {
                 var index = array.Count() - new Number(1);
                 if (array.ListIndices().Contains(index)) {
@@ -35,7 +36,8 @@ namespace Skell.Library.Functions.Array
                     array.Delete(index);
 
                     prop.Value = new Skell.Types.Array(array.ListValues());
-                }
+                } else
+                    Console.WriteLine("Invalid Index!");
             }
             
             return result;
