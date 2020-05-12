@@ -24,4 +24,23 @@ namespace Skell.Library.Functions
             return new Skell.Types.None();
         }
     }
+
+    public class PrintLine : BuiltinLambda
+    {
+        public PrintLine()
+        {
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any)
+            };
+        }
+
+        public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
+        {
+            var result = new Skell.Types.String(args.First().Item3.ToString());
+            Console.WriteLine(result.contents);
+
+            return new Skell.Types.None();
+        }
+    }
 }
