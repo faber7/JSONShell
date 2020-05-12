@@ -117,14 +117,35 @@ namespace Skell.Interpreter
                 logger.Fatal(e.Message);
                 Console.WriteLine(e.Message);
                 return 1;
+            } catch (Antlr4.Runtime.Misc.ParseCanceledException e) {
+                if (e.InnerException is Antlr4.Runtime.InputMismatchException ex) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append($"Syntax error at line {ex.OffendingToken.Line}:{ex.OffendingToken.Column}\n");
+                    var expected = ex.GetExpectedTokens()
+                        .ToIntegerList()
+                        .Select((tok, index) => {
+                            var str = ex.Recognizer.Vocabulary.GetLiteralName(tok);
+                            if (str == null)
+                                return ex.Recognizer.Vocabulary.GetDisplayName(tok);
+                            return str;
+                        }).ToList();
+                    sb.Append("Expected one of: " +  String.Join(", ", expected));
+
+                    logger.Fatal(sb.ToString());
+                    Console.WriteLine(sb.ToString());
+                } else {
+                    logger.Fatal(e.GetType() + ": " + e.Message);
+                    Console.WriteLine(e.Message);
+                }
+                return 1;
             } catch (Skell.Problems.Exception e) {
                 logger.Warning(e.Message);
                 Console.WriteLine(e.Message);
             } catch (Exception e) {
-                logger.Fatal(e.Message);
+                logger.Fatal(e.GetType() + ": " + e.Message);
                 logger.Fatal(e.StackTrace);
                 Console.WriteLine("An internal error was reported by the runtime. A restart is suggested. The error details are given below:");
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.GetType() + ": " + e.Message);
                 Console.WriteLine(e.StackTrace);
             }
             return 0;
