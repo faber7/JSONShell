@@ -20,6 +20,10 @@ namespace Skell.Library
             insertfn.AddBuiltinLambda(new Skell.Library.Functions.Array.Insert());
             array_ns.Set(insertfn.name, insertfn);
 
+            var deletefn = new Skell.Types.Function(typeof(Skell.Library.Functions.Array.Delete).Name);
+            deletefn.AddBuiltinLambda(new Skell.Library.Functions.Array.Delete());
+            array_ns.Set(deletefn.name, deletefn);
+
             return array_ns;
         }
     }
