@@ -18,8 +18,11 @@ namespace Skell.Library.Functions
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
         {
-            var result = new Skell.Types.String(args.First().Item3.ToString());
-            Console.Write(result.contents);
+            if (args.First().Item3 is Skell.Types.String str) {
+                Console.Write(str.contents);
+                return new Skell.Types.None();
+            }
+            Console.Write(args.First().ToString());
 
             return new Skell.Types.None();
         }
@@ -37,8 +40,11 @@ namespace Skell.Library.Functions
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
         {
-            var result = new Skell.Types.String(args.First().Item3.ToString());
-            Console.WriteLine(result.contents);
+            if (args.First().Item3 is Skell.Types.String str) {
+                Console.WriteLine(str.contents);
+                return new Skell.Types.None();
+            }
+            Console.WriteLine(args.First().ToString());
 
             return new Skell.Types.None();
         }
