@@ -16,6 +16,10 @@ namespace Skell.Library
             popfn.AddBuiltinLambda(new Skell.Library.Functions.Array.Pop());
             array_ns.Set(popfn.name, popfn);
 
+            var insertfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Array.Insert).Name);
+            insertfn.AddBuiltinLambda(new Skell.Library.Functions.Array.Insert());
+            array_ns.Set(insertfn.name, insertfn);
+
             return array_ns;
         }
     }
