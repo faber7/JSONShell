@@ -346,7 +346,9 @@ namespace Skell.Interpreter
                     var value = visitor.VisitExpression(tree);
                     visitor.tokenSource = dupSrc;
 
-                    if (value is Skell.Types.ISkellType)
+                    if (value is Skell.Types.String str)
+                        return str.contents;
+                    else if (value is Skell.Types.ISkellType)
                         return value.ToString();
                     else
                         return "";
