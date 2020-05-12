@@ -1,6 +1,7 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Skell.Interpreter
 {
@@ -10,16 +11,16 @@ namespace Skell.Interpreter
 
         // These variables track the state of the interpreter
 
-        private readonly List<Context<Skell.Types.ISkellType>> all_variables;
-        internal Context<Skell.Types.ISkellType> current_variables;
-        internal Context<Skell.Types.Function> current_functions;
+        internal List<
+            Tuple<
+                Context<Skell.Types.ISkellType>,
+                Context<Skell.Types.Function>,
+                bool
+            >
+        > contexts;
+
         internal Dictionary<string, Skell.Types.Namespace> all_namespaces;
-        private bool flag_return;
         private bool flag_returned;
-
-        // These are backup variables, only used with the 4 special functions in this class
-
-        private Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>> temp_state;
 
         // These variables act as the public api for handling
         // requests related to variables, functions, namespaces, and names
@@ -33,11 +34,13 @@ namespace Skell.Interpreter
         public State()
         {
             logger = Log.ForContext<State>();
-            var global = new Context<Skell.Types.ISkellType>("ORIGIN");
-            all_variables = new List<Context<Skell.Types.ISkellType>>();
-            all_variables.Add(global);
-            current_variables = global;
-            current_functions = new Context<Skell.Types.Function>("FUNCTIONS");
+
+            var origin = new Context<Skell.Types.ISkellType>("ORIGIN");
+            var functions = new Context<Skell.Types.Function>("FUNCTIONS");
+            
+            contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>, bool>>();
+            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>, bool>(origin, functions, false));
+            
             all_namespaces = new Dictionary<string, Skell.Types.Namespace>();
 
             this.Variables = new VariableHandler(this);
@@ -46,7 +49,9 @@ namespace Skell.Interpreter
             this.Names = new NameHandler(this);
         }
 
-        public bool can_return() => flag_return;
+        internal Context<Skell.Types.ISkellType> current_variables() => contexts.Last().Item1;
+        internal Context<Skell.Types.Function> current_functions() => contexts.Last().Item2;
+        public bool can_return() => contexts.Last().Item3;
         public bool has_returned() => flag_returned;
         public bool start_return() => flag_returned = true;
         public bool end_return() => flag_returned = false;
@@ -60,32 +65,19 @@ namespace Skell.Interpreter
             var cont = new Context<Skell.Types.ISkellType>(ctx_name);
             var new_functions = new Context<Skell.Types.Function>(ctx_name);
 
-            logger.Verbose($"Entering a new context {cont.name} from {current_variables.name}.");
-
-            // Create a backup of current context and function context
-            temp_state = new Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>(
-                flag_return,
-                this.current_variables,
-                current_functions
-            );
-
-            flag_return = true;
-            all_variables.Add(cont);
-
-            current_variables = cont;
-            current_functions = new_functions;
+            logger.Verbose($"Entering a new context {cont.name} from {current_variables().name}.");
+            
+            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>, bool>(cont, new_functions, true));
         }
 
         /// <summary>
         /// Safely exit the context created by ENTER_RETURNABLE_CONTEXT()
         /// </summary>
         public void EXIT_CONTEXT() {
-            logger.Verbose($"Exiting from {current_variables.name} to {temp_state.Item2.name}. Restoring previous copy of function declarations");
-            flag_return = temp_state.Item1;
-            all_variables.Remove(current_variables);
-            current_variables = temp_state.Item2;
-            current_functions = temp_state.Item3;
-            temp_state = null;
+            var current_name = current_variables().name;
+            var tuple = contexts.Last();
+            logger.Verbose($"Exiting from {current_name} to {tuple.Item1.name}.");
+            contexts.Remove(tuple);
         }
 
         public class NameHandler
@@ -208,13 +200,13 @@ namespace Skell.Interpreter
                 state = s;
             }
 
-            public bool Exists(string name) => state.current_variables.Exists(name);
+            public bool Exists(string name) => state.current_variables().Exists(name);
 
-            public Skell.Types.ISkellType Get(string name) => state.current_variables.Get(name);
+            public Skell.Types.ISkellType Get(string name) => state.current_variables().Get(name);
 
-            public void Set(string name, Skell.Types.ISkellType value) => state.current_variables.Set(name, value);
+            public void Set(string name, Skell.Types.ISkellType value) => state.current_variables().Set(name, value);
             
-            public void Delete(string name) => state.current_variables.Delete(name);
+            public void Delete(string name) => state.current_variables().Delete(name);
         }
 
         public class FunctionHandler
@@ -226,13 +218,13 @@ namespace Skell.Interpreter
                 state = s;
             }
 
-            public bool Exists(string name) => state.current_functions.Exists(name);
+            public bool Exists(string name) => state.current_functions().Exists(name);
 
-            public Skell.Types.Function Get(string name) => state.current_functions.Get(name);
+            public Skell.Types.Function Get(string name) => state.current_functions().Get(name);
 
-            public void Set(string name, Skell.Types.Function value) => state.current_functions.Set(name, value);
+            public void Set(string name, Skell.Types.Function value) => state.current_functions().Set(name, value);
             
-            public void Delete(string name) => state.current_functions.Delete(name);
+            public void Delete(string name) => state.current_functions().Delete(name);
         }
 
         public class NamespaceHandler
