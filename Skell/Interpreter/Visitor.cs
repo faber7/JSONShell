@@ -596,10 +596,9 @@ namespace Skell.Interpreter
         {
             var expr = context.expression();
 
-            if (!state.can_return()) {
-                logger.Warning("Tried to return from non-returnable area");
-                throw new System.NotImplementedException();
-            }
+            if (!state.can_return())
+                throw new Skell.Problems.InvalidReturn(new Source(context.Start, context.Stop));
+            
             Skell.Types.ISkellReturnable retval = new Skell.Types.Null();
             if (expr != null)
                 retval = VisitExpression(expr);

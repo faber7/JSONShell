@@ -182,15 +182,13 @@ namespace Skell.Problems
         }
     }
 
-    internal class InvalidNamespace : Exception
+    internal class InvalidReturn : Exception
     {
-        public InvalidNamespace(
-            Source src,
-            string ns,
-            Skell.Types.Array namespaces
+        public InvalidReturn(
+            Source src
         )
         {
-            Message = $"Namespace \"{ns}\" not found. Valid namespaces are \n{namespaces}\n";
+            Message = $"A return is not permitted at {src}. Only functions may return a value";
         }
     }
 
