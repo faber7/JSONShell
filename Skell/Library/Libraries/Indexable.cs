@@ -16,14 +16,6 @@ namespace Skell.Library
             containsfn.AddBuiltinLambda(new Skell.Library.Functions.Indexable.Contains());
             data_ns.Set(containsfn.name, containsfn);
 
-            var pushfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Indexable.Push).Name);
-            pushfn.AddBuiltinLambda(new Skell.Library.Functions.Indexable.Push());
-            data_ns.Set(pushfn.name, pushfn);
-
-            var popfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Indexable.Pop).Name);
-            popfn.AddBuiltinLambda(new Skell.Library.Functions.Indexable.Pop());
-            data_ns.Set(popfn.name, popfn);
-
             var keysfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Indexable.Keys).Name);
             keysfn.AddBuiltinLambda(new Skell.Library.Functions.Indexable.Keys());
             data_ns.Set(keysfn.name, keysfn);

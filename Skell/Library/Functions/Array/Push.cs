@@ -4,7 +4,7 @@ using System.Linq;
 using Skell.Interpreter;
 using Skell.Types;
 
-namespace Skell.Library.Functions.Indexable
+namespace Skell.Library.Functions.Array
 {
     public class Push : Skell.Types.BuiltinLambda
     {
@@ -12,7 +12,7 @@ namespace Skell.Library.Functions.Indexable
         {
             argList = new List<Tuple<string, Skell.Types.Specifier>>
             {
-                new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any),
+                new Tuple<string, Skell.Types.Specifier>("array", Skell.Types.Specifier.Array),
                 new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any)
             };
         }
