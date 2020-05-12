@@ -436,9 +436,9 @@ namespace Skell.Interpreter
                         case SkellLexer.OP_GT:
                             return r > n;
                         case SkellLexer.OP_LE:
-                            return r < n;
-                        case SkellLexer.OP_LT:
                             return r <= n;
+                        case SkellLexer.OP_LT:
+                            return r < n;
                     }
             }
             return result;
@@ -584,13 +584,13 @@ namespace Skell.Interpreter
             var elsestmts = context.statementBlock();
             var elif = context.ifControl();
 
-            // Evaluate the expression separately
-            // Do not use VisitIfThenControl as the statementBlock in the
-            // ifThenControl can return a false value
+            // Evaluate the situation manually
+            // Do not use VisitIfThenControl as it does not return values
+            // based on whether the condition is true or false
             Skell.Types.Boolean cont = Utility.EvaluateExpr(this, condition);
             if (cont.value)
                 return VisitStatementBlock(ifthenstmts);
-            else if (context.statementBlock() != null)
+            else if (elsestmts != null)
                 return VisitStatementBlock(elsestmts);
             else
                 return VisitIfControl(elif);
