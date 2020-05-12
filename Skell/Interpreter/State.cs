@@ -36,7 +36,7 @@ namespace Skell.Interpreter
             logger = Log.ForContext<State>();
 
             var origin = new Context<Skell.Types.ISkellType>("ORIGIN");
-            var functions = new Context<Skell.Types.Function>("FUNCTIONS");
+            var functions = new Context<Skell.Types.Function>("ORIGIN");
             
             contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>, bool>>();
             contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>, bool>(origin, functions, false));
