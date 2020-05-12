@@ -22,7 +22,7 @@ namespace Skell.Library.Functions.Directory
 
             var path = ((Skell.Types.String) cwd.Value).contents;
             
-            if (io.File.Exists(path) && io.File.GetAttributes(path).HasFlag(io.FileAttributes.Directory)) {
+            if (new io.DirectoryInfo(path).Exists) {
                 var list = io.Directory.GetFiles(path).Select((path) => new Skell.Types.String(path));
                 return new Skell.Types.Array(list.ToArray());
             }

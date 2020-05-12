@@ -25,7 +25,7 @@ namespace Skell.Library.Functions.Directory
 
             var cwd = (Skell.Types.Property) dir.Get("Current");
             
-            if (File.Exists(path.contents) && File.GetAttributes(path.contents).HasFlag(FileAttributes.Directory)) {
+            if (new DirectoryInfo(path.contents).Exists) {
                 if (path.contents.StartsWith("/"))
                     cwd.Value = new Skell.Types.String(path.contents);
                 else {
