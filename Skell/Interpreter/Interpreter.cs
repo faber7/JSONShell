@@ -118,6 +118,12 @@ namespace Skell.Interpreter
             } catch (Skell.Problems.Exception e) {
                 logger.Warning(e.Message);
                 Console.WriteLine(e.Message);
+            } catch (Exception e) {
+                logger.Fatal(e.Message);
+                logger.Fatal(e.StackTrace);
+                Console.WriteLine("An internal error was reported by the runtime. A restart is suggested. The error details are given below:");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
             return 0;
         }
