@@ -619,7 +619,8 @@ namespace Skell.Interpreter
 
                 Skell.Types.ISkellReturnable returnvalue = defaultReturnValue;
 
-                foreach (Skell.Types.ISkellType data in arr) {
+                for (int i = 0; i < arr.Count().integerValue; i++) {
+                    var data = arr.GetMember(new Skell.Types.Number(i));
                     state.Variables.Set(varName, data);
                     var ret = VisitStatementBlock(stmts);
                     if (state.HasReturned()) {
