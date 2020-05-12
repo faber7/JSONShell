@@ -22,7 +22,7 @@ namespace Skell.Library.Functions
                 Console.Write(str.contents);
                 return new Skell.Types.None();
             }
-            Console.Write(args.First().ToString());
+            Console.Write(args.First().Item3.ToString());
 
             return new Skell.Types.None();
         }
@@ -44,7 +44,7 @@ namespace Skell.Library.Functions
                 Console.WriteLine(str.contents);
                 return new Skell.Types.None();
             }
-            Console.WriteLine(args.First().ToString());
+            Console.WriteLine(args.First().Item3.ToString());
 
             return new Skell.Types.None();
         }
