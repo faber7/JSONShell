@@ -57,8 +57,10 @@ namespace Skell.Library.Functions.Name
                 Console.WriteLine("Aliasing failed! The given namespaced id does not refer to a function.");
                 return new Skell.Types.None();
             }
+            
+            var tup = state.contexts.First();
 
-            state.Functions.Set(name.contents, (Skell.Types.Function) result);
+            tup.Item2.Set(name.contents, (Skell.Types.Function) result);
 
             return new Skell.Types.None();
         }
