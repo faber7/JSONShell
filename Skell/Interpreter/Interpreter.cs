@@ -157,7 +157,7 @@ namespace Skell.Interpreter
                         stack.Push('}');
                     else if (c == '[')
                         stack.Push(']');
-                    else if (stack.Peek() == c) 
+                    else if (stack.TryPeek(out char top) && top == c) 
                         stack.Pop();
                     else
                         continueInput = true;
