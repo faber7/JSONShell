@@ -13,9 +13,11 @@ namespace Skell.Library.Functions.Name
     {
         public Alias()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("name", Skell.Types.Specifier.String));
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("namespacedid", Skell.Types.Specifier.String));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("name", Skell.Types.Specifier.String),
+                new Tuple<string, Skell.Types.Specifier>("namespacedid", Skell.Types.Specifier.String)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
@@ -53,7 +55,7 @@ namespace Skell.Library.Functions.Name
             }
             
             var result = Utility.GetNamespacedIdentifier(context, state);
-            if (!(result is Skell.Types.Function fn)) {
+            if (!(result is Skell.Types.Function)) {
                 Console.WriteLine("Aliasing failed! The given namespaced id does not refer to a function.");
                 return new Skell.Types.None();
             }

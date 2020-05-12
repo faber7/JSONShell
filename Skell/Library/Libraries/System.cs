@@ -12,10 +12,12 @@ namespace Skell.Library
         {
             var system = new Skell.Types.Namespace(typeof(System).Name);
 
-            var libraries = new List<Skell.Types.Namespace>();
-            libraries.Add((new Skell.Library.Indexable()).AsNamespace());
-            libraries.Add((new Skell.Library.Name()).AsNamespace());
-            libraries.Add((new Skell.Library.Directory()).AsNamespace());
+            var libraries = new List<Skell.Types.Namespace>
+            {
+                (new Skell.Library.Indexable()).AsNamespace(),
+                (new Skell.Library.Name()).AsNamespace(),
+                (new Skell.Library.Directory()).AsNamespace()
+            };
 
             foreach (var library in libraries) {
                 library.parent = system;
@@ -30,7 +32,7 @@ namespace Skell.Library
             printlnnfn.AddBuiltinLambda(new Skell.Library.Functions.PrintLine());
             system.Set(printlnnfn.name, printlnnfn);
 
-            system.Set("Path", getPath());
+            system.Set("Path", GetPath());
 
             var addtopathfn = new Skell.Types.Function(typeof(Skell.Library.Functions.AddToPath).Name);
             addtopathfn.AddBuiltinLambda(new Skell.Library.Functions.AddToPath());
@@ -51,18 +53,21 @@ namespace Skell.Library
             return system;
         }
 
-        private Skell.Types.Property getPath()
+        private Skell.Types.Property GetPath()
         {
             var sysPath = Environment.GetEnvironmentVariable("PATH");
             var array = sysPath.Split(':').Select((str) => new Skell.Types.String(str)).ToArray();
             var skellArr = new Skell.Types.Array(array);
-            var prop = new Skell.Types.Property((arr) => {
-                var array = ((Skell.Types.Array) arr).ListValues().Select((str) => ((Skell.Types.String) str).contents);
+            var prop = new Skell.Types.Property((arr) =>
+            {
+                var array = ((Skell.Types.Array)arr).ListValues().Select((str) => ((Skell.Types.String)str).contents);
                 var pathstr = string.Join(':', array);
                 Environment.SetEnvironmentVariable("PATH", pathstr);
                 Log.Verbose($"Set $PATH: {pathstr}");
-            });
-            prop.value = skellArr;
+            })
+            {
+                Value = skellArr
+            };
             return prop;
         }
     }

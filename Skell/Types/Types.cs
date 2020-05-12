@@ -56,7 +56,7 @@ namespace Skell.Types
         public Action<ISkellType> action;
         private ISkellType _value;
 
-        public ISkellType value
+        public ISkellType Value
         {
             get { return _value; }
             set

@@ -11,8 +11,10 @@ namespace Skell.Library.Functions
     {
         public SetPath()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("string_array", Skell.Types.Specifier.Array));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("string_array", Skell.Types.Specifier.Array)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
@@ -30,7 +32,7 @@ namespace Skell.Library.Functions
                 }
 
                 var pathprop = (Skell.Types.Property) system.Get("Path");
-                pathprop.value = new Skell.Types.Array(arrPath.ToArray());
+                pathprop.Value = new Skell.Types.Array(arrPath.ToArray());
 
                 var pathstr = string.Join(':', arrPath);
                 Environment.SetEnvironmentVariable("PATH", pathstr);

@@ -16,8 +16,10 @@ namespace Skell.Types
 
         public Array(ISkellType value)
         {
-            contents = new List<ISkellType>();
-            contents.Add(value);
+            contents = new List<ISkellType>
+            {
+                value
+            };
         }
 
         public Array(ISkellType[] values)

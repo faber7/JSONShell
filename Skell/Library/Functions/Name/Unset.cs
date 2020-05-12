@@ -10,8 +10,10 @@ namespace Skell.Library.Functions.Name
     {
         public Unset()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("name", Skell.Types.Specifier.String));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("name", Skell.Types.Specifier.String)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)

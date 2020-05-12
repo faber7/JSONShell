@@ -10,7 +10,7 @@ namespace Skell.Library
         {
             var dir_ns = new Skell.Types.Namespace(typeof(Directory).Name);
 
-            dir_ns.Set("Current", getCWD());
+            dir_ns.Set("Current", GetCWD());
 
             var changefn = new Skell.Types.Function(typeof(Skell.Library.Functions.Directory.Change).Name);
             changefn.AddBuiltinLambda(new Skell.Library.Functions.Directory.Change());
@@ -24,14 +24,17 @@ namespace Skell.Library
             return dir_ns;
         }
 
-        private Property getCWD()
+        private Property GetCWD()
         {
             var cwd = Environment.CurrentDirectory;
 
-            var prop = new Property((ncwd) => {
+            var prop = new Property((ncwd) =>
+            {
                 Log.Verbose($"Current directory is now {ncwd}");
-            });
-            prop.value = new Skell.Types.String(cwd);
+            })
+            {
+                Value = new Skell.Types.String(cwd)
+            };
 
             return prop;
         }

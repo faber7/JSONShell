@@ -10,8 +10,10 @@ namespace Skell.Library.Functions.Indexable
     {
         public Pop()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
@@ -26,13 +28,13 @@ namespace Skell.Library.Functions.Indexable
                     result = arr.GetMember(index);
                     arr.Delete(index);
                 }
-            } else if (indexable is Skell.Types.Property prop && prop.value is Skell.Types.Array array) {
+            } else if (indexable is Skell.Types.Property prop && prop.Value is Skell.Types.Array array) {
                 var index = array.Count() - new Number(1);
                 if (array.ListIndices().Contains(index)) {
                     result = array.GetMember(index);
                     array.Delete(index);
 
-                    prop.value = new Skell.Types.Array(array.ListValues());
+                    prop.Value = new Skell.Types.Array(array.ListValues());
                 }
             }
             

@@ -10,9 +10,11 @@ namespace Skell.Library.Functions.Indexable
     {
         public Push()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any));
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any),
+                new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
@@ -22,9 +24,9 @@ namespace Skell.Library.Functions.Indexable
 
             if (indexable is Skell.Types.Array arr)
                 arr.Insert(arr.Count(), value);
-            else if (indexable is Skell.Types.Property prop && prop.value is Skell.Types.Array array) {
+            else if (indexable is Skell.Types.Property prop && prop.Value is Skell.Types.Array array) {
                 array.Insert(array.Count(), value);
-                prop.value = new Skell.Types.Array(array.ListValues());
+                prop.Value = new Skell.Types.Array(array.ListValues());
             }
             
             return new Skell.Types.None();

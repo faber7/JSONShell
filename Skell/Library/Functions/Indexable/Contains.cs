@@ -10,16 +10,18 @@ namespace Skell.Library.Functions.Indexable
     {
         public Contains()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any));
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("indexable", Skell.Types.Specifier.Any),
+                new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
         {
             var indexable1 = args.First().Item3;
             if (indexable1 is Skell.Types.Property prop)
-                indexable1 = prop.value;
+                indexable1 = prop.Value;
             var value = args.Skip(1).First().Item3;
 
             if (indexable1 is Skell.Types.ISkellIndexable indexable)

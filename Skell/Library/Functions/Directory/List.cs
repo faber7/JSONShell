@@ -20,7 +20,7 @@ namespace Skell.Library.Functions.Directory
             var dir = (Skell.Types.Namespace) system.Get("Directory");
             var cwd = (Skell.Types.Property) dir.Get("Current");
 
-            var path = ((Skell.Types.String) cwd.value).contents;
+            var path = ((Skell.Types.String) cwd.Value).contents;
             
             if (io.File.Exists(path) && io.File.GetAttributes(path).HasFlag(io.FileAttributes.Directory)) {
                 var list = io.Directory.GetFiles(path).Select((path) => new Skell.Types.String(path));
@@ -35,8 +35,10 @@ namespace Skell.Library.Functions.Directory
     {
         public ListDir()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("string", Skell.Types.Specifier.String));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("string", Skell.Types.Specifier.String)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)

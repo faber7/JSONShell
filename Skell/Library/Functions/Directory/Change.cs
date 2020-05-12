@@ -11,8 +11,10 @@ namespace Skell.Library.Functions.Directory
     {
         public Change()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("string", Skell.Types.Specifier.String));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("string", Skell.Types.Specifier.String)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
@@ -25,10 +27,10 @@ namespace Skell.Library.Functions.Directory
             
             if (File.Exists(path.contents) && File.GetAttributes(path.contents).HasFlag(FileAttributes.Directory)) {
                 if (path.contents.StartsWith("/"))
-                    cwd.value = new Skell.Types.String(path.contents);
+                    cwd.Value = new Skell.Types.String(path.contents);
                 else {
-                    var ncwd = Path.Join(((Skell.Types.String)cwd.value).contents, path.contents);
-                    cwd.value = new Skell.Types.String(ncwd);
+                    var ncwd = Path.Join(((Skell.Types.String)cwd.Value).contents, path.contents);
+                    cwd.Value = new Skell.Types.String(ncwd);
                 }
             }
 

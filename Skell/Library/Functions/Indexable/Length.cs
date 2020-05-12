@@ -10,15 +10,17 @@ namespace Skell.Library.Functions.Indexable
     {
         public Length()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("value", Skell.Types.Specifier.Any)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, Skell.Types.ISkellType>> args)
         {
             var value = args.First().Item3;
             if (value is Skell.Types.Property prop)
-                value = prop.value;
+                value = prop.Value;
 
             if (value is Skell.Types.ISkellIndexable indexable)
                 return indexable.Count();

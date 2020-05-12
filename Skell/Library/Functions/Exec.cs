@@ -11,8 +11,10 @@ namespace Skell.Library.Functions
     {
         public Exec()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("string_array", Skell.Types.Specifier.Array));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("string_array", Skell.Types.Specifier.Array)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)

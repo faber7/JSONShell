@@ -28,7 +28,9 @@ namespace Skell.Interpreter
                     .ToIntegerList()
                     .Select((tok, index) => {
                         var str = recognizer.Vocabulary.GetLiteralName(tok);
-                        return (str != null) ? str : recognizer.Vocabulary.GetDisplayName(tok);
+                        if (str == null)
+                            return recognizer.Vocabulary.GetDisplayName(tok);
+                        return str;
                     }).ToList();
             sb.Append("Expected one of: " +  String.Join(", ", expected));
             throw new ParseFailure(sb.ToString());
@@ -50,7 +52,7 @@ namespace Skell.Interpreter
         private ITokenSource lexer;
         private SkellParser parser;
         private readonly Visitor visitor;
-        private State state;
+        private readonly State state;
 
         public Interpreter()
         {
@@ -143,12 +145,10 @@ namespace Skell.Interpreter
             Console.WriteLine("Press Ctrl+D to exit the prompt.");
 
             Stack<char> stack = new Stack<char>();
-            bool continueInput = false;
-            char top;
+            bool continueInput;
             string input = "", inp;
             Console.Write("> ");
             while ((inp = Console.In.ReadLine()) != null) {
-                continueInput = false;
                 // Atleast verify whether the brackets are balanced
                 foreach (char c in inp) {
                     if (c == '(')
@@ -157,19 +157,18 @@ namespace Skell.Interpreter
                         stack.Push('}');
                     else if (c == '[')
                         stack.Push(']');
-                    else if (stack.TryPeek(out top) && c == top) 
+                    else if (stack.Peek() == c) 
                         stack.Pop();
                     else
                         continueInput = true;
                 }
 
-                continueInput = (stack.Count > 0) ? true : false ;
+                continueInput = stack.Count > 0;
 
                 input = input + inp + '\n';
                 if (!continueInput) {
                     Interprete(input, false);
                     input = "";
-                    continueInput = false;
                     Console.Write("\n> ");
                 }
             }

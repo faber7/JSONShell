@@ -11,8 +11,10 @@ namespace Skell.Library.Functions
     {
         public AddToPath()
         {
-            argList = new List<Tuple<string, Skell.Types.Specifier>>();
-            argList.Add(new Tuple<string, Skell.Types.Specifier>("path", Skell.Types.Specifier.String));
+            argList = new List<Tuple<string, Skell.Types.Specifier>>
+            {
+                new Tuple<string, Skell.Types.Specifier>("path", Skell.Types.Specifier.String)
+            };
         }
 
         public override ISkellReturnable Execute(State state, List<Tuple<int, string, ISkellType>> args)
@@ -21,13 +23,13 @@ namespace Skell.Library.Functions
             var system = state.Namespaces.Get(typeof(Skell.Library.System).Name);
 
             var arr = (Skell.Types.Property) system.Get("Path");
-            var origarr = (Skell.Types.Array) arr.value;
+            var origarr = (Skell.Types.Array) arr.Value;
             var arrPath = new Skell.Types.Array(origarr.ListValues());
 
             if (path is Skell.Types.String strPath) 
                 if (File.Exists(strPath.contents) && File.GetAttributes(strPath.contents).HasFlag(FileAttributes.Directory)) {
                     arrPath.Insert(arrPath.Count(), strPath);
-                    arr.value = new Skell.Types.Array(arrPath.ListValues());
+                    arr.Value = new Skell.Types.Array(arrPath.ListValues());
                 }
             
             return new Skell.Types.None();

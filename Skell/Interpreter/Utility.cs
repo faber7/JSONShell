@@ -73,7 +73,7 @@ namespace Skell.Interpreter
                         if (lambda is Skell.Types.BuiltinLambda)
                             state.Variables.Set(arg.Item2, prop);
                         else
-                            state.Variables.Set(arg.Item2, prop.value);
+                            state.Variables.Set(arg.Item2, prop.Value);
                     else 
                         state.Variables.Set(arg.Item2, arg.Item3);
 
@@ -86,9 +86,9 @@ namespace Skell.Interpreter
                     returnValue = ((Skell.Types.BuiltinLambda) lambda).Execute(state, args);
 
                 //cleanup
-                if (state.has_returned()) {
+                if (state.HasReturned()) {
                     logger.Debug($"{function.name} returned {returnValue}");
-                    state.end_return();
+                    state.EndReturn();
                 }
                 state.EXIT_CONTEXT();
 
@@ -117,7 +117,7 @@ namespace Skell.Interpreter
             var parser = new SkellParser(tokenStream);
             var tree = parser.@namespace();
 
-            return new Skell.Types.Namespace(pathDir, tree, visitor);
+            return new Skell.Types.Namespace(rename, pathDir, tree, visitor);
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace Skell.Interpreter
         public static Skell.Types.ISkellReturnable GetReturnableValue(Skell.Types.ISkellReturnable returnable)
         {
             if (returnable is Skell.Types.Property prop)
-                return prop.value;
+                return prop.Value;
 
             return returnable;
         }

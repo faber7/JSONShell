@@ -9,7 +9,7 @@ namespace Skell.Types
         public Namespace parent;
         public string definitionDirectory;
         public string name;
-        private Dictionary<string, Skell.Types.ISkellNamedType> contents;
+        private readonly Dictionary<string, Skell.Types.ISkellNamedType> contents;
 
         /// <summary>
         /// This overloaded constructor is only for internal use (loading builtins)
@@ -27,19 +27,23 @@ namespace Skell.Types
         /// namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
         /// namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
         /// </summary>
-        public Namespace(string from, Skell.Generated.SkellParser.NamespaceContext context, Visitor visitor)
+        public Namespace(string name, string from, Skell.Generated.SkellParser.NamespaceContext context, Visitor visitor)
         {
             definitionDirectory = from;
             contents = new Dictionary<string, Types.ISkellNamedType>();
-            name = context.IDENTIFIER().GetText();
+            this.name = name;
+            if (name == "")
+                this.name = context.IDENTIFIER().GetText();
             foreach (var stmt in context.namespaceStmt()) {
                 var nsContext = stmt.@namespace();
                 var nsDecl = stmt.namespaceDecl();
                 var nsLoad = stmt.namespaceLoad();
 
                 if (nsContext != null) {
-                    var ns = new Namespace(definitionDirectory, nsContext, visitor);
-                    ns.parent = this;
+                    var ns = new Namespace("", definitionDirectory, nsContext, visitor)
+                    {
+                        parent = this
+                    };
                     Set(ns.name, ns);
                 } else if (nsDecl != null) {
                     string nm = nsDecl.IDENTIFIER().GetText();
@@ -71,21 +75,21 @@ namespace Skell.Types
                         }
                     }
                 } else if (nsLoad != null) {
-                    var name = Utility.GetString(nsLoad.STRING().GetText(), visitor);
+                    name = Utility.GetString(nsLoad.STRING().GetText(), visitor).contents;
                     string newPath;
-                    if (definitionDirectory == "." && name.contents.StartsWith("./")) {
-                        newPath = name.contents;
-                    } else if (definitionDirectory != "." && name.contents.StartsWith("/")) {
-                        newPath = name.contents;
+                    if (definitionDirectory == "." && name.StartsWith("./")) {
+                        newPath = name;
+                    } else if (definitionDirectory != "." && name.StartsWith("/")) {
+                        newPath = name;
                     } else {
-                        if (!(definitionDirectory.EndsWith('/')) && name.contents.StartsWith("./")) {
-                            newPath = definitionDirectory + name.contents.Substring(1);
+                        if (!(definitionDirectory.EndsWith('/')) && name.StartsWith("./")) {
+                            newPath = definitionDirectory + name.Substring(1);
                         } else {
-                            newPath = definitionDirectory + name.contents;
+                            newPath = definitionDirectory + name;
                         }
                     }
                     var ns = Utility.LoadNamespace(
-                        name.contents,
+                        name,
                         nsLoad.IDENTIFIER() != null ? nsLoad.IDENTIFIER().GetText() : "",
                         visitor
                     );

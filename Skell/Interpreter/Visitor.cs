@@ -14,7 +14,7 @@ namespace Skell.Interpreter
         private static ILogger logger;
         public ICharStream tokenSource;
 
-        private State state;
+        private readonly State state;
 
         public Visitor(State st)
         {
@@ -55,7 +55,7 @@ namespace Skell.Interpreter
             var ctx_stmt = context.statement();
 
             if (ctx_ns != null) {
-                var ns = new Skell.Types.Namespace(".", ctx_ns, this);
+                var ns = new Skell.Types.Namespace("", ".", ctx_ns, this);
                 state.Namespaces.Register(ns);
                 return defaultReturnValue;
             } else
@@ -165,7 +165,7 @@ namespace Skell.Interpreter
                     if (str.StartsWith("\"") && str.EndsWith("\""))
                         return Utility.GetString(str, this).ToString();
                     else if (str.StartsWith('`') && str.EndsWith('`'))
-                        return str.Substring(1, str.Length - 2);
+                        return str[1..^1];
 
                     return str;
                 }
@@ -190,7 +190,7 @@ namespace Skell.Interpreter
             var statements = context.statement();
             foreach (var statement in statements) {
                 var result = VisitStatement(statement);
-                if (state.has_returned())
+                if (state.HasReturned())
                     // do not unset state.has_returned() here as it is the caller's job
                     return result;
             }
@@ -262,7 +262,6 @@ namespace Skell.Interpreter
                     else
                         throw new Skell.Problems.InvalidDefinition(src_expression, name, state);
                 } else {
-                    Skell.Types.UserDefinedLambda lambda = new Skell.Types.UserDefinedLambda(ctx_function);
                     Source src_function = new Source(ctx_function.Start, ctx_function.Stop);
 
                     if (state.Names.Available(name) || state.Names.DefinedAs(name, typeof(Skell.Types.Function))) {
@@ -554,7 +553,6 @@ namespace Skell.Interpreter
             primary = Utility.GetReturnableValue(primary);
             if (primary is Skell.Types.Array arr) {
                 string varName = id.GetText();
-                Skell.Types.ISkellReturnable result = defaultReturnValue;
 
                 // Shadow the name if it already exists
                 Skell.Types.ISkellNamedType backup = null;
@@ -596,13 +594,13 @@ namespace Skell.Interpreter
         {
             var expr = context.expression();
 
-            if (!state.can_return())
+            if (!state.CanReturn())
                 throw new Skell.Problems.InvalidReturn(new Source(context.Start, context.Stop));
             
             Skell.Types.ISkellReturnable retval = new Skell.Types.Null();
             if (expr != null)
                 retval = VisitExpression(expr);
-            state.start_return();
+            state.StartReturn();
             retval = Utility.GetReturnableValue(retval);
             return retval;
         }
@@ -626,7 +624,7 @@ namespace Skell.Interpreter
                 Skell.Types.Number numUnary = new Skell.Types.Number(VisitUnary(unary).ToString());
                 return -numUnary;
             }
-            return VisitPrimary(context.primary());
+            return VisitPrimary(primary);
         }
 
         /// <summary>
@@ -786,7 +784,6 @@ namespace Skell.Interpreter
             var ctx_st = context.STRING();
             var ctx_nm = context.NUMBER();
             var ctx_bl = context.@bool(); 
-            var ctx_null = context.KW_NULL();
 
             if (ctx_ob != null)
                 return VisitObject(ctx_ob);

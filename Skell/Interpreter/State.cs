@@ -36,10 +36,12 @@ namespace Skell.Interpreter
 
             var origin = new Context<Skell.Types.ISkellType>("ORIGIN");
             var functions = new Context<Skell.Types.Function>("ORIGIN");
-            
-            contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>>();
-            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>>(origin, functions));
-            
+
+            contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>>
+            {
+                new Tuple<Context<Types.ISkellType>, Context<Types.Function>>(origin, functions)
+            };
+
             all_namespaces = new Dictionary<string, Skell.Types.Namespace>();
 
             this.Variables = new VariableHandler(this);
@@ -48,12 +50,12 @@ namespace Skell.Interpreter
             this.Names = new NameHandler(this);
         }
 
-        internal Context<Skell.Types.ISkellType> current_variables() => contexts.Last().Item1;
-        internal Context<Skell.Types.Function> current_functions() => contexts.Last().Item2;
-        public bool can_return() => contexts.Last() != contexts.First();
-        public bool has_returned() => flag_returned;
-        public bool start_return() => flag_returned = true;
-        public bool end_return() => flag_returned = false;
+        internal Context<Skell.Types.ISkellType> CurrentVariables() => contexts.Last().Item1;
+        internal Context<Skell.Types.Function> CurrentFunctions() => contexts.Last().Item2;
+        public bool CanReturn() => contexts.Last() != contexts.First();
+        public bool HasReturned() => flag_returned;
+        public bool StartReturn() => flag_returned = true;
+        public bool EndReturn() => flag_returned = false;
 
         /// <summary>
         /// Safely enter a new returnable context
@@ -64,7 +66,7 @@ namespace Skell.Interpreter
             var cont = new Context<Skell.Types.ISkellType>(ctx_name);
             var new_functions = new Context<Skell.Types.Function>(ctx_name);
 
-            logger.Verbose($"Entering a new context {cont.name} from {current_variables().name}.");
+            logger.Verbose($"Entering a new context {cont.name} from {CurrentVariables().name}.");
             
             contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>>(cont, new_functions));
         }
@@ -73,7 +75,7 @@ namespace Skell.Interpreter
         /// Safely exit the context created by ENTER_RETURNABLE_CONTEXT()
         /// </summary>
         public void EXIT_CONTEXT() {
-            var current_name = current_variables().name;
+            var current_name = CurrentVariables().name;
             var tuple = contexts.Last();
             logger.Verbose($"Exiting from {current_name} to {tuple.Item1.name}.");
             contexts.Remove(tuple);
@@ -81,12 +83,12 @@ namespace Skell.Interpreter
 
         public class NameHandler
         {
-            private string error_not_found = "Name not found";
+            private readonly string error_not_found = "Name not found";
 
-            private ILogger logger;
-            private VariableHandler variables;
-            private FunctionHandler functions;
-            private NamespaceHandler namespaces;
+            private readonly ILogger logger;
+            private readonly VariableHandler variables;
+            private readonly FunctionHandler functions;
+            private readonly NamespaceHandler namespaces;
 
             public NameHandler(State s)
             {
@@ -192,43 +194,43 @@ namespace Skell.Interpreter
 
         public class VariableHandler
         {
-            private State state;
+            private readonly State state;
 
             public VariableHandler(State s)
             {
                 state = s;
             }
 
-            public bool Exists(string name) => state.current_variables().Exists(name);
+            public bool Exists(string name) => state.CurrentVariables().Exists(name);
 
-            public Skell.Types.ISkellType Get(string name) => state.current_variables().Get(name);
+            public Skell.Types.ISkellType Get(string name) => state.CurrentVariables().Get(name);
 
-            public void Set(string name, Skell.Types.ISkellType value) => state.current_variables().Set(name, value);
+            public void Set(string name, Skell.Types.ISkellType value) => state.CurrentVariables().Set(name, value);
             
-            public void Delete(string name) => state.current_variables().Delete(name);
+            public void Delete(string name) => state.CurrentVariables().Delete(name);
         }
 
         public class FunctionHandler
         {
-            private State state;
+            private readonly State state;
 
             public FunctionHandler(State s)
             {
                 state = s;
             }
 
-            public bool Exists(string name) => state.current_functions().Exists(name);
+            public bool Exists(string name) => state.CurrentFunctions().Exists(name);
 
-            public Skell.Types.Function Get(string name) => state.current_functions().Get(name);
+            public Skell.Types.Function Get(string name) => state.CurrentFunctions().Get(name);
 
-            public void Set(string name, Skell.Types.Function value) => state.current_functions().Set(name, value);
+            public void Set(string name, Skell.Types.Function value) => state.CurrentFunctions().Set(name, value);
             
-            public void Delete(string name) => state.current_functions().Delete(name);
+            public void Delete(string name) => state.CurrentFunctions().Delete(name);
         }
 
         public class NamespaceHandler
         {
-            private State state;
+            private readonly State state;
 
             internal NamespaceHandler(State s)
             {

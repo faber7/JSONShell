@@ -17,12 +17,12 @@ namespace Skell.Interpreter
             this.name = name;
         }
 
-        public Dictionary<string, T> pairs => mem;
+        public Dictionary<string, T> Pairs => mem;
 
         public static Context<T> Copy(Context<T> context)
         {
             var ct = new Context<T>(context.name);
-            foreach (var pair in context.pairs)
+            foreach (var pair in context.Pairs)
                 ct.Set(pair.Key, pair.Value);
             return ct;
         }
