@@ -20,7 +20,6 @@ namespace Skell.Interpreter
         // These are backup variables, only used with the 4 special functions in this class
 
         private Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>> temp_state;
-        private Context<Skell.Types.Function> temp_functions;
 
         // These variables act as the public api for handling
         // requests related to variables, functions, namespaces, and names
@@ -54,13 +53,14 @@ namespace Skell.Interpreter
 
         /// <summary>
         /// Safely enter a new returnable context
-        /// Any new functions created are lost on switching back
+        /// Any new definitions are lost on switching back with EXIT_CONTEXT
         /// </summary>
-        public void ENTER_RETURNABLE_CONTEXT(string name) {
-            var cont = new Context<Skell.Types.ISkellType>("{" + name + "}");
-            var new_functions = Context<Skell.Types.Function>.Copy(current_functions);
+        public void ENTER_CONTEXT(string name) {
+            var ctx_name = "{" + name + "}";
+            var cont = new Context<Skell.Types.ISkellType>(ctx_name);
+            var new_functions = new Context<Skell.Types.Function>(ctx_name);
 
-            logger.Verbose($"Entering a new returnable context {cont.name} from {current_variables.name}. Creating a copy of function declarations.");
+            logger.Verbose($"Entering a new context {cont.name} from {current_variables.name}.");
 
             // Create a backup of current context and function context
             temp_state = new Tuple<bool, Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>(
@@ -71,6 +71,7 @@ namespace Skell.Interpreter
 
             flag_return = true;
             all_variables.Add(cont);
+
             current_variables = cont;
             current_functions = new_functions;
         }
@@ -78,37 +79,13 @@ namespace Skell.Interpreter
         /// <summary>
         /// Safely exit the context created by ENTER_RETURNABLE_CONTEXT()
         /// </summary>
-        public void EXIT_RETURNABLE_CONTEXT() {
+        public void EXIT_CONTEXT() {
             logger.Verbose($"Exiting from {current_variables.name} to {temp_state.Item2.name}. Restoring previous copy of function declarations");
             flag_return = temp_state.Item1;
             all_variables.Remove(current_variables);
             current_variables = temp_state.Item2;
             current_functions = temp_state.Item3;
             temp_state = null;
-        }
-
-        /// <summary>
-        /// Disable user-defined functions.
-        /// Note that namespaced functions will still work,
-        /// as well as any locally defined functions after this call
-        /// </summary>
-        public void DISABLE_GLOBAL_FUNCTIONS(bool log = false) {
-            if (log)
-                logger.Verbose("Disabling all existing functions");
-
-            temp_functions = current_functions;
-            current_functions = new Context<Types.Function>("TEMP_FUNCTIONS");
-        }
-
-        /// <summary>
-        /// Enable user-defined functions.
-        /// </summary>
-        public void ENABLE_GLOBAL_FUNCTIONS(bool log = false) {
-            if (log)
-                logger.Verbose("Restoring global functions");
-
-            current_functions = temp_functions;
-            temp_functions = new Context<Types.Function>("TEMP_FUNCTIONS");
         }
 
         public class NameHandler

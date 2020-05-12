@@ -515,7 +515,7 @@ namespace Skell.Interpreter
                 string varName = id.GetText();
                 Skell.Types.ISkellReturnable result = defaultReturnValue;
 
-                state.ENTER_RETURNABLE_CONTEXT($"for {varName} in {arr}");
+                state.ENTER_CONTEXT($"for {varName} in {arr}");
 
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.Variables.Set(varName, data);
@@ -528,7 +528,7 @@ namespace Skell.Interpreter
                     }
                 }
 
-                state.EXIT_RETURNABLE_CONTEXT();
+                state.EXIT_CONTEXT();
                 return defaultReturnValue;
             }
             throw new Skell.Problems.UnexpectedType(
@@ -618,11 +618,9 @@ namespace Skell.Interpreter
             var identifier = context.IDENTIFIER();
 
             Skell.Types.ISkellNamedType id;
-            bool isNamespaced = false;
-            if (namespacedIdentifier != null) {
+            if (namespacedIdentifier != null)
                 id = Utility.GetNamespacedIdentifier(namespacedIdentifier, state);
-                isNamespaced = true;
-            } else
+            else
                 id = state.Names.DefinitionOf(identifier.GetText());
             
             if (!(id is Skell.Types.Function))
@@ -648,18 +646,12 @@ namespace Skell.Interpreter
                 i++;
             }
 
-            if (isNamespaced)
-                state.DISABLE_GLOBAL_FUNCTIONS(true);
-
             var result = Utility.Function.ExecuteFunction(
                 this,
                 state,
                 fn,
                 args
             );
-
-            if (isNamespaced)
-                state.ENABLE_GLOBAL_FUNCTIONS(true);
 
             return result;
         }
@@ -690,23 +682,12 @@ namespace Skell.Interpreter
             // term : IDENTIFIER ;
             if (ctx_id != null) {
                 var name = context.IDENTIFIER().GetText();
-                // if it is a function, it is handled in VisitPrimary()
                 return Utility.GetIdentifer(new Source(ctx_id.Symbol), name, state);
             }
             
             // term : namespacedIdentifier ;
             if (ctx_nid != null) {
-                var ret = Utility.GetNamespacedIdentifier(ctx_nid, state);
-                // handle the function case here because VisitPrimary() will not know if
-                // VisitTerm() returned a namespaced function or not
-                if (ret is Skell.Types.Function func) {
-                    var lambda = func.SelectLambda(new List<Tuple<int, Types.ISkellType>>());
-                    if (lambda != null)
-                        return Utility.Function.ExecuteNamespacedFunction(
-                            this, state, func, null
-                        );
-                }
-                return ret;
+                return Utility.GetNamespacedIdentifier(ctx_nid, state);
             }
 
             // term : term LSQR index RSQR ;
@@ -720,6 +701,7 @@ namespace Skell.Interpreter
                 // two possibilities:
                 // - fn takes no arguments, returns an indexable
                 // - fn takes an array/any as input
+
                 var args = new List<Tuple<int, Skell.Types.ISkellType>>();
                 if (fn.SelectLambda(args) != null) {
                     // 1st case

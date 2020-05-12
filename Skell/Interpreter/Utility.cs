@@ -32,8 +32,11 @@ namespace Skell.Interpreter
             }
 
             /// <summary>
-            /// Sets up, executes, and then cleans up function calls
+            /// Sets up, executes, and then cleans up function calls.
             /// </summary>
+            /// <remark>
+            /// Set name to "" if the function is namespaced.
+            /// </remark>
             public static Skell.Types.ISkellReturnable ExecuteFunction(
                 SkellBaseVisitor<Skell.Types.ISkellReturnable> visitor,
                 State state,
@@ -62,7 +65,8 @@ namespace Skell.Interpreter
                 }
                 
                 // pre-setup for state
-                state.ENTER_RETURNABLE_CONTEXT($"{function.name}{argString}");
+                state.ENTER_CONTEXT($"{function.name}{argString}");
+
                 // set up state with arguments in context
                 foreach (var arg in args)
                     if (arg.Item3 is Skell.Types.Property prop)
@@ -72,6 +76,9 @@ namespace Skell.Interpreter
                             state.Variables.Set(arg.Item2, prop.value);
                     else 
                         state.Variables.Set(arg.Item2, arg.Item3);
+
+                // allow the function to call itself through its own identifier
+                state.Functions.Set(function.name, function);
                 
                 if (lambda is Skell.Types.UserDefinedLambda udLambda)
                     returnValue = udLambda.Execute(visitor);
@@ -83,31 +90,9 @@ namespace Skell.Interpreter
                     logger.Debug($"{function.name} returned {returnValue}");
                     state.end_return();
                 }
-                state.EXIT_RETURNABLE_CONTEXT();
+                state.EXIT_CONTEXT();
 
                 return returnValue;
-            }
-
-            /// <summary>
-            /// Sets up, executes, and then cleans up namespaced function calls
-            /// </summary>
-            public static Skell.Types.ISkellReturnable ExecuteNamespacedFunction(
-                SkellBaseVisitor<Skell.Types.ISkellReturnable> visitor,
-                State state,
-                Skell.Types.Function function,
-                List<Tuple<int, Skell.Types.ISkellType>> unnamedArgs
-            )
-            {
-                state.DISABLE_GLOBAL_FUNCTIONS(true);
-                var result = Utility.Function.ExecuteFunction(
-                    visitor,
-                    state,
-                    function,
-                    null
-                );
-                state.ENABLE_GLOBAL_FUNCTIONS(false);
-
-                return result;
             }
         }
 
@@ -254,7 +239,7 @@ namespace Skell.Interpreter
             var named = Utility.GetNamespacedIdentifier(context, state);
 
             if (named is Skell.Types.Function fn)
-                return Utility.Function.ExecuteNamespacedFunction(
+                return Utility.Function.ExecuteFunction(
                     visitor,
                     state,
                     fn,
