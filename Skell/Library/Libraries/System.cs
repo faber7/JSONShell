@@ -50,6 +50,11 @@ namespace Skell.Library
             execfn.AddBuiltinLambda(new Skell.Library.Functions.Exec());
             system.Set(execfn.name, execfn);
 
+            var exitfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Exit).Name);
+            exitfn.AddBuiltinLambda(new Skell.Library.Functions.Exit());
+            exitfn.AddBuiltinLambda(new Skell.Library.Functions.ExitWithCode());
+            system.Set(exitfn.name, exitfn);
+
             return system;
         }
 
