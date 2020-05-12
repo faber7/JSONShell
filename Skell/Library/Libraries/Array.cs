@@ -24,6 +24,10 @@ namespace Skell.Library
             deletefn.AddBuiltinLambda(new Skell.Library.Functions.Array.Delete());
             array_ns.Set(deletefn.name, deletefn);
 
+            var rangefn = new Skell.Types.Function(typeof(Skell.Library.Functions.Array.Range).Name);
+            rangefn.AddBuiltinLambda(new Skell.Library.Functions.Array.Range());
+            array_ns.Set(rangefn.name, rangefn);
+
             return array_ns;
         }
     }
