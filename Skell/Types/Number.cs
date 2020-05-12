@@ -23,8 +23,13 @@ namespace Skell.Types
 
         public Number(decimal value)
         {
-            isInt = false;
-            decimalValue = value;
+            if (value % 1 == 0) {
+                isInt = true;
+                integerValue = (int) value;
+            } else {
+                isInt = false;
+                decimalValue = value;
+            }
         }
 
         public Number(string token)
