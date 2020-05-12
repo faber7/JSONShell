@@ -16,6 +16,10 @@ namespace Skell.Library
             unsetfn.AddBuiltinLambda(new Skell.Library.Functions.Name.Unset());
             name_ns.Set(unsetfn.name, unsetfn);
 
+            //var aliasfn = new Skell.Types.Function(typeof(Skell.Library.Functions.Name.Alias).Name);
+            //aliasfn.AddBuiltinLambda(new Skell.Library.Functions.Name.Alias());
+            //name_ns.Set(aliasfn.name, aliasfn);
+
             return name_ns;
         }
     }
