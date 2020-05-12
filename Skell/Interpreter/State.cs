@@ -14,8 +14,7 @@ namespace Skell.Interpreter
         internal List<
             Tuple<
                 Context<Skell.Types.ISkellType>,
-                Context<Skell.Types.Function>,
-                bool
+                Context<Skell.Types.Function>
             >
         > contexts;
 
@@ -38,8 +37,8 @@ namespace Skell.Interpreter
             var origin = new Context<Skell.Types.ISkellType>("ORIGIN");
             var functions = new Context<Skell.Types.Function>("ORIGIN");
             
-            contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>, bool>>();
-            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>, bool>(origin, functions, false));
+            contexts = new List<Tuple<Context<Skell.Types.ISkellType>, Context<Skell.Types.Function>>>();
+            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>>(origin, functions));
             
             all_namespaces = new Dictionary<string, Skell.Types.Namespace>();
 
@@ -51,7 +50,7 @@ namespace Skell.Interpreter
 
         internal Context<Skell.Types.ISkellType> current_variables() => contexts.Last().Item1;
         internal Context<Skell.Types.Function> current_functions() => contexts.Last().Item2;
-        public bool can_return() => contexts.Last().Item3;
+        public bool can_return() => contexts.Last() != contexts.First();
         public bool has_returned() => flag_returned;
         public bool start_return() => flag_returned = true;
         public bool end_return() => flag_returned = false;
@@ -67,7 +66,7 @@ namespace Skell.Interpreter
 
             logger.Verbose($"Entering a new context {cont.name} from {current_variables().name}.");
             
-            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>, bool>(cont, new_functions, true));
+            contexts.Add(new Tuple<Context<Types.ISkellType>, Context<Types.Function>>(cont, new_functions));
         }
 
         /// <summary>
