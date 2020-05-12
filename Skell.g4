@@ -30,7 +30,7 @@ functionArg : typeSpecifier IDENTIFIER ;
 
 control : ifControl | forControl | returnControl ;
 ifControl : ifThenControl | ifThenElseControl ;
-ifThenControl : KW_IF expression KW_THEN statementBlock ;
+ifThenControl : KW_IF expression statementBlock ;
 ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
 forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
 returnControl : KW_RETURN expression? ;
@@ -77,7 +77,6 @@ WS: [ \t\r]+ -> skip; // skip all the whitespace
 KW_TRUE : 'true' ;
 KW_FALSE : 'false' ;
 KW_IF : 'if' ;
-KW_THEN : 'then' ;
 KW_ELSE : 'else' ;
 KW_FOR : 'for' ;
 KW_IN : 'in' ;

@@ -517,7 +517,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// ifThenControl : KW_IF expression KW_THEN statementBlock ;
+        /// ifThenControl : KW_IF expression statementBlock ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitIfThenControl(SkellParser.IfThenControlContext context)
         {
