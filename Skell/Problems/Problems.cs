@@ -90,11 +90,6 @@ namespace Skell.Problems
             var from = state.Names.DefinitionOf(name);
             Message = $"Attempted to redefine the {from.GetType()} {name} at {src}";
         }
-
-        public InvalidDefinition(Source src)
-        {
-            Message = "Invalid definition at {src}";
-        }
     }
 
     internal class InvalidFunctionDefinition : Exception
