@@ -290,16 +290,16 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// expression : logExpr (KW_IS usableTypeSpecifier)? | fnCall ;
+        /// expression : orExpr (KW_IS usableTypeSpecifier)? | fnCall ;
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitExpression(SkellParser.ExpressionContext context)
         {
-            var ctx_logExpr = context.logExpr();
+            var ctx_orExpr = context.orExpr();
             var ctx_is = context.KW_IS();
             var ctx_fnCall = context.fnCall();
 
-            if (ctx_logExpr != null) {
-                var value = VisitLogExpr(ctx_logExpr);
+            if (ctx_orExpr != null) {
+                var value = VisitOrExpr(ctx_orExpr);
                 if (ctx_is != null) {
                     var ctx_uts = context.usableTypeSpecifier();
 
@@ -314,9 +314,49 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// logExpr : eqExpr ((OP_AND eqExpr)* | (OP_OR eqExpr)*) ;
+        /// orExpr : andExpr (OP_OR andExpr)* ;
         /// </summary>
-        override public Skell.Types.ISkellReturnable VisitLogExpr(SkellParser.LogExprContext context)
+        override public Skell.Types.ISkellReturnable VisitOrExpr(SkellParser.OrExprContext context)
+        {
+            int i = 0;
+            var ctx_curr = context.andExpr(i);
+            Skell.Types.ISkellReturnable result = VisitAndExpr(ctx_curr);
+
+            i++;
+            var ctx_next = context.andExpr(i);
+            while (ctx_next != null) {
+                if (!(result is Skell.Types.Boolean))
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(context.andExpr(0).Start, ctx_curr.Stop),
+                        result, typeof(Skell.Types.Boolean)
+                    );
+                
+                var v1 = (Skell.Types.Boolean) result;
+                // short circuit
+                if (v1.value)
+                    return v1;
+
+                Skell.Types.ISkellReturnable next = VisitAndExpr(ctx_next);
+                if (!(next is Skell.Types.Boolean))
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(ctx_next.Start, ctx_next.Stop),
+                        next, typeof(Skell.Types.Boolean)
+                    );
+
+                var v2 = (Skell.Types.Boolean) next;
+                result = new Skell.Types.Boolean(v1.value || v2.value);
+
+                i++;
+                ctx_curr = ctx_next;
+                ctx_next = context.andExpr(i);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// andExpr : eqExpr (OP_AND eqExpr)* ;
+        /// </summary>
+        override public Skell.Types.ISkellReturnable VisitAndExpr(SkellParser.AndExprContext context)
         {
             int i = 0;
             var ctx_curr = context.eqExpr(i);
@@ -331,6 +371,11 @@ namespace Skell.Interpreter
                         result, typeof(Skell.Types.Boolean)
                     );
 
+                var v1 = (Skell.Types.Boolean) result;
+                // short circuit
+                if (!v1.value)
+                    return v1;
+
                 Skell.Types.ISkellReturnable next = VisitEqExpr(ctx_next);
                 if (!(next is Skell.Types.Boolean))
                     throw new Skell.Problems.UnexpectedType(
@@ -338,14 +383,8 @@ namespace Skell.Interpreter
                         next, typeof(Skell.Types.Boolean)
                     );
 
-                var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
-                var v1 = ((Skell.Types.Boolean) result).value;
-                var v2 = ((Skell.Types.Boolean) next).value;
-                if (op.Type == SkellLexer.OP_AND) {
-                    result = new Skell.Types.Boolean(v1 && v2);
-                } else {
-                    result = new Skell.Types.Boolean(v1 || v2);
-                }
+                var v2 = (Skell.Types.Boolean) next;
+                result = new Skell.Types.Boolean(v1.value && v2.value);
 
                 i++;
                 ctx_curr = ctx_next;
