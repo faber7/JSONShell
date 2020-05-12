@@ -23,7 +23,7 @@ programExec : SYM_DOLLAR ~EOL* ;
 
 statementBlock : LCURL statement* RCURL ;
 
-declaration : KW_LET IDENTIFIER (LSQR index RSQR)* OP_ASSGN (expression | function);
+declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
 
 function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
 functionArg : typeSpecifier IDENTIFIER ;
@@ -54,10 +54,8 @@ fnCall : (namespacedIdentifier | IDENTIFIER) expression* ;
 term : value
      | IDENTIFIER
      | namespacedIdentifier
-     | term LSQR index RSQR
+     | term LSQR expression RSQR
      ;
-
-index : STRING | NUMBER | IDENTIFIER ;
 
 namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 

@@ -198,7 +198,7 @@ namespace Skell.Interpreter
         }
 
         /// <summary>
-        /// declaration : KW_LET IDENTIFIER (LSQR index RSQR)* OP_ASSGN (expression | function);
+        /// declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
         /// function : LPAREN RPAREN statementBlock
         ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
         ///          ;
@@ -206,9 +206,10 @@ namespace Skell.Interpreter
         /// </summary>
         override public Skell.Types.ISkellReturnable VisitDeclaration(SkellParser.DeclarationContext context)
         {
-            var ctx_expression = context.expression();
+            var ctx_expression = context.expression().Last();
             var ctx_function = context.function();
             var ctx_id = context.IDENTIFIER();
+            var indices = context.expression().SkipLast(1);
             string name = ctx_id.GetText();
 
             var isMember = context.LSQR().Length != 0;
@@ -216,17 +217,24 @@ namespace Skell.Interpreter
             if (isMember) {
                 if (state.Names.Available(name))
                     throw new Skell.Problems.UndefinedIdentifer(new Source(ctx_id.Symbol), name);
+                
+                if (ctx_expression == null)
+                    throw new Skell.Problems.UnexpectedType(
+                        new Source(ctx_expression.Start, ctx_expression.Stop),
+                        new Skell.Types.UserDefinedLambda(ctx_function),
+                        typeof(Skell.Types.ISkellType)
+                    );
 
                 Skell.Types.ISkellIndexable current;
                 // first ensure that identifier is referring to an indexable
                 if (state.Names.DefinedAsIndexable(name)) {
                     current = (Skell.Types.ISkellIndexable) state.Names.DefinitionOf(name);
 
-                    foreach (var index in context.index().SkipLast(1)) {
+                    foreach (var index in indices.SkipLast(1)) {
                         var result = Utility.GetIndex(
                             new Source(index.Start, index.Stop),
                             current,
-                            (Skell.Types.ISkellType) VisitIndex(index)
+                            (Skell.Types.ISkellType) VisitExpression(index)
                         );
                         
                         if (!(result is Skell.Types.ISkellIndexable))
@@ -239,11 +247,17 @@ namespace Skell.Interpreter
                         current = (Skell.Types.ISkellIndexable) result;
                     }
 
-                    var lastIndex = (Skell.Types.ISkellType) VisitIndex(context.index().Last());
-                    current.Replace(lastIndex, Utility.GetSkellType(
-                        new Source(ctx_id.Symbol, context.index().Last().Stop),
-                        VisitExpression(ctx_expression)
-                    ));
+                    var lastIndex = (Skell.Types.ISkellType) VisitExpression(indices.Last());
+                    if (current.ListIndices().Contains(lastIndex))
+                        current.Replace(lastIndex, Utility.GetSkellType(
+                            new Source(ctx_id.Symbol, indices.Last().Stop),
+                            VisitExpression(ctx_expression)
+                        ));
+                    else
+                        throw new Skell.Problems.IndexOutOfRange(
+                            new Source(indices.Last().Start, indices.Last().Stop),
+                            lastIndex, current
+                        );
                 } else
                     throw new Skell.Problems.UnexpectedType(
                         new Source(ctx_id.Symbol),
@@ -706,7 +720,7 @@ namespace Skell.Interpreter
         /// term : value
         ///      | IDENTIFIER
         ///      | namespacedIdentifier
-        ///      | term LSQR index RSQR
+        ///      | term LSQR expression RSQR
         ///      ;
         /// </summary>
         /// <remark>
@@ -718,7 +732,7 @@ namespace Skell.Interpreter
             var ctx_term = context.term();
             var ctx_id = context.IDENTIFIER();
             var ctx_nid = context.namespacedIdentifier();
-            var ctx_index = context.index();
+            var ctx_index = context.expression();
 
             // term : value ;
             if (ctx_value != null) {
@@ -740,7 +754,7 @@ namespace Skell.Interpreter
             // note : could be a function call, or a member access
             var src = new Source(ctx_index.Start, ctx_index.Stop);
 
-            var index = (Skell.Types.ISkellType) VisitIndex(ctx_index);
+            var index = (Skell.Types.ISkellType) VisitExpression(ctx_index);
 
             var term = VisitTerm(ctx_term);
             if (term is Skell.Types.Function fn) {
@@ -801,23 +815,6 @@ namespace Skell.Interpreter
                 return new Skell.Types.Boolean(ctx_bl.GetText());
             
             return new Skell.Types.Null();
-        }
-
-        /// <summary>
-        /// index : STRING | NUMBER | IDENTIFIER ;
-        /// </summary>
-        override public Skell.Types.ISkellReturnable VisitIndex(SkellParser.IndexContext context)
-        {
-            var ctx_st = context.STRING();
-            var ctx_nm = context.NUMBER();
-            var ctx_id = context.IDENTIFIER();
-
-            if (ctx_st != null)
-                return Utility.GetString(ctx_st.GetText(), this);
-            else if (ctx_nm != null)
-                return new Skell.Types.Number(ctx_nm.GetText());
-            else
-                return Utility.GetIdentifer(new Source(ctx_id.Symbol), ctx_id.GetText(), state);
         }
 
         /// <summary>

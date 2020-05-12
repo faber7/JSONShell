@@ -200,12 +200,6 @@ public interface ISkellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitTerm([NotNull] SkellParser.TermContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="SkellParser.index"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitIndex([NotNull] SkellParser.IndexContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="SkellParser.namespacedIdentifier"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
