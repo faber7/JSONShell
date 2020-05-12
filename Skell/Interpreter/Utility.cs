@@ -330,7 +330,7 @@ namespace Skell.Interpreter
             contents = contents.Remove(contents.Length - 1, 1);
             contents = Regex.Replace(
                 contents,
-                @"\$\{.*\}",
+                @"\$\{[^\$\{\}]*\}",
                 m => {
                     string src = m.Value.Remove(0, 2);
                     src = src.Remove(src.Length - 1, 1);
