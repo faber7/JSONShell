@@ -63,7 +63,6 @@ namespace Skell.Library
                 var array = ((Skell.Types.Array)arr).ListValues().Select((str) => ((Skell.Types.String)str).contents);
                 var pathstr = string.Join(':', array);
                 Environment.SetEnvironmentVariable("PATH", pathstr);
-                Log.Verbose($"Set $PATH: {pathstr}");
             })
             {
                 Value = skellArr

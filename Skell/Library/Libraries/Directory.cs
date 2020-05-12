@@ -30,7 +30,7 @@ namespace Skell.Library
 
             var prop = new Property((ncwd) =>
             {
-                Log.Verbose($"Current directory is now {ncwd}");
+                
             })
             {
                 Value = new Skell.Types.String(cwd)
