@@ -70,15 +70,7 @@ namespace Skell.Problems
             Message = $"Cannot perform operation {operand1} {operation} {operand2}";
         }
     }
-
-    internal class UnaccessibleLHS : Exception
-    {
-        public UnaccessibleLHS(Source src)
-        {
-            Message = $"Attempted to declare an unaccessible expression at {src}";
-        }
-    }
-
+    
     internal class InvalidDefinition : Exception
     {
         public InvalidDefinition(
