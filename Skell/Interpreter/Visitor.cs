@@ -617,9 +617,15 @@ namespace Skell.Interpreter
                     state.Names.Clear(varName);
                 }
 
+                Skell.Types.ISkellReturnable returnvalue = defaultReturnValue;
+
                 foreach (Skell.Types.ISkellType data in arr) {
                     state.Variables.Set(varName, data);
-                    VisitStatementBlock(stmts);
+                    var ret = VisitStatementBlock(stmts);
+                    if (state.HasReturned()) {
+                        returnvalue = ret;
+                        break;
+                    }
                 }
 
                 // restore the name if it existed prior to the loop
@@ -632,7 +638,7 @@ namespace Skell.Interpreter
                         state.Variables.Set(varName, (Skell.Types.ISkellType) backup);
                 }
 
-                return defaultReturnValue;
+                return returnvalue;
             }
             throw new Skell.Problems.UnexpectedType(
                 new Source(expr.Start, expr.Stop),
