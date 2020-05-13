@@ -836,7 +836,7 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// value : object | array | STRING | NUMBER | bool | KW_NULL ;
+        /// value : object | array | STRING | NUMBER | bool | TYPE_NULL ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitValue(ShellParser.ValueContext context)
         {

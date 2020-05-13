@@ -399,6 +399,8 @@ namespace Shell.Interpreter
                 return true;
             else if (data is Shell.Types.String && type == Shell.Types.Specifier.String)
                 return true;
+            else if (data is Shell.Types.Null && type == Shell.Types.Specifier.Null)
+                return true;
             else if (data is Shell.Types.IShellData && type == Shell.Types.Specifier.Any)
                 return true;
 
@@ -420,6 +422,8 @@ namespace Shell.Interpreter
                 return Shell.Types.Specifier.Object;
             else if (token.Type == ShellLexer.TYPE_STRING)
                 return Shell.Types.Specifier.String;
+            else if (token.Type == ShellLexer.TYPE_NULL)
+                return Shell.Types.Specifier.Null;
             else
                 return Shell.Types.Specifier.Any;
         }

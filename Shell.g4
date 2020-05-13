@@ -63,7 +63,7 @@ term : value
 
 identifier_namespaced : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 
-value : object | array | STRING | NUMBER | bool | KW_NULL ;
+value : object | array | STRING | NUMBER | bool | TYPE_NULL ;
 bool : KW_TRUE | KW_FALSE ;
 array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
 pair : STRING SYM_COLON term ;
@@ -71,7 +71,7 @@ object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Type specifiers
 argument_type_specifier : value_type_specifier | TYPE_ANY ;
-value_type_specifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+value_type_specifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL | TYPE_NULL ;
 
 // Lexer Rules
 EOL: '\n' ;
@@ -88,7 +88,6 @@ KW_RETURN : 'return' ;
 KW_LET : 'let' ;
 KW_FUN : 'fun' ;
 KW_IS : 'is' ;
-KW_NULL : 'null' ;
 KW_NAMESPACE : 'namespace' ;
 KW_USING : 'using' ;
 KW_AS : 'as' ;
@@ -99,6 +98,7 @@ TYPE_NUMBER : 'number' ;
 TYPE_STRING : 'string' ;
 TYPE_BOOL : 'bool' ;
 TYPE_ANY : 'any' ;
+TYPE_NULL : 'null' ;
 
 // Symbols and operators
 LSQR: '[' ;

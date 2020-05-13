@@ -6,6 +6,7 @@ namespace Shell.Types
 {
     public enum Specifier
     {
+        Null,
         Any,
         Bool,
         Number,
