@@ -49,7 +49,7 @@ namespace Shell.Library.Functions.Directory
 
             var path = ((Shell.Types.String) args.First().Item3).contents;
             
-            if (io.File.Exists(path) && io.File.GetAttributes(path).HasFlag(io.FileAttributes.Directory)) {
+            if (new io.DirectoryInfo(path).Exists) {
                 var list = io.Directory.GetFiles(path).Select((path) => new Shell.Types.String(path));
                 return new Shell.Types.Array(list.ToArray());
             }
