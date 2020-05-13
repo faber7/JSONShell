@@ -27,7 +27,7 @@ namespace Shell.Library.Functions
             var arrPath = new Shell.Types.Array(origarr.ListValues());
 
             if (path is Shell.Types.String strPath) 
-                if (File.Exists(strPath.contents) && File.GetAttributes(strPath.contents).HasFlag(FileAttributes.Directory)) {
+                if (new DirectoryInfo(strPath.contents).Exists) {
                     arrPath.Insert(arrPath.Count(), strPath);
                     arr.Value = new Shell.Types.Array(arrPath.ListValues());
                 }

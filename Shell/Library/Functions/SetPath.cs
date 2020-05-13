@@ -27,7 +27,7 @@ namespace Shell.Library.Functions
             if (array is Shell.Types.Array arr && arr.IsHomogeneous(Shell.Types.Specifier.String)) {
                 foreach (var strPath in arr.ListIndices()) {
                     var path = ((Shell.Types.String) strPath).contents;
-                    if (File.Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                    if (new DirectoryInfo(path).Exists)
                         arrPath.Insert(arrPath.Count(), (Shell.Types.String) strPath);
                 }
 
