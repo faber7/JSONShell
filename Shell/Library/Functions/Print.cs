@@ -18,13 +18,17 @@ namespace Shell.Library.Functions
 
         public override IShellReturnable Execute(State state, List<Tuple<int, string, IShellData>> args)
         {
-            if (args.First().Item3 is Shell.Types.String str) {
+            IShellData data = args.First().Item3;
+            if (data is Property prop)
+                data = prop.Value;
+            
+            if (data is Types.String str) {
                 Console.Write(str.contents);
-                return new Shell.Types.None();
+                return new Types.None();
             }
-            Console.Write(args.First().Item3.ToString());
+            Console.Write(data.ToString());
 
-            return new Shell.Types.None();
+            return new Types.None();
         }
     }
 
@@ -40,13 +44,17 @@ namespace Shell.Library.Functions
 
         public override IShellReturnable Execute(State state, List<Tuple<int, string, IShellData>> args)
         {
-            if (args.First().Item3 is Shell.Types.String str) {
+            IShellData data = args.First().Item3;
+            if (data is Property prop)
+                data = prop.Value;
+            
+            if (data is Types.String str) {
                 Console.WriteLine(str.contents);
-                return new Shell.Types.None();
+                return new Types.None();
             }
-            Console.WriteLine(args.First().Item3.ToString());
+            Console.WriteLine(data.ToString());
 
-            return new Shell.Types.None();
+            return new Types.None();
         }
     }
 }
