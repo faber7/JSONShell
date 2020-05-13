@@ -401,6 +401,8 @@ namespace Shell.Interpreter
                 return true;
             else if (data is Shell.Types.Null && type == Shell.Types.Specifier.Null)
                 return true;
+            else if (data is Shell.Types.Property prop)
+                return MatchType(prop.Value, type);
             else if (data is Shell.Types.IShellData && type == Shell.Types.Specifier.Any)
                 return true;
 
