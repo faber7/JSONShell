@@ -526,6 +526,56 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
+        /// expression_unary : (OP_NOT | OP_SUB) expression_unary
+        ///                  | expression_primary
+        ///                  ;
+        /// </summary>
+        override public Shell.Types.IShellReturnable VisitExpression_unary(ShellParser.Expression_unaryContext context)
+        {
+            var expression_unary = context.expression_unary();
+            var expression_primary = context.expression_primary();
+
+            if (expression_unary != null) {
+                var op = (Antlr4.Runtime.IToken) expression_unary.GetLeftSibling().Payload;
+                if (op.Type == ShellLexer.OP_NOT) {
+                    Shell.Types.Boolean boolExpression_unary = new Shell.Types.Boolean(VisitExpression_unary(expression_unary).ToString());
+                    return !boolExpression_unary;
+                }
+                Shell.Types.Number numExpression_unary = new Shell.Types.Number(VisitExpression_unary(expression_unary).ToString());
+                return -numExpression_unary;
+            }
+            return VisitExpression_primary(expression_primary);
+        }
+
+        /// <summary>
+        /// expression_primary : term
+        ///                    | LPAREN expression RPAREN
+        ///                    ;
+        /// </summary>
+        override public Shell.Types.IShellReturnable VisitExpression_primary(ShellParser.Expression_primaryContext context)
+        {
+            var term = context.term();
+            var expr = context.expression();
+
+            if (term != null) {
+                var ret = VisitTerm(term);
+                // if term is a function and it is possible to call it without any arguments, call it
+                if (ret is Shell.Types.Function fn) {
+                    var lambda = fn.SelectLambda(new List<Tuple<int, Types.IShellData>>());
+                    if (lambda != null)
+                        return Utility.Function.ExecuteFunction(
+                            this, state, fn, null
+                        );
+                }
+                return ret;
+            } else {
+                var ret = VisitExpression(expr);
+                ret = Utility.GetReturnableValue(ret);
+                return ret;
+            }
+        }
+
+        /// <summary>
         /// control : control_if | control_for | control_return ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitControl(ShellParser.ControlContext context)
@@ -664,56 +714,6 @@ namespace Shell.Interpreter
             state.StartReturn();
             retval = Utility.GetReturnableValue(retval);
             return retval;
-        }
-
-        /// <summary>
-        /// expression_unary : (OP_NOT | OP_SUB) expression_unary
-        ///                  | expression_primary
-        ///                  ;
-        /// </summary>
-        override public Shell.Types.IShellReturnable VisitExpression_unary(ShellParser.Expression_unaryContext context)
-        {
-            var expression_unary = context.expression_unary();
-            var expression_primary = context.expression_primary();
-
-            if (expression_unary != null) {
-                var op = (Antlr4.Runtime.IToken) expression_unary.GetLeftSibling().Payload;
-                if (op.Type == ShellLexer.OP_NOT) {
-                    Shell.Types.Boolean boolExpression_unary = new Shell.Types.Boolean(VisitExpression_unary(expression_unary).ToString());
-                    return !boolExpression_unary;
-                }
-                Shell.Types.Number numExpression_unary = new Shell.Types.Number(VisitExpression_unary(expression_unary).ToString());
-                return -numExpression_unary;
-            }
-            return VisitExpression_primary(expression_primary);
-        }
-
-        /// <summary>
-        /// expression_primary : term
-        ///                    | LPAREN expression RPAREN
-        ///                    ;
-        /// </summary>
-        override public Shell.Types.IShellReturnable VisitExpression_primary(ShellParser.Expression_primaryContext context)
-        {
-            var term = context.term();
-            var expr = context.expression();
-
-            if (term != null) {
-                var ret = VisitTerm(term);
-                // if term is a function and it is possible to call it without any arguments, call it
-                if (ret is Shell.Types.Function fn) {
-                    var lambda = fn.SelectLambda(new List<Tuple<int, Types.IShellData>>());
-                    if (lambda != null)
-                        return Utility.Function.ExecuteFunction(
-                            this, state, fn, null
-                        );
-                }
-                return ret;
-            } else {
-                var ret = VisitExpression(expr);
-                ret = Utility.GetReturnableValue(ret);
-                return ret;
-            }
         }
 
         /// <summary>
