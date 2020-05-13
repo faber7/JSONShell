@@ -10,7 +10,7 @@ namespace Shell.Interpreter
         {
             var config = new LoggerConfiguration();
             if (!Debug && !Verbose)
-                config = config.MinimumLevel.Information();
+                config = config.MinimumLevel.Fatal();
             else if (Debug)
                 config = config.MinimumLevel.Debug();
             else if (Verbose)
