@@ -170,17 +170,17 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpression_relational([NotNull] ShellParser.Expression_relationalContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.expression_addition"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_additive"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExpression_addition([NotNull] ShellParser.Expression_additionContext context);
+	Result VisitExpression_additive([NotNull] ShellParser.Expression_additiveContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplication"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplicative"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitExpression_multiplication([NotNull] ShellParser.Expression_multiplicationContext context);
+	Result VisitExpression_multiplicative([NotNull] ShellParser.Expression_multiplicativeContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.expression_unary"/>.
 	/// </summary>

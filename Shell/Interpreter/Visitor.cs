@@ -416,16 +416,16 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// expression_relational : expression_addition ((OP_GT | OP_GE | OP_LT | OP_LE) expression_addition)? ;
+        /// expression_relational : expression_additive ((OP_GT | OP_GE | OP_LT | OP_LE) expression_additive)? ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitExpression_relational(ShellParser.Expression_relationalContext context)
         {
-            var ctx_curr = context.expression_addition(0);
-            Shell.Types.IShellReturnable result = VisitExpression_addition(ctx_curr);
+            var ctx_curr = context.expression_additive(0);
+            Shell.Types.IShellReturnable result = VisitExpression_additive(ctx_curr);
 
-            var ctx_next = context.expression_addition(1);
+            var ctx_next = context.expression_additive(1);
             if (ctx_next != null) {
-                Shell.Types.IShellReturnable next = VisitExpression_addition(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_additive(ctx_next);
                 var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 if (result is Shell.Types.Number r && next is Shell.Types.Number n)
                     switch (op.Type) {
@@ -443,24 +443,24 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// expression_addition : expression_multiplication ((OP_SUB | OP_ADD) expression_multiplication)* ;
+        /// expression_additive : expression_multiplicative ((OP_SUB | OP_ADD) expression_multiplicative)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitExpression_addition(ShellParser.Expression_additionContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_additive(ShellParser.Expression_additiveContext context)
         {
             int i = 0;
-            var ctx_curr = context.expression_multiplication(i);
-            Shell.Types.IShellReturnable result = VisitExpression_multiplication(ctx_curr);
+            var ctx_curr = context.expression_multiplicative(i);
+            Shell.Types.IShellReturnable result = VisitExpression_multiplicative(ctx_curr);
 
             i++;
-            var ctx_next = context.expression_multiplication(i);
+            var ctx_next = context.expression_multiplicative(i);
             while (ctx_next != null) {
                 if (!(result is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
-                        new Source(context.expression_multiplication(0).Start, ctx_curr.Stop),
+                        new Source(context.expression_multiplicative(0).Start, ctx_curr.Stop),
                         result, typeof(Shell.Types.Number)
                     );
 
-                Shell.Types.IShellReturnable next = VisitExpression_multiplication(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_multiplicative(ctx_next);
                 if (!(next is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
                         new Source(ctx_next.Start, ctx_next.Stop),
@@ -476,15 +476,15 @@ namespace Shell.Interpreter
 
                 i++;
                 ctx_curr = ctx_next;
-                ctx_next = context.expression_multiplication(i);
+                ctx_next = context.expression_multiplicative(i);
             }
             return result;
         }
 
         /// <summary>
-        /// expression_multiplication : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
+        /// expression_multiplicative : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitExpression_multiplication(ShellParser.Expression_multiplicationContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_multiplicative(ShellParser.Expression_multiplicativeContext context)
         {
             int i = 0;
             var ctx_curr = context.expression_unary(i);

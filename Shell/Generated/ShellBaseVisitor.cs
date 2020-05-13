@@ -264,7 +264,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitExpression_relational([NotNull] ShellParser.Expression_relationalContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.expression_addition"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_additive"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -272,9 +272,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitExpression_addition([NotNull] ShellParser.Expression_additionContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_additive([NotNull] ShellParser.Expression_additiveContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplication"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplicative"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -282,7 +282,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitExpression_multiplication([NotNull] ShellParser.Expression_multiplicationContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_multiplicative([NotNull] ShellParser.Expression_multiplicativeContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.expression_unary"/>.
 	/// <para>

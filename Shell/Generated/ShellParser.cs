@@ -53,8 +53,8 @@ public partial class ShellParser : Parser {
 		RULE_function = 10, RULE_function_argument = 11, RULE_control = 12, RULE_control_if = 13, 
 		RULE_if_then = 14, RULE_if_then_else = 15, RULE_control_for = 16, RULE_control_return = 17, 
 		RULE_expression = 18, RULE_expression_or = 19, RULE_expression_and = 20, 
-		RULE_expression_equality = 21, RULE_expression_relational = 22, RULE_expression_addition = 23, 
-		RULE_expression_multiplication = 24, RULE_expression_unary = 25, RULE_expression_primary = 26, 
+		RULE_expression_equality = 21, RULE_expression_relational = 22, RULE_expression_additive = 23, 
+		RULE_expression_multiplicative = 24, RULE_expression_unary = 25, RULE_expression_primary = 26, 
 		RULE_function_call = 27, RULE_term = 28, RULE_identifier_namespaced = 29, 
 		RULE_value = 30, RULE_bool = 31, RULE_array = 32, RULE_pair = 33, RULE_object = 34, 
 		RULE_argument_type_specifier = 35, RULE_value_type_specifier = 36;
@@ -64,7 +64,7 @@ public partial class ShellParser : Parser {
 		"statement_block", "declaration", "function", "function_argument", "control", 
 		"control_if", "if_then", "if_then_else", "control_for", "control_return", 
 		"expression", "expression_or", "expression_and", "expression_equality", 
-		"expression_relational", "expression_addition", "expression_multiplication", 
+		"expression_relational", "expression_additive", "expression_multiplicative", 
 		"expression_unary", "expression_primary", "function_call", "term", "identifier_namespaced", 
 		"value", "bool", "array", "pair", "object", "argument_type_specifier", 
 		"value_type_specifier"
@@ -1507,11 +1507,11 @@ public partial class ShellParser : Parser {
 	}
 
 	public partial class Expression_relationalContext : ParserRuleContext {
-		public Expression_additionContext[] expression_addition() {
-			return GetRuleContexts<Expression_additionContext>();
+		public Expression_additiveContext[] expression_additive() {
+			return GetRuleContexts<Expression_additiveContext>();
 		}
-		public Expression_additionContext expression_addition(int i) {
-			return GetRuleContext<Expression_additionContext>(i);
+		public Expression_additiveContext expression_additive(int i) {
+			return GetRuleContext<Expression_additiveContext>(i);
 		}
 		public ITerminalNode OP_GT() { return GetToken(ShellParser.OP_GT, 0); }
 		public ITerminalNode OP_GE() { return GetToken(ShellParser.OP_GE, 0); }
@@ -1537,7 +1537,7 @@ public partial class ShellParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 247; expression_addition();
+			State = 247; expression_additive();
 			State = 250;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1552,7 +1552,7 @@ public partial class ShellParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 249; expression_addition();
+				State = 249; expression_additive();
 				}
 			}
 
@@ -1569,12 +1569,12 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Expression_additionContext : ParserRuleContext {
-		public Expression_multiplicationContext[] expression_multiplication() {
-			return GetRuleContexts<Expression_multiplicationContext>();
+	public partial class Expression_additiveContext : ParserRuleContext {
+		public Expression_multiplicativeContext[] expression_multiplicative() {
+			return GetRuleContexts<Expression_multiplicativeContext>();
 		}
-		public Expression_multiplicationContext expression_multiplication(int i) {
-			return GetRuleContext<Expression_multiplicationContext>(i);
+		public Expression_multiplicativeContext expression_multiplicative(int i) {
+			return GetRuleContext<Expression_multiplicativeContext>(i);
 		}
 		public ITerminalNode[] OP_SUB() { return GetTokens(ShellParser.OP_SUB); }
 		public ITerminalNode OP_SUB(int i) {
@@ -1584,28 +1584,28 @@ public partial class ShellParser : Parser {
 		public ITerminalNode OP_ADD(int i) {
 			return GetToken(ShellParser.OP_ADD, i);
 		}
-		public Expression_additionContext(ParserRuleContext parent, int invokingState)
+		public Expression_additiveContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_expression_addition; } }
+		public override int RuleIndex { get { return RULE_expression_additive; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitExpression_addition(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_additive(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Expression_additionContext expression_addition() {
-		Expression_additionContext _localctx = new Expression_additionContext(Context, State);
-		EnterRule(_localctx, 46, RULE_expression_addition);
+	public Expression_additiveContext expression_additive() {
+		Expression_additiveContext _localctx = new Expression_additiveContext(Context, State);
+		EnterRule(_localctx, 46, RULE_expression_additive);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 252; expression_multiplication();
+			State = 252; expression_multiplicative();
 			State = 257;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,24,Context);
@@ -1622,7 +1622,7 @@ public partial class ShellParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 254; expression_multiplication();
+					State = 254; expression_multiplicative();
 					}
 					} 
 				}
@@ -1643,7 +1643,7 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Expression_multiplicationContext : ParserRuleContext {
+	public partial class Expression_multiplicativeContext : ParserRuleContext {
 		public Expression_unaryContext[] expression_unary() {
 			return GetRuleContexts<Expression_unaryContext>();
 		}
@@ -1662,22 +1662,22 @@ public partial class ShellParser : Parser {
 		public ITerminalNode OP_MOD(int i) {
 			return GetToken(ShellParser.OP_MOD, i);
 		}
-		public Expression_multiplicationContext(ParserRuleContext parent, int invokingState)
+		public Expression_multiplicativeContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_expression_multiplication; } }
+		public override int RuleIndex { get { return RULE_expression_multiplicative; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitExpression_multiplication(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_multiplicative(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Expression_multiplicationContext expression_multiplication() {
-		Expression_multiplicationContext _localctx = new Expression_multiplicationContext(Context, State);
-		EnterRule(_localctx, 48, RULE_expression_multiplication);
+	public Expression_multiplicativeContext expression_multiplicative() {
+		Expression_multiplicativeContext _localctx = new Expression_multiplicativeContext(Context, State);
+		EnterRule(_localctx, 48, RULE_expression_multiplicative);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);

@@ -42,9 +42,9 @@ expression : expression_or (KW_IS value_type_specifier)? | function_call ;
 expression_or : expression_and (OP_OR expression_and)* ;
 expression_and : expression_equality (OP_AND expression_equality)* ;
 expression_equality : expression_relational ((OP_NE | OP_EQ) expression_relational)? ;
-expression_relational : expression_addition ((OP_GT | OP_GE | OP_LT | OP_LE) expression_addition)? ;
-expression_addition : expression_multiplication ((OP_SUB | OP_ADD) expression_multiplication)* ;
-expression_multiplication : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
+expression_relational : expression_additive ((OP_GT | OP_GE | OP_LT | OP_LE) expression_additive)? ;
+expression_additive : expression_multiplicative ((OP_SUB | OP_ADD) expression_multiplicative)* ;
+expression_multiplicative : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
 expression_unary : (OP_NOT | OP_SUB) expression_unary
                  | expression_primary
                  ;

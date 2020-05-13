@@ -154,8 +154,8 @@ expression_or
 expression_and
 expression_equality
 expression_relational
-expression_addition
-expression_multiplication
+expression_additive
+expression_multiplicative
 expression_unary
 expression_primary
 function_call
