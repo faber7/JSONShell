@@ -15,13 +15,13 @@ statement : EOL
 
 load_namespace : KW_USING STRING (KW_AS IDENTIFIER)? ;
 
-namespace_declaration : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaced_statement* RCURL ;
+namespace_declaration : KW_NAMESPACE IDENTIFIER EOL* LCURL namespaced_statement* RCURL ;
 namespaced_statement : EOL | namespaced_declaration EOL | namespace_declaration EOL | load_namespace EOL ;
 namespaced_declaration : IDENTIFIER OP_ASSGN (expression | function) ;
 
 program_shorthand : SYM_DOLLAR ~EOL* ;
 
-statement_block : LCURL statement* RCURL ;
+statement_block : EOL? LCURL statement* RCURL ;
 
 declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
 
@@ -65,9 +65,9 @@ identifier_namespaced : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 
 value : object | array | STRING | NUMBER | bool | TYPE_NULL ;
 bool : KW_TRUE | KW_FALSE ;
-array : LSQR EOL? (term (SYM_COMMA EOL? term)*)? RSQR ;
+array : LSQR EOL* (term EOL* (SYM_COMMA EOL* term)* EOL*)? EOL* RSQR ;
 pair : STRING SYM_COLON term ;
-object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
+object : LCURL EOL* (pair EOL* (SYM_COMMA EOL* pair)* EOL*)? EOL* RCURL ;
 
 // Type specifiers
 argument_type_specifier : value_type_specifier | TYPE_ANY ;
