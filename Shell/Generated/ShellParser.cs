@@ -57,7 +57,7 @@ public partial class ShellParser : Parser {
 		RULE_expression_multiplication = 24, RULE_expression_unary = 25, RULE_expression_primary = 26, 
 		RULE_function_call = 27, RULE_term = 28, RULE_identifier_namespaced = 29, 
 		RULE_value = 30, RULE_bool = 31, RULE_array = 32, RULE_pair = 33, RULE_object = 34, 
-		RULE_type_specifier = 35, RULE_type_specifier_value = 36;
+		RULE_argument_type_specifier = 35, RULE_value_type_specifier = 36;
 	public static readonly string[] ruleNames = {
 		"program", "program_statement", "statement", "load_namespace", "namespace_declaration", 
 		"namespaced_statement", "namespaced_declaration", "program_shorthand", 
@@ -66,7 +66,8 @@ public partial class ShellParser : Parser {
 		"expression", "expression_or", "expression_and", "expression_equality", 
 		"expression_relational", "expression_addition", "expression_multiplication", 
 		"expression_unary", "expression_primary", "function_call", "term", "identifier_namespaced", 
-		"value", "bool", "array", "pair", "object", "type_specifier", "type_specifier_value"
+		"value", "bool", "array", "pair", "object", "argument_type_specifier", 
+		"value_type_specifier"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -908,8 +909,8 @@ public partial class ShellParser : Parser {
 	}
 
 	public partial class Function_argumentContext : ParserRuleContext {
-		public Type_specifierContext type_specifier() {
-			return GetRuleContext<Type_specifierContext>(0);
+		public Argument_type_specifierContext argument_type_specifier() {
+			return GetRuleContext<Argument_type_specifierContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
 		public Function_argumentContext(ParserRuleContext parent, int invokingState)
@@ -931,7 +932,7 @@ public partial class ShellParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 186; type_specifier();
+			State = 186; argument_type_specifier();
 			State = 187; Match(IDENTIFIER);
 			}
 		}
@@ -1264,8 +1265,8 @@ public partial class ShellParser : Parser {
 			return GetRuleContext<Expression_orContext>(0);
 		}
 		public ITerminalNode KW_IS() { return GetToken(ShellParser.KW_IS, 0); }
-		public Type_specifier_valueContext type_specifier_value() {
-			return GetRuleContext<Type_specifier_valueContext>(0);
+		public Value_type_specifierContext value_type_specifier() {
+			return GetRuleContext<Value_type_specifierContext>(0);
 		}
 		public Function_callContext function_call() {
 			return GetRuleContext<Function_callContext>(0);
@@ -1301,7 +1302,7 @@ public partial class ShellParser : Parser {
 				if (_la==KW_IS) {
 					{
 					State = 219; Match(KW_IS);
-					State = 220; type_specifier_value();
+					State = 220; value_type_specifier();
 					}
 				}
 
@@ -2451,27 +2452,27 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Type_specifierContext : ParserRuleContext {
-		public Type_specifier_valueContext type_specifier_value() {
-			return GetRuleContext<Type_specifier_valueContext>(0);
+	public partial class Argument_type_specifierContext : ParserRuleContext {
+		public Value_type_specifierContext value_type_specifier() {
+			return GetRuleContext<Value_type_specifierContext>(0);
 		}
 		public ITerminalNode TYPE_ANY() { return GetToken(ShellParser.TYPE_ANY, 0); }
-		public Type_specifierContext(ParserRuleContext parent, int invokingState)
+		public Argument_type_specifierContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_type_specifier; } }
+		public override int RuleIndex { get { return RULE_argument_type_specifier; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitType_specifier(this);
+			if (typedVisitor != null) return typedVisitor.VisitArgument_type_specifier(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Type_specifierContext type_specifier() {
-		Type_specifierContext _localctx = new Type_specifierContext(Context, State);
-		EnterRule(_localctx, 70, RULE_type_specifier);
+	public Argument_type_specifierContext argument_type_specifier() {
+		Argument_type_specifierContext _localctx = new Argument_type_specifierContext(Context, State);
+		EnterRule(_localctx, 70, RULE_argument_type_specifier);
 		try {
 			State = 368;
 			ErrorHandler.Sync(this);
@@ -2483,7 +2484,7 @@ public partial class ShellParser : Parser {
 			case TYPE_BOOL:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 366; type_specifier_value();
+				State = 366; value_type_specifier();
 				}
 				break;
 			case TYPE_ANY:
@@ -2507,28 +2508,28 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Type_specifier_valueContext : ParserRuleContext {
+	public partial class Value_type_specifierContext : ParserRuleContext {
 		public ITerminalNode TYPE_OBJECT() { return GetToken(ShellParser.TYPE_OBJECT, 0); }
 		public ITerminalNode TYPE_ARRAY() { return GetToken(ShellParser.TYPE_ARRAY, 0); }
 		public ITerminalNode TYPE_NUMBER() { return GetToken(ShellParser.TYPE_NUMBER, 0); }
 		public ITerminalNode TYPE_STRING() { return GetToken(ShellParser.TYPE_STRING, 0); }
 		public ITerminalNode TYPE_BOOL() { return GetToken(ShellParser.TYPE_BOOL, 0); }
-		public Type_specifier_valueContext(ParserRuleContext parent, int invokingState)
+		public Value_type_specifierContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_type_specifier_value; } }
+		public override int RuleIndex { get { return RULE_value_type_specifier; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitType_specifier_value(this);
+			if (typedVisitor != null) return typedVisitor.VisitValue_type_specifier(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public Type_specifier_valueContext type_specifier_value() {
-		Type_specifier_valueContext _localctx = new Type_specifier_valueContext(Context, State);
-		EnterRule(_localctx, 72, RULE_type_specifier_value);
+	public Value_type_specifierContext value_type_specifier() {
+		Value_type_specifierContext _localctx = new Value_type_specifierContext(Context, State);
+		EnterRule(_localctx, 72, RULE_value_type_specifier);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);

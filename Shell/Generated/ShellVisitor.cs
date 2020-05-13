@@ -242,16 +242,16 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitObject([NotNull] ShellParser.ObjectContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.argument_type_specifier"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitType_specifier([NotNull] ShellParser.Type_specifierContext context);
+	Result VisitArgument_type_specifier([NotNull] ShellParser.Argument_type_specifierContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier_value"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.value_type_specifier"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitType_specifier_value([NotNull] ShellParser.Type_specifier_valueContext context);
+	Result VisitValue_type_specifier([NotNull] ShellParser.Value_type_specifierContext context);
 }
 } // namespace Shell.Generated

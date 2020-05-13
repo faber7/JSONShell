@@ -26,7 +26,7 @@ statement_block : LCURL statement* RCURL ;
 declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
 
 function : KW_FUN LPAREN (function_argument (SYM_COMMA function_argument)*)? RPAREN statement_block ;
-function_argument : type_specifier IDENTIFIER ;
+function_argument : argument_type_specifier IDENTIFIER ;
 
 control : control_if | control_for | control_return ;
 
@@ -38,7 +38,7 @@ control_for : KW_FOR IDENTIFIER KW_IN expression statement_block ;
 
 control_return : KW_RETURN expression? ;
 
-expression : expression_or (KW_IS type_specifier_value)? | function_call ;
+expression : expression_or (KW_IS value_type_specifier)? | function_call ;
 expression_or : expression_and (OP_OR expression_and)* ;
 expression_and : expression_equality (OP_AND expression_equality)* ;
 expression_equality : expression_relational ((OP_NE | OP_EQ) expression_relational)? ;
@@ -70,8 +70,8 @@ pair : STRING SYM_COLON term ;
 object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Type specifiers
-type_specifier : type_specifier_value | TYPE_ANY ;
-type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+argument_type_specifier : value_type_specifier | TYPE_ANY ;
+value_type_specifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
 
 // Lexer Rules
 EOL: '\n' ;

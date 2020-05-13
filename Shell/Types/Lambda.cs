@@ -13,7 +13,7 @@ namespace Shell.Types
 
         /// <remark>
         /// function : KW_FUN LPAREN (function_argument (SYM_COMMA function_argument)*)? RPAREN statement_block ;
-        /// function_argument : type_specifier IDENTIFIER ;
+        /// function_argument : argument_type_specifier IDENTIFIER ;
         /// </remark>
         public UserDefinedLambda(ShellParser.FunctionContext ctx)
         {
@@ -22,7 +22,7 @@ namespace Shell.Types
             for (int i = 0; i < context.function_argument().Length; i++) {
                 var arg = context.function_argument(i);
                 string name = arg.IDENTIFIER().GetText();
-                var token = Shell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.type_specifier());
+                var token = Shell.Interpreter.Utility.GetTokenOfArgumentTypeSpecifier(arg.argument_type_specifier());
 
                 argList.Add(new Tuple<string, Specifier>(name, Shell.Interpreter.Utility.GetSpecifier(token)));
             }

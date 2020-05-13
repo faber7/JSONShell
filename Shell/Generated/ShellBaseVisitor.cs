@@ -384,7 +384,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitObject([NotNull] ShellParser.ObjectContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.argument_type_specifier"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -392,9 +392,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitType_specifier([NotNull] ShellParser.Type_specifierContext context) { return VisitChildren(context); }
+	public virtual Result VisitArgument_type_specifier([NotNull] ShellParser.Argument_type_specifierContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier_value"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.value_type_specifier"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -402,6 +402,6 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitType_specifier_value([NotNull] ShellParser.Type_specifier_valueContext context) { return VisitChildren(context); }
+	public virtual Result VisitValue_type_specifier([NotNull] ShellParser.Value_type_specifierContext context) { return VisitChildren(context); }
 }
 } // namespace Shell.Generated

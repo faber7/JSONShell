@@ -166,8 +166,8 @@ bool
 array
 pair
 object
-type_specifier
-type_specifier_value
+argument_type_specifier
+value_type_specifier
 
 
 atn:

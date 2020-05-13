@@ -291,7 +291,7 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// expression : expression_or (KW_IS type_specifier_value)? | function_call ;
+        /// expression : expression_or (KW_IS value_type_specifier)? | function_call ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitExpression(ShellParser.ExpressionContext context)
         {
@@ -302,7 +302,7 @@ namespace Shell.Interpreter
             if (ctx_expression_or != null) {
                 var value = VisitExpression_or(ctx_expression_or);
                 if (ctx_is != null) {
-                    var ctx_uts = context.type_specifier_value();
+                    var ctx_uts = context.value_type_specifier();
 
                     var token = Utility.GetTokenOfValueTypeSpecifier(ctx_uts);
                     // as there is no chance of a TYPE_ANY token

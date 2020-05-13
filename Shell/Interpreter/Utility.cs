@@ -358,28 +358,28 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// Returns the token for the given type_specifier context
+        /// Returns the token for the given argument_type_specifier context
         /// </summary>
         /// <remark>
-        /// type_specifier : type_specifier_value | TYPE_ANY ;
-        /// type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// argument_type_specifier : value_type_specifier | TYPE_ANY ;
+        /// value_type_specifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(ShellParser.Type_specifierContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfArgumentTypeSpecifier(ShellParser.Argument_type_specifierContext context)
         {
-            if (context.type_specifier_value() != null)
-                return Utility.GetTokenOfValueTypeSpecifier(context.type_specifier_value());
+            if (context.value_type_specifier() != null)
+                return Utility.GetTokenOfValueTypeSpecifier(context.value_type_specifier());
             
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
         
         /// <summary>
-        /// Returns the token for the given type_specifier_value context
+        /// Returns the token for the given value_type_specifier context
         /// </summary>
         /// <remark>
-        /// type_specifier : type_specifier_value | TYPE_ANY ;
-        /// type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// argument_type_specifier : value_type_specifier | TYPE_ANY ;
+        /// value_type_specifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfValueTypeSpecifier(ShellParser.Type_specifier_valueContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfValueTypeSpecifier(ShellParser.Value_type_specifierContext context)
         {
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
