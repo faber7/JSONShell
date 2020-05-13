@@ -1,64 +1,67 @@
 grammar Shell;
 
 // Language rules
-program : programStatement+ ; // start rule
-programStatement : namespace EOL
-                 | statement
-                 ;
+program : program_statement+ ; // start rule
+program_statement : namespace_declaration EOL
+                  | statement
+                  ;
 statement : EOL
-          | namespaceLoad EOL
-          | programExec EOL
+          | load_namespace EOL
+          | program_shorthand EOL
           | declaration EOL
           | expression EOL
           | control
           ;
 
-namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
+load_namespace : KW_USING STRING (KW_AS IDENTIFIER)? ;
 
-namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
-namespaceStmt : EOL | namespaceDecl EOL | namespace EOL | namespaceLoad EOL ;
-namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
+namespace_declaration : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaced_statement* RCURL ;
+namespaced_statement : EOL | namespaced_declaration EOL | namespace_declaration EOL | load_namespace EOL ;
+namespaced_declaration : IDENTIFIER OP_ASSGN (expression | function) ;
 
-programExec : SYM_DOLLAR ~EOL* ;
+program_shorthand : SYM_DOLLAR ~EOL* ;
 
-statementBlock : LCURL statement* RCURL ;
+statement_block : LCURL statement* RCURL ;
 
 declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
 
-function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
-functionArg : typeSpecifier IDENTIFIER ;
+function : KW_FUN LPAREN (function_argument (SYM_COMMA function_argument)*)? RPAREN statement_block ;
+function_argument : type_specifier IDENTIFIER ;
 
-control : ifControl | forControl | returnControl ;
-ifControl : ifThenControl | ifThenElseControl ;
-ifThenControl : KW_IF expression statementBlock ;
-ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
-forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
-returnControl : KW_RETURN expression? ;
+control : control_if | control_for | control_return ;
 
-expression : orExpr (KW_IS usableTypeSpecifier)? | fnCall ;
-orExpr : andExpr (OP_OR andExpr)* ;
-andExpr : eqExpr (OP_AND eqExpr)* ;
-eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
-relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
-addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
-mulExpr : unary ((OP_DIV | OP_MUL | OP_MOD) unary)* ;
-unary : (OP_NOT | OP_SUB) unary
-      | primary
-      ;
-primary : term
-        | LPAREN expression RPAREN
-        ;
+control_if : if_then | if_then_else ;
+if_then : KW_IF expression statement_block ;
+if_then_else : if_then KW_ELSE (statement_block | control_if) ;
+
+control_for : KW_FOR IDENTIFIER KW_IN expression statement_block ;
+
+control_return : KW_RETURN expression? ;
+
+expression : expression_or (KW_IS type_specifier_value)? | function_call ;
+expression_or : expression_and (OP_OR expression_and)* ;
+expression_and : expression_equality (OP_AND expression_equality)* ;
+expression_equality : expression_relational ((OP_NE | OP_EQ) expression_relational)? ;
+expression_relational : expression_addition ((OP_GT | OP_GE | OP_LT | OP_LE) expression_addition)? ;
+expression_addition : expression_multiplication ((OP_SUB | OP_ADD) expression_multiplication)* ;
+expression_multiplication : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
+expression_unary : (OP_NOT | OP_SUB) expression_unary
+                 | expression_primary
+                 ;
+expression_primary : term
+                   | LPAREN expression RPAREN
+                   ;
 
 // If there is no argument, the function is identified as a term instead and executed directly
-fnCall : (namespacedIdentifier | IDENTIFIER) expression* ;
+function_call : (identifier_namespaced | IDENTIFIER) expression* ;
 
 term : value
      | IDENTIFIER
-     | namespacedIdentifier
+     | identifier_namespaced
      | term LSQR expression RSQR
      ;
 
-namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
+identifier_namespaced : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
 
 value : object | array | STRING | NUMBER | bool | KW_NULL ;
 bool : KW_TRUE | KW_FALSE ;
@@ -67,8 +70,8 @@ pair : STRING SYM_COLON term ;
 object : LCURL EOL? (pair (SYM_COMMA EOL? pair)*)? RCURL ;
 
 // Type specifiers
-typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
-usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+type_specifier : type_specifier_value | TYPE_ANY ;
+type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
 
 // Lexer Rules
 EOL: '\n' ;

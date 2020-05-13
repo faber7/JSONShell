@@ -115,7 +115,7 @@ namespace Shell.Interpreter
             var lexer = new ShellLexer(charStream);
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ShellParser(tokenStream);
-            var tree = parser.@namespace();
+            var tree = parser.namespace_declaration();
 
             return new Shell.Types.Namespace(rename, pathDir, tree, visitor);
         }
@@ -231,7 +231,7 @@ namespace Shell.Interpreter
         /// Small wrapper over Utility.GetNamespacedIdentifier to call the return value if it is a function
         /// </summary>
         public static Shell.Types.IShellReturnable GetNamespacedIdentifier(
-            ShellParser.NamespacedIdentifierContext context,
+            ShellParser.Identifier_namespacedContext context,
             Visitor visitor,
             State state
         )
@@ -268,7 +268,7 @@ namespace Shell.Interpreter
         /// namespacedIdentifier : (IDENTIFIER SYM_PERIOD)+ IDENTIFIER ;
         /// </summary>
         public static Shell.Types.IShellNamed GetNamespacedIdentifier(
-            ShellParser.NamespacedIdentifierContext context,
+            ShellParser.Identifier_namespacedContext context,
             State state
         )
         {
@@ -358,28 +358,28 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// Returns the token for the given typeSpecifier context
+        /// Returns the token for the given type_specifier context
         /// </summary>
         /// <remark>
-        /// typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
-        /// usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// type_specifier : type_specifier_value | TYPE_ANY ;
+        /// type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(ShellParser.TypeSpecifierContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfTypeSpecifier(ShellParser.Type_specifierContext context)
         {
-            if (context.usableTypeSpecifier() != null)
-                return Utility.GetTokenOfUsableTypeSpecifier(context.usableTypeSpecifier());
+            if (context.type_specifier_value() != null)
+                return Utility.GetTokenOfValueTypeSpecifier(context.type_specifier_value());
             
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }
         
         /// <summary>
-        /// Returns the token for the given usableTypeSpecifier context
+        /// Returns the token for the given type_specifier_value context
         /// </summary>
         /// <remark>
-        /// typeSpecifier : usableTypeSpecifier | TYPE_ANY ;
-        /// usableTypeSpecifier : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
+        /// type_specifier : type_specifier_value | TYPE_ANY ;
+        /// type_specifier_value : TYPE_OBJECT | TYPE_ARRAY | TYPE_NUMBER | TYPE_STRING | TYPE_BOOL ;
         /// </remark>
-        public static Antlr4.Runtime.IToken GetTokenOfUsableTypeSpecifier(ShellParser.UsableTypeSpecifierContext context)
+        public static Antlr4.Runtime.IToken GetTokenOfValueTypeSpecifier(ShellParser.Type_specifier_valueContext context)
         {
             return (Antlr4.Runtime.IToken) context.children[0].Payload;
         }

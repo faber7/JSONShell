@@ -23,15 +23,15 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// program : programStatement+ ;
+        /// program : program_statement+ ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitProgram(ShellParser.ProgramContext context)
         {
-            var statements = context.programStatement();
+            var statements = context.program_statement();
 
             Shell.Types.IShellReturnable lastResult = defaultReturnValue;
             foreach (var statement in statements) {
-                lastResult = VisitProgramStatement(statement);
+                lastResult = VisitProgram_statement(statement);
                 if (lastResult is Shell.Types.String str)
                     logger.Debug($"Result: \"{lastResult}\" of type {lastResult.GetType()}");
                 else if (lastResult is Shell.Types.Array arr)
@@ -45,13 +45,13 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// programStatement : namespace EOL
-        ///                  | statement
-        ///                  ;
+        /// program_statement : namespace_declaration EOL
+        ///                   | statement
+        ///                   ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitProgramStatement(ShellParser.ProgramStatementContext context)
+        override public Shell.Types.IShellReturnable VisitProgram_statement(ShellParser.Program_statementContext context)
         {
-            var ctx_ns = context.@namespace();
+            var ctx_ns = context.namespace_declaration();
             var ctx_stmt = context.statement();
 
             if (ctx_ns != null) {
@@ -64,8 +64,8 @@ namespace Shell.Interpreter
 
         /// <summary>
         /// statement : EOL
-        ///           | namespaceLoad EOL
-        ///           | programExec EOL
+        ///           | load_namespace EOL
+        ///           | program_shorthand EOL
         ///           | declaration EOL
         ///           | expression EOL
         ///           | control
@@ -73,16 +73,16 @@ namespace Shell.Interpreter
         /// </summary>
         override public Shell.Types.IShellReturnable VisitStatement(ShellParser.StatementContext context)
         {
-            var ctx_nsLoad = context.namespaceLoad();
-            var ctx_progExec = context.programExec();
+            var ctx_nsLoad = context.load_namespace();
+            var ctx_progExec = context.program_shorthand();
             var ctx_decl = context.declaration();
             var ctx_expr = context.expression();
             var ctx_ctrl = context.control();
 
             if (ctx_nsLoad != null)
-                return VisitNamespaceLoad(ctx_nsLoad);
+                return VisitLoad_namespace(ctx_nsLoad);
             else if (ctx_progExec != null)
-                return VisitProgramExec(ctx_progExec);
+                return VisitProgram_shorthand(ctx_progExec);
             else if (ctx_decl != null)
                 return VisitDeclaration(ctx_decl);
             else if (ctx_expr != null) {
@@ -96,9 +96,9 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
+        /// load_namespace : KW_USING STRING (KW_AS IDENTIFIER)? ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitNamespaceLoad(ShellParser.NamespaceLoadContext context)
+        override public Shell.Types.IShellReturnable VisitLoad_namespace(ShellParser.Load_namespaceContext context)
         {
             var ctx_str = context.STRING();
             var ctx_id = context.IDENTIFIER();
@@ -117,9 +117,9 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// programExec : SYM_DOLLAR ~EOL* ;
+        /// program_shorthand : SYM_DOLLAR ~EOL* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitProgramExec(ShellParser.ProgramExecContext context)
+        override public Shell.Types.IShellReturnable VisitProgram_shorthand(ShellParser.Program_shorthandContext context)
         {
             string execString = tokenSource.GetText(
                     new Antlr4.Runtime.Misc.Interval(
@@ -183,9 +183,9 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// statementBlock : LCURL statement* RCURL ;
+        /// statement_block : LCURL statement* RCURL ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitStatementBlock(ShellParser.StatementBlockContext context)
+        override public Shell.Types.IShellReturnable VisitStatement_block(ShellParser.Statement_blockContext context)
         {
             var statements = context.statement();
             foreach (var statement in statements) {
@@ -199,10 +199,8 @@ namespace Shell.Interpreter
 
         /// <summary>
         /// declaration : KW_LET IDENTIFIER (LSQR expression RSQR)* OP_ASSGN (expression | function);
-        /// function : LPAREN RPAREN statementBlock
-        ///          | LPAREN functionArg (SYM_COMMA functionArg)* statementBlock
-        ///          ;
-        /// functionArg : TypeSpecifier IDENTIFIER ;
+        /// function : KW_FUN LPAREN (function_argument (SYM_COMMA function_argument)*)? RPAREN statement_block ;
+        /// function_argument : type_specifier IDENTIFIER ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitDeclaration(ShellParser.DeclarationContext context)
         {
@@ -293,44 +291,44 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// expression : orExpr (KW_IS usableTypeSpecifier)? | fnCall ;
+        /// expression : expression_or (KW_IS type_specifier_value)? | function_call ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitExpression(ShellParser.ExpressionContext context)
         {
-            var ctx_orExpr = context.orExpr();
+            var ctx_expression_or = context.expression_or();
             var ctx_is = context.KW_IS();
-            var ctx_fnCall = context.fnCall();
+            var ctx_function_call = context.function_call();
 
-            if (ctx_orExpr != null) {
-                var value = VisitOrExpr(ctx_orExpr);
+            if (ctx_expression_or != null) {
+                var value = VisitExpression_or(ctx_expression_or);
                 if (ctx_is != null) {
-                    var ctx_uts = context.usableTypeSpecifier();
+                    var ctx_uts = context.type_specifier_value();
 
-                    var token = Utility.GetTokenOfUsableTypeSpecifier(ctx_uts);
+                    var token = Utility.GetTokenOfValueTypeSpecifier(ctx_uts);
                     // as there is no chance of a TYPE_ANY token
                     return new Shell.Types.Boolean(Utility.MatchType(value, Utility.GetSpecifier(token)));
                 }
                 return value;
             } else {
-                return VisitFnCall(ctx_fnCall);
+                return VisitFunction_call(ctx_function_call);
             }
         }
 
         /// <summary>
-        /// orExpr : andExpr (OP_OR andExpr)* ;
+        /// expression_or : expression_and (OP_OR expression_and)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitOrExpr(ShellParser.OrExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_or(ShellParser.Expression_orContext context)
         {
             int i = 0;
-            var ctx_curr = context.andExpr(i);
-            Shell.Types.IShellReturnable result = VisitAndExpr(ctx_curr);
+            var ctx_curr = context.expression_and(i);
+            Shell.Types.IShellReturnable result = VisitExpression_and(ctx_curr);
 
             i++;
-            var ctx_next = context.andExpr(i);
+            var ctx_next = context.expression_and(i);
             while (ctx_next != null) {
                 if (!(result is Shell.Types.Boolean))
                     throw new Shell.Problems.UnexpectedType(
-                        new Source(context.andExpr(0).Start, ctx_curr.Stop),
+                        new Source(context.expression_and(0).Start, ctx_curr.Stop),
                         result, typeof(Shell.Types.Boolean)
                     );
                 
@@ -339,7 +337,7 @@ namespace Shell.Interpreter
                 if (v1.value)
                     return v1;
 
-                Shell.Types.IShellReturnable next = VisitAndExpr(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_and(ctx_next);
                 if (!(next is Shell.Types.Boolean))
                     throw new Shell.Problems.UnexpectedType(
                         new Source(ctx_next.Start, ctx_next.Stop),
@@ -351,26 +349,26 @@ namespace Shell.Interpreter
 
                 i++;
                 ctx_curr = ctx_next;
-                ctx_next = context.andExpr(i);
+                ctx_next = context.expression_and(i);
             }
             return result;
         }
 
         /// <summary>
-        /// andExpr : eqExpr (OP_AND eqExpr)* ;
+        /// expression_and : expression_equality (OP_AND expression_equality)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitAndExpr(ShellParser.AndExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_and(ShellParser.Expression_andContext context)
         {
             int i = 0;
-            var ctx_curr = context.eqExpr(i);
-            Shell.Types.IShellReturnable result = VisitEqExpr(ctx_curr);
+            var ctx_curr = context.expression_equality(i);
+            Shell.Types.IShellReturnable result = VisitExpression_equality(ctx_curr);
 
             i++;
-            var ctx_next = context.eqExpr(i);
+            var ctx_next = context.expression_equality(i);
             while (ctx_next != null) {
                 if (!(result is Shell.Types.Boolean))
                     throw new Shell.Problems.UnexpectedType(
-                        new Source(context.eqExpr(0).Start, ctx_curr.Stop),
+                        new Source(context.expression_equality(0).Start, ctx_curr.Stop),
                         result, typeof(Shell.Types.Boolean)
                     );
 
@@ -379,7 +377,7 @@ namespace Shell.Interpreter
                 if (!v1.value)
                     return v1;
 
-                Shell.Types.IShellReturnable next = VisitEqExpr(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_equality(ctx_next);
                 if (!(next is Shell.Types.Boolean))
                     throw new Shell.Problems.UnexpectedType(
                         new Source(ctx_next.Start, ctx_next.Stop),
@@ -391,22 +389,22 @@ namespace Shell.Interpreter
 
                 i++;
                 ctx_curr = ctx_next;
-                ctx_next = context.eqExpr(i);
+                ctx_next = context.expression_equality(i);
             }
             return result;
         }
 
         /// <summary>
-        /// eqExpr : relExpr ((OP_NE | OP_EQ) relExpr)? ;
+        /// expression_equality : expression_relational ((OP_NE | OP_EQ) expression_relational)? ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitEqExpr(ShellParser.EqExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_equality(ShellParser.Expression_equalityContext context)
         {
-            var ctx_curr = context.relExpr(0);
-            Shell.Types.IShellReturnable result = VisitRelExpr(ctx_curr);
+            var ctx_curr = context.expression_relational(0);
+            Shell.Types.IShellReturnable result = VisitExpression_relational(ctx_curr);
 
-            var ctx_next = context.relExpr(1);
+            var ctx_next = context.expression_relational(1);
             if (ctx_next != null) {
-                Shell.Types.IShellReturnable next = VisitRelExpr(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_relational(ctx_next);
                 var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 bool ret = result.Equals(next);
                 if (op.Type == ShellLexer.OP_NE)
@@ -418,16 +416,16 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// relExpr : addExpr ((OP_GT | OP_GE | OP_LT | OP_LE) addExpr)? ;
+        /// expression_relational : expression_addition ((OP_GT | OP_GE | OP_LT | OP_LE) expression_addition)? ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitRelExpr(ShellParser.RelExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_relational(ShellParser.Expression_relationalContext context)
         {
-            var ctx_curr = context.addExpr(0);
-            Shell.Types.IShellReturnable result = VisitAddExpr(ctx_curr);
+            var ctx_curr = context.expression_addition(0);
+            Shell.Types.IShellReturnable result = VisitExpression_addition(ctx_curr);
 
-            var ctx_next = context.addExpr(1);
+            var ctx_next = context.expression_addition(1);
             if (ctx_next != null) {
-                Shell.Types.IShellReturnable next = VisitAddExpr(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_addition(ctx_next);
                 var op = (Antlr4.Runtime.IToken) ctx_next.GetLeftSibling().Payload;
                 if (result is Shell.Types.Number r && next is Shell.Types.Number n)
                     switch (op.Type) {
@@ -445,24 +443,24 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// addExpr : mulExpr ((OP_SUB | OP_ADD) mulExpr)* ;
+        /// expression_addition : expression_multiplication ((OP_SUB | OP_ADD) expression_multiplication)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitAddExpr(ShellParser.AddExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_addition(ShellParser.Expression_additionContext context)
         {
             int i = 0;
-            var ctx_curr = context.mulExpr(i);
-            Shell.Types.IShellReturnable result = VisitMulExpr(ctx_curr);
+            var ctx_curr = context.expression_multiplication(i);
+            Shell.Types.IShellReturnable result = VisitExpression_multiplication(ctx_curr);
 
             i++;
-            var ctx_next = context.mulExpr(i);
+            var ctx_next = context.expression_multiplication(i);
             while (ctx_next != null) {
                 if (!(result is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
-                        new Source(context.mulExpr(0).Start, ctx_curr.Stop),
+                        new Source(context.expression_multiplication(0).Start, ctx_curr.Stop),
                         result, typeof(Shell.Types.Number)
                     );
 
-                Shell.Types.IShellReturnable next = VisitMulExpr(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_multiplication(ctx_next);
                 if (!(next is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
                         new Source(ctx_next.Start, ctx_next.Stop),
@@ -478,30 +476,30 @@ namespace Shell.Interpreter
 
                 i++;
                 ctx_curr = ctx_next;
-                ctx_next = context.mulExpr(i);
+                ctx_next = context.expression_multiplication(i);
             }
             return result;
         }
 
         /// <summary>
-        /// mulExpr : unary ((OP_DIV | OP_MUL | OP_MOD) unary)* ;
+        /// expression_multiplication : expression_unary ((OP_DIV | OP_MUL | OP_MOD) expression_unary)* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitMulExpr(ShellParser.MulExprContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_multiplication(ShellParser.Expression_multiplicationContext context)
         {
             int i = 0;
-            var ctx_curr = context.unary(i);
-            Shell.Types.IShellReturnable result = VisitUnary(ctx_curr);
+            var ctx_curr = context.expression_unary(i);
+            Shell.Types.IShellReturnable result = VisitExpression_unary(ctx_curr);
 
             i++;
-            var ctx_next = context.unary(i);
+            var ctx_next = context.expression_unary(i);
             while (ctx_next != null) {
                 if (!(result is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
-                        new Source(context.unary(0).Start, ctx_curr.Stop),
+                        new Source(context.expression_unary(0).Start, ctx_curr.Stop),
                         result, typeof(Shell.Types.Number)
                     );
 
-                Shell.Types.IShellReturnable next = VisitUnary(ctx_next);
+                Shell.Types.IShellReturnable next = VisitExpression_unary(ctx_next);
                 if (!(next is Shell.Types.Number))
                     throw new Shell.Problems.UnexpectedType(
                         new Source(ctx_next.Start, ctx_next.Stop),
@@ -522,92 +520,92 @@ namespace Shell.Interpreter
 
                 i++;
                 ctx_curr = ctx_next;
-                ctx_next = context.unary(i);
+                ctx_next = context.expression_unary(i);
             }
             return result;
         }
 
         /// <summary>
-        /// control : ifControl | forControl | returnControl ;
+        /// control : control_if | control_for | control_return ;
         /// </summary>
         override public Shell.Types.IShellReturnable VisitControl(ShellParser.ControlContext context)
         {
-            var ctx_if = context.ifControl();
-            var ctx_for = context.forControl();
-            var ctx_ret = context.returnControl();
+            var ctx_if = context.control_if();
+            var ctx_for = context.control_for();
+            var ctx_ret = context.control_return();
 
             if (ctx_if != null)
-                return VisitIfControl(ctx_if);
+                return VisitControl_if(ctx_if);
             else if (ctx_for != null)
-                return VisitForControl(ctx_for);
+                return VisitControl_for(ctx_for);
 
-            return VisitReturnControl(ctx_ret);
+            return VisitControl_return(ctx_ret);
         }
 
         /// <summary>
-        /// ifControl : ifThenControl | ifThenElseControl ;
+        /// control_if : if_then | if_then_else ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitIfControl(ShellParser.IfControlContext context)
+        override public Shell.Types.IShellReturnable VisitControl_if(ShellParser.Control_ifContext context)
         {
-            var ctx_ifthen = context.ifThenControl();
-            var ctx_ifthenelse = context.ifThenElseControl();
+            var ctx_ifthen = context.if_then();
+            var ctx_ifthenelse = context.if_then_else();
 
             if (ctx_ifthen != null)
-                return VisitIfThenControl(ctx_ifthen);
+                return VisitIf_then(ctx_ifthen);
             else
-                return VisitIfThenElseControl(ctx_ifthenelse);
+                return VisitIf_then_else(ctx_ifthenelse);
         }
 
         /// <summary>
-        /// ifThenControl : KW_IF expression statementBlock ;
+        /// if_then : KW_IF expression statement_block ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitIfThenControl(ShellParser.IfThenControlContext context)
+        override public Shell.Types.IShellReturnable VisitIf_then(ShellParser.If_thenContext context)
         {
             var condition = context.expression();
-            var stmts = context.statementBlock();
+            var stmts = context.statement_block();
 
             Shell.Types.Boolean cont = Utility.EvaluateExpr(this, condition);
             if (cont.value)
-                return VisitStatementBlock(stmts);
+                return VisitStatement_block(stmts);
 
             return defaultReturnValue;
         }
 
         /// <summary>
-        /// ifThenElseControl : ifThenControl KW_ELSE (statementBlock | ifControl) ;
+        /// if_then_else : if_then KW_ELSE (statement_block | control_if) ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitIfThenElseControl(ShellParser.IfThenElseControlContext context)
+        override public Shell.Types.IShellReturnable VisitIf_then_else(ShellParser.If_then_elseContext context)
         {
-            var ifthen = context.ifThenControl();
+            var ifthen = context.if_then();
             var condition = ifthen.expression();
-            var ifthenstmts = ifthen.statementBlock();
-            var elsestmts = context.statementBlock();
-            var elif = context.ifControl();
+            var ifthenstmts = ifthen.statement_block();
+            var elsestmts = context.statement_block();
+            var elif = context.control_if();
 
             // Evaluate the situation manually
-            // Do not use VisitIfThenControl as it does not return values
+            // Do not use VisitIf_then as it does not return values
             // based on whether the condition is true or false
             Shell.Types.Boolean cont = Utility.EvaluateExpr(this, condition);
             if (cont.value)
-                return VisitStatementBlock(ifthenstmts);
+                return VisitStatement_block(ifthenstmts);
             else if (elsestmts != null)
-                return VisitStatementBlock(elsestmts);
+                return VisitStatement_block(elsestmts);
             else
-                return VisitIfControl(elif);
+                return VisitControl_if(elif);
         }
 
         /// <summary>
-        /// forControl : KW_FOR IDENTIFIER KW_IN expression statementBlock ;
+        /// control_for : KW_FOR IDENTIFIER KW_IN expression statement_block ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitForControl(ShellParser.ForControlContext context)
+        override public Shell.Types.IShellReturnable VisitControl_for(ShellParser.Control_forContext context)
         {
             var id = context.IDENTIFIER();
             var expr = context.expression();
-            var stmts = context.statementBlock();
+            var stmts = context.statement_block();
 
-            var primary = VisitExpression(expr);
-            primary = Utility.GetReturnableValue(primary);
-            if (primary is Shell.Types.Array arr) {
+            var expression_primary = VisitExpression(expr);
+            expression_primary = Utility.GetReturnableValue(expression_primary);
+            if (expression_primary is Shell.Types.Array arr) {
                 string varName = id.GetText();
 
                 // Shadow the name if it already exists
@@ -622,7 +620,7 @@ namespace Shell.Interpreter
                 for (int i = 0; i < arr.Count().integerValue; i++) {
                     var data = arr.GetMember(new Shell.Types.Number(i));
                     state.Variables.Set(varName, data);
-                    var ret = VisitStatementBlock(stmts);
+                    var ret = VisitStatement_block(stmts);
                     if (state.HasReturned()) {
                         returnvalue = ret;
                         break;
@@ -643,17 +641,17 @@ namespace Shell.Interpreter
             }
             throw new Shell.Problems.UnexpectedType(
                 new Source(expr.Start, expr.Stop),
-                primary, typeof(Shell.Types.Array)
+                expression_primary, typeof(Shell.Types.Array)
             );
         }
 
         /// <summary>
-        /// returnControl : KW_RETURN expression? ;
+        /// control_return : KW_RETURN expression? ;
         /// </summary>
         /// <remark>
         /// Sets FLAG_RETURN before returning
         /// </remark>
-        override public Shell.Types.IShellReturnable VisitReturnControl(ShellParser.ReturnControlContext context)
+        override public Shell.Types.IShellReturnable VisitControl_return(ShellParser.Control_returnContext context)
         {
             var expr = context.expression();
 
@@ -669,33 +667,33 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// unary : (OP_NOT | OP_SUB) unary
-        ///       | primary
-        ///       ;
+        /// expression_unary : (OP_NOT | OP_SUB) expression_unary
+        ///                  | expression_primary
+        ///                  ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitUnary(ShellParser.UnaryContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_unary(ShellParser.Expression_unaryContext context)
         {
-            var unary = context.unary();
-            var primary = context.primary();
+            var expression_unary = context.expression_unary();
+            var expression_primary = context.expression_primary();
 
-            if (unary != null) {
-                var op = (Antlr4.Runtime.IToken) unary.GetLeftSibling().Payload;
+            if (expression_unary != null) {
+                var op = (Antlr4.Runtime.IToken) expression_unary.GetLeftSibling().Payload;
                 if (op.Type == ShellLexer.OP_NOT) {
-                    Shell.Types.Boolean boolUnary = new Shell.Types.Boolean(VisitUnary(unary).ToString());
-                    return !boolUnary;
+                    Shell.Types.Boolean boolExpression_unary = new Shell.Types.Boolean(VisitExpression_unary(expression_unary).ToString());
+                    return !boolExpression_unary;
                 }
-                Shell.Types.Number numUnary = new Shell.Types.Number(VisitUnary(unary).ToString());
-                return -numUnary;
+                Shell.Types.Number numExpression_unary = new Shell.Types.Number(VisitExpression_unary(expression_unary).ToString());
+                return -numExpression_unary;
             }
-            return VisitPrimary(primary);
+            return VisitExpression_primary(expression_primary);
         }
 
         /// <summary>
-        /// primary : term
-        ///         | LPAREN expression RPAREN
-        ///         ;
+        /// expression_primary : term
+        ///                    | LPAREN expression RPAREN
+        ///                    ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitPrimary(ShellParser.PrimaryContext context)
+        override public Shell.Types.IShellReturnable VisitExpression_primary(ShellParser.Expression_primaryContext context)
         {
             var term = context.term();
             var expr = context.expression();
@@ -719,16 +717,16 @@ namespace Shell.Interpreter
         }
 
         /// <summary>
-        /// fnCall : (namespacedIdentifier | IDENTIFIER) expression* ;
+        /// function_call : (identifier_namespaced | IDENTIFIER) expression* ;
         /// </summary>
-        override public Shell.Types.IShellReturnable VisitFnCall(ShellParser.FnCallContext context)
+        override public Shell.Types.IShellReturnable VisitFunction_call(ShellParser.Function_callContext context)
         {
-            var namespacedIdentifier = context.namespacedIdentifier();
+            var identifier_namespaced = context.identifier_namespaced();
             var identifier = context.IDENTIFIER();
 
             Shell.Types.IShellNamed id;
-            if (namespacedIdentifier != null)
-                id = Utility.GetNamespacedIdentifier(namespacedIdentifier, state);
+            if (identifier_namespaced != null)
+                id = Utility.GetNamespacedIdentifier(identifier_namespaced, state);
             else
                 id = state.Names.DefinitionOf(identifier.GetText());
             
@@ -768,19 +766,19 @@ namespace Shell.Interpreter
         /// <summary>
         /// term : value
         ///      | IDENTIFIER
-        ///      | namespacedIdentifier
+        ///      | identifier_namespaced
         ///      | term LSQR expression RSQR
         ///      ;
         /// </summary>
         /// <remark>
-        /// term is executed if it is an identifier/namespacedIdentifier and refers to a function
+        /// term is executed if it is an identifier/identifier_namespaced and refers to a function
         /// </remark>
         override public Shell.Types.IShellReturnable VisitTerm(ShellParser.TermContext context)
         {
             var ctx_value = context.value();
             var ctx_term = context.term();
             var ctx_id = context.IDENTIFIER();
-            var ctx_nid = context.namespacedIdentifier();
+            var ctx_nid = context.identifier_namespaced();
             var ctx_index = context.expression();
 
             // term : value ;
@@ -794,7 +792,7 @@ namespace Shell.Interpreter
                 return Utility.GetIdentifer(new Source(ctx_id.Symbol), name, state);
             }
             
-            // term : namespacedIdentifier ;
+            // term : identifier_namespaced ;
             if (ctx_nid != null) {
                 return Utility.GetNamespacedIdentifier(ctx_nid, state);
             }

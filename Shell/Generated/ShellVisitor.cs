@@ -38,11 +38,11 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitProgram([NotNull] ShellParser.ProgramContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.programStatement"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.program_statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitProgramStatement([NotNull] ShellParser.ProgramStatementContext context);
+	Result VisitProgram_statement([NotNull] ShellParser.Program_statementContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.statement"/>.
 	/// </summary>
@@ -50,41 +50,41 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] ShellParser.StatementContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceLoad"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.load_namespace"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitNamespaceLoad([NotNull] ShellParser.NamespaceLoadContext context);
+	Result VisitLoad_namespace([NotNull] ShellParser.Load_namespaceContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespace"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespace_declaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitNamespace([NotNull] ShellParser.NamespaceContext context);
+	Result VisitNamespace_declaration([NotNull] ShellParser.Namespace_declarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceStmt"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespaced_statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitNamespaceStmt([NotNull] ShellParser.NamespaceStmtContext context);
+	Result VisitNamespaced_statement([NotNull] ShellParser.Namespaced_statementContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceDecl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespaced_declaration"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitNamespaceDecl([NotNull] ShellParser.NamespaceDeclContext context);
+	Result VisitNamespaced_declaration([NotNull] ShellParser.Namespaced_declarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.programExec"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.program_shorthand"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitProgramExec([NotNull] ShellParser.ProgramExecContext context);
+	Result VisitProgram_shorthand([NotNull] ShellParser.Program_shorthandContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.statementBlock"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.statement_block"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStatementBlock([NotNull] ShellParser.StatementBlockContext context);
+	Result VisitStatement_block([NotNull] ShellParser.Statement_blockContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.declaration"/>.
 	/// </summary>
@@ -98,11 +98,11 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFunction([NotNull] ShellParser.FunctionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.functionArg"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.function_argument"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFunctionArg([NotNull] ShellParser.FunctionArgContext context);
+	Result VisitFunction_argument([NotNull] ShellParser.Function_argumentContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.control"/>.
 	/// </summary>
@@ -110,35 +110,35 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitControl([NotNull] ShellParser.ControlContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_if"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitIfControl([NotNull] ShellParser.IfControlContext context);
+	Result VisitControl_if([NotNull] ShellParser.Control_ifContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifThenControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.if_then"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitIfThenControl([NotNull] ShellParser.IfThenControlContext context);
+	Result VisitIf_then([NotNull] ShellParser.If_thenContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifThenElseControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.if_then_else"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitIfThenElseControl([NotNull] ShellParser.IfThenElseControlContext context);
+	Result VisitIf_then_else([NotNull] ShellParser.If_then_elseContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.forControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_for"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitForControl([NotNull] ShellParser.ForControlContext context);
+	Result VisitControl_for([NotNull] ShellParser.Control_forContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.returnControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_return"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitReturnControl([NotNull] ShellParser.ReturnControlContext context);
+	Result VisitControl_return([NotNull] ShellParser.Control_returnContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.expression"/>.
 	/// </summary>
@@ -146,59 +146,59 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpression([NotNull] ShellParser.ExpressionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.orExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_or"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitOrExpr([NotNull] ShellParser.OrExprContext context);
+	Result VisitExpression_or([NotNull] ShellParser.Expression_orContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.andExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_and"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitAndExpr([NotNull] ShellParser.AndExprContext context);
+	Result VisitExpression_and([NotNull] ShellParser.Expression_andContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.eqExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_equality"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEqExpr([NotNull] ShellParser.EqExprContext context);
+	Result VisitExpression_equality([NotNull] ShellParser.Expression_equalityContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.relExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_relational"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitRelExpr([NotNull] ShellParser.RelExprContext context);
+	Result VisitExpression_relational([NotNull] ShellParser.Expression_relationalContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.addExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_addition"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitAddExpr([NotNull] ShellParser.AddExprContext context);
+	Result VisitExpression_addition([NotNull] ShellParser.Expression_additionContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.mulExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplication"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitMulExpr([NotNull] ShellParser.MulExprContext context);
+	Result VisitExpression_multiplication([NotNull] ShellParser.Expression_multiplicationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.unary"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_unary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitUnary([NotNull] ShellParser.UnaryContext context);
+	Result VisitExpression_unary([NotNull] ShellParser.Expression_unaryContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.primary"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_primary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitPrimary([NotNull] ShellParser.PrimaryContext context);
+	Result VisitExpression_primary([NotNull] ShellParser.Expression_primaryContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.fnCall"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.function_call"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFnCall([NotNull] ShellParser.FnCallContext context);
+	Result VisitFunction_call([NotNull] ShellParser.Function_callContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.term"/>.
 	/// </summary>
@@ -206,11 +206,11 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitTerm([NotNull] ShellParser.TermContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespacedIdentifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.identifier_namespaced"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitNamespacedIdentifier([NotNull] ShellParser.NamespacedIdentifierContext context);
+	Result VisitIdentifier_namespaced([NotNull] ShellParser.Identifier_namespacedContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.value"/>.
 	/// </summary>
@@ -242,16 +242,16 @@ public interface IShellVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitObject([NotNull] ShellParser.ObjectContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.typeSpecifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitTypeSpecifier([NotNull] ShellParser.TypeSpecifierContext context);
+	Result VisitType_specifier([NotNull] ShellParser.Type_specifierContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.usableTypeSpecifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier_value"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitUsableTypeSpecifier([NotNull] ShellParser.UsableTypeSpecifierContext context);
+	Result VisitType_specifier_value([NotNull] ShellParser.Type_specifier_valueContext context);
 }
 } // namespace Shell.Generated

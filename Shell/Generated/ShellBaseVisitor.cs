@@ -44,7 +44,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitProgram([NotNull] ShellParser.ProgramContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.programStatement"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.program_statement"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -52,7 +52,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitProgramStatement([NotNull] ShellParser.ProgramStatementContext context) { return VisitChildren(context); }
+	public virtual Result VisitProgram_statement([NotNull] ShellParser.Program_statementContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.statement"/>.
 	/// <para>
@@ -64,7 +64,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitStatement([NotNull] ShellParser.StatementContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceLoad"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.load_namespace"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -72,9 +72,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNamespaceLoad([NotNull] ShellParser.NamespaceLoadContext context) { return VisitChildren(context); }
+	public virtual Result VisitLoad_namespace([NotNull] ShellParser.Load_namespaceContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespace"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespace_declaration"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -82,9 +82,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNamespace([NotNull] ShellParser.NamespaceContext context) { return VisitChildren(context); }
+	public virtual Result VisitNamespace_declaration([NotNull] ShellParser.Namespace_declarationContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceStmt"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespaced_statement"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -92,9 +92,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNamespaceStmt([NotNull] ShellParser.NamespaceStmtContext context) { return VisitChildren(context); }
+	public virtual Result VisitNamespaced_statement([NotNull] ShellParser.Namespaced_statementContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespaceDecl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.namespaced_declaration"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -102,9 +102,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNamespaceDecl([NotNull] ShellParser.NamespaceDeclContext context) { return VisitChildren(context); }
+	public virtual Result VisitNamespaced_declaration([NotNull] ShellParser.Namespaced_declarationContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.programExec"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.program_shorthand"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -112,9 +112,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitProgramExec([NotNull] ShellParser.ProgramExecContext context) { return VisitChildren(context); }
+	public virtual Result VisitProgram_shorthand([NotNull] ShellParser.Program_shorthandContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.statementBlock"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.statement_block"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -122,7 +122,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitStatementBlock([NotNull] ShellParser.StatementBlockContext context) { return VisitChildren(context); }
+	public virtual Result VisitStatement_block([NotNull] ShellParser.Statement_blockContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.declaration"/>.
 	/// <para>
@@ -144,7 +144,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitFunction([NotNull] ShellParser.FunctionContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.functionArg"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.function_argument"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -152,7 +152,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitFunctionArg([NotNull] ShellParser.FunctionArgContext context) { return VisitChildren(context); }
+	public virtual Result VisitFunction_argument([NotNull] ShellParser.Function_argumentContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.control"/>.
 	/// <para>
@@ -164,7 +164,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitControl([NotNull] ShellParser.ControlContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_if"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -172,9 +172,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIfControl([NotNull] ShellParser.IfControlContext context) { return VisitChildren(context); }
+	public virtual Result VisitControl_if([NotNull] ShellParser.Control_ifContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifThenControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.if_then"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -182,9 +182,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIfThenControl([NotNull] ShellParser.IfThenControlContext context) { return VisitChildren(context); }
+	public virtual Result VisitIf_then([NotNull] ShellParser.If_thenContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.ifThenElseControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.if_then_else"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -192,9 +192,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitIfThenElseControl([NotNull] ShellParser.IfThenElseControlContext context) { return VisitChildren(context); }
+	public virtual Result VisitIf_then_else([NotNull] ShellParser.If_then_elseContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.forControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_for"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -202,9 +202,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitForControl([NotNull] ShellParser.ForControlContext context) { return VisitChildren(context); }
+	public virtual Result VisitControl_for([NotNull] ShellParser.Control_forContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.returnControl"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.control_return"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -212,7 +212,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitReturnControl([NotNull] ShellParser.ReturnControlContext context) { return VisitChildren(context); }
+	public virtual Result VisitControl_return([NotNull] ShellParser.Control_returnContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.expression"/>.
 	/// <para>
@@ -224,7 +224,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitExpression([NotNull] ShellParser.ExpressionContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.orExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_or"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -232,9 +232,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitOrExpr([NotNull] ShellParser.OrExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_or([NotNull] ShellParser.Expression_orContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.andExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_and"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -242,9 +242,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAndExpr([NotNull] ShellParser.AndExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_and([NotNull] ShellParser.Expression_andContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.eqExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_equality"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -252,9 +252,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitEqExpr([NotNull] ShellParser.EqExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_equality([NotNull] ShellParser.Expression_equalityContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.relExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_relational"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -262,9 +262,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitRelExpr([NotNull] ShellParser.RelExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_relational([NotNull] ShellParser.Expression_relationalContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.addExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_addition"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -272,9 +272,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAddExpr([NotNull] ShellParser.AddExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_addition([NotNull] ShellParser.Expression_additionContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.mulExpr"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_multiplication"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -282,9 +282,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitMulExpr([NotNull] ShellParser.MulExprContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_multiplication([NotNull] ShellParser.Expression_multiplicationContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.unary"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_unary"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -292,9 +292,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitUnary([NotNull] ShellParser.UnaryContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_unary([NotNull] ShellParser.Expression_unaryContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.primary"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.expression_primary"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -302,9 +302,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPrimary([NotNull] ShellParser.PrimaryContext context) { return VisitChildren(context); }
+	public virtual Result VisitExpression_primary([NotNull] ShellParser.Expression_primaryContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.fnCall"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.function_call"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -312,7 +312,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitFnCall([NotNull] ShellParser.FnCallContext context) { return VisitChildren(context); }
+	public virtual Result VisitFunction_call([NotNull] ShellParser.Function_callContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.term"/>.
 	/// <para>
@@ -324,7 +324,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitTerm([NotNull] ShellParser.TermContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.namespacedIdentifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.identifier_namespaced"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -332,7 +332,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitNamespacedIdentifier([NotNull] ShellParser.NamespacedIdentifierContext context) { return VisitChildren(context); }
+	public virtual Result VisitIdentifier_namespaced([NotNull] ShellParser.Identifier_namespacedContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="ShellParser.value"/>.
 	/// <para>
@@ -384,7 +384,7 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitObject([NotNull] ShellParser.ObjectContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.typeSpecifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -392,9 +392,9 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitTypeSpecifier([NotNull] ShellParser.TypeSpecifierContext context) { return VisitChildren(context); }
+	public virtual Result VisitType_specifier([NotNull] ShellParser.Type_specifierContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="ShellParser.usableTypeSpecifier"/>.
+	/// Visit a parse tree produced by <see cref="ShellParser.type_specifier_value"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -402,6 +402,6 @@ public partial class ShellBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitUsableTypeSpecifier([NotNull] ShellParser.UsableTypeSpecifierContext context) { return VisitChildren(context); }
+	public virtual Result VisitType_specifier_value([NotNull] ShellParser.Type_specifier_valueContext context) { return VisitChildren(context); }
 }
 } // namespace Shell.Generated

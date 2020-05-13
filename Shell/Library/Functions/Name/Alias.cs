@@ -45,10 +45,10 @@ namespace Shell.Library.Functions.Name
                 ErrorHandler = new BailErrorStrategy()
             };
 
-            ShellParser.NamespacedIdentifierContext context;
+            ShellParser.Identifier_namespacedContext context;
 
             try {
-                context = parser.namespacedIdentifier();
+                context = parser.identifier_namespaced();
             } catch (Exception e) {
                 Console.WriteLine($"Aliasing failed! Could not parse the given namespaced identifier: {e.Message}");
                 return new Shell.Types.None();

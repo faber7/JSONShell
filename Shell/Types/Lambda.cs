@@ -9,20 +9,20 @@ namespace Shell.Types
     public class UserDefinedLambda : Lambda
     {
         private readonly ShellParser.FunctionContext context;
-        private readonly ShellParser.StatementBlockContext statementBlock;
+        private readonly ShellParser.Statement_blockContext statement_block;
 
         /// <remark>
-        /// function : KW_FUN LPAREN (functionArg (SYM_COMMA functionArg)*)? RPAREN statementBlock ;
-        /// functionArg : typeSpecifier IDENTIFIER ;
+        /// function : KW_FUN LPAREN (function_argument (SYM_COMMA function_argument)*)? RPAREN statement_block ;
+        /// function_argument : type_specifier IDENTIFIER ;
         /// </remark>
         public UserDefinedLambda(ShellParser.FunctionContext ctx)
         {
             context = ctx;
-            statementBlock = context.statementBlock();
-            for (int i = 0; i < context.functionArg().Length; i++) {
-                var arg = context.functionArg(i);
+            statement_block = context.statement_block();
+            for (int i = 0; i < context.function_argument().Length; i++) {
+                var arg = context.function_argument(i);
                 string name = arg.IDENTIFIER().GetText();
-                var token = Shell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.typeSpecifier());
+                var token = Shell.Interpreter.Utility.GetTokenOfTypeSpecifier(arg.type_specifier());
 
                 argList.Add(new Tuple<string, Specifier>(name, Shell.Interpreter.Utility.GetSpecifier(token)));
             }
@@ -30,7 +30,7 @@ namespace Shell.Types
 
         public IShellReturnable Execute(ShellBaseVisitor<IShellReturnable> visitor)
         {
-            return visitor.VisitStatementBlock(statementBlock);
+            return visitor.VisitStatement_block(statement_block);
         }
 
         override public int Arity() => argList.Count;

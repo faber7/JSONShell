@@ -22,22 +22,22 @@ namespace Shell.Types
         }
 
         /// <summary>
-        /// namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaceStmt* RCURL ;
-        /// namespaceStmt : EOL | namespaceDecl EOL | namespace EOL | namespaceLoad EOL ;
-        /// namespaceDecl : IDENTIFIER OP_ASSGN (expression | function) ;
-        /// namespaceLoad : KW_USING STRING (KW_AS IDENTIFIER)? ;
+        /// namespace : KW_NAMESPACE IDENTIFIER LCURL EOL? namespaced_statement* RCURL ;
+        /// namespaced_statement : EOL | namespaced_declaration EOL | namespace EOL | load_namespace EOL ;
+        /// namespaced_declaration : IDENTIFIER OP_ASSGN (expression | function) ;
+        /// load_namespace : KW_USING STRING (KW_AS IDENTIFIER)? ;
         /// </summary>
-        public Namespace(string name, string from, Shell.Generated.ShellParser.NamespaceContext context, Visitor visitor)
+        public Namespace(string name, string from, Shell.Generated.ShellParser.Namespace_declarationContext context, Visitor visitor)
         {
             definitionDirectory = from;
             contents = new Dictionary<string, Types.IShellNamed>();
             this.name = name;
             if (name == "")
                 this.name = context.IDENTIFIER().GetText();
-            foreach (var stmt in context.namespaceStmt()) {
-                var nsContext = stmt.@namespace();
-                var nsDecl = stmt.namespaceDecl();
-                var nsLoad = stmt.namespaceLoad();
+            foreach (var stmt in context.namespaced_statement()) {
+                var nsContext = stmt.namespace_declaration();
+                var nsDecl = stmt.namespaced_declaration();
+                var nsLoad = stmt.load_namespace();
 
                 if (nsContext != null) {
                     var ns = new Namespace("", definitionDirectory, nsContext, visitor)

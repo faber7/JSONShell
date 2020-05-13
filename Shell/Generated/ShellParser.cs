@@ -47,24 +47,26 @@ public partial class ShellParser : Parser {
 		NUMBER=51, NONDIGIT=52, DIGIT=53, NONZERO_DIGIT=54, ZERO=55, SIGN=56, 
 		INT=57, FRAC=58, EXP=59, HEX=60, UNICODE=61, ESC=62, SAFECODEPOINT=63;
 	public const int
-		RULE_program = 0, RULE_programStatement = 1, RULE_statement = 2, RULE_namespaceLoad = 3, 
-		RULE_namespace = 4, RULE_namespaceStmt = 5, RULE_namespaceDecl = 6, RULE_programExec = 7, 
-		RULE_statementBlock = 8, RULE_declaration = 9, RULE_function = 10, RULE_functionArg = 11, 
-		RULE_control = 12, RULE_ifControl = 13, RULE_ifThenControl = 14, RULE_ifThenElseControl = 15, 
-		RULE_forControl = 16, RULE_returnControl = 17, RULE_expression = 18, RULE_orExpr = 19, 
-		RULE_andExpr = 20, RULE_eqExpr = 21, RULE_relExpr = 22, RULE_addExpr = 23, 
-		RULE_mulExpr = 24, RULE_unary = 25, RULE_primary = 26, RULE_fnCall = 27, 
-		RULE_term = 28, RULE_namespacedIdentifier = 29, RULE_value = 30, RULE_bool = 31, 
-		RULE_array = 32, RULE_pair = 33, RULE_object = 34, RULE_typeSpecifier = 35, 
-		RULE_usableTypeSpecifier = 36;
+		RULE_program = 0, RULE_program_statement = 1, RULE_statement = 2, RULE_load_namespace = 3, 
+		RULE_namespace_declaration = 4, RULE_namespaced_statement = 5, RULE_namespaced_declaration = 6, 
+		RULE_program_shorthand = 7, RULE_statement_block = 8, RULE_declaration = 9, 
+		RULE_function = 10, RULE_function_argument = 11, RULE_control = 12, RULE_control_if = 13, 
+		RULE_if_then = 14, RULE_if_then_else = 15, RULE_control_for = 16, RULE_control_return = 17, 
+		RULE_expression = 18, RULE_expression_or = 19, RULE_expression_and = 20, 
+		RULE_expression_equality = 21, RULE_expression_relational = 22, RULE_expression_addition = 23, 
+		RULE_expression_multiplication = 24, RULE_expression_unary = 25, RULE_expression_primary = 26, 
+		RULE_function_call = 27, RULE_term = 28, RULE_identifier_namespaced = 29, 
+		RULE_value = 30, RULE_bool = 31, RULE_array = 32, RULE_pair = 33, RULE_object = 34, 
+		RULE_type_specifier = 35, RULE_type_specifier_value = 36;
 	public static readonly string[] ruleNames = {
-		"program", "programStatement", "statement", "namespaceLoad", "namespace", 
-		"namespaceStmt", "namespaceDecl", "programExec", "statementBlock", "declaration", 
-		"function", "functionArg", "control", "ifControl", "ifThenControl", "ifThenElseControl", 
-		"forControl", "returnControl", "expression", "orExpr", "andExpr", "eqExpr", 
-		"relExpr", "addExpr", "mulExpr", "unary", "primary", "fnCall", "term", 
-		"namespacedIdentifier", "value", "bool", "array", "pair", "object", "typeSpecifier", 
-		"usableTypeSpecifier"
+		"program", "program_statement", "statement", "load_namespace", "namespace_declaration", 
+		"namespaced_statement", "namespaced_declaration", "program_shorthand", 
+		"statement_block", "declaration", "function", "function_argument", "control", 
+		"control_if", "if_then", "if_then_else", "control_for", "control_return", 
+		"expression", "expression_or", "expression_and", "expression_equality", 
+		"expression_relational", "expression_addition", "expression_multiplication", 
+		"expression_unary", "expression_primary", "function_call", "term", "identifier_namespaced", 
+		"value", "bool", "array", "pair", "object", "type_specifier", "type_specifier_value"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -120,11 +122,11 @@ public partial class ShellParser : Parser {
 	}
 
 	public partial class ProgramContext : ParserRuleContext {
-		public ProgramStatementContext[] programStatement() {
-			return GetRuleContexts<ProgramStatementContext>();
+		public Program_statementContext[] program_statement() {
+			return GetRuleContexts<Program_statementContext>();
 		}
-		public ProgramStatementContext programStatement(int i) {
-			return GetRuleContext<ProgramStatementContext>(i);
+		public Program_statementContext program_statement(int i) {
+			return GetRuleContext<Program_statementContext>(i);
 		}
 		public ProgramContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -152,7 +154,7 @@ public partial class ShellParser : Parser {
 			do {
 				{
 				{
-				State = 74; programStatement();
+				State = 74; program_statement();
 				}
 				}
 				State = 77;
@@ -172,30 +174,30 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ProgramStatementContext : ParserRuleContext {
-		public NamespaceContext @namespace() {
-			return GetRuleContext<NamespaceContext>(0);
+	public partial class Program_statementContext : ParserRuleContext {
+		public Namespace_declarationContext namespace_declaration() {
+			return GetRuleContext<Namespace_declarationContext>(0);
 		}
 		public ITerminalNode EOL() { return GetToken(ShellParser.EOL, 0); }
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
-		public ProgramStatementContext(ParserRuleContext parent, int invokingState)
+		public Program_statementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_programStatement; } }
+		public override int RuleIndex { get { return RULE_program_statement; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitProgramStatement(this);
+			if (typedVisitor != null) return typedVisitor.VisitProgram_statement(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public ProgramStatementContext programStatement() {
-		ProgramStatementContext _localctx = new ProgramStatementContext(Context, State);
-		EnterRule(_localctx, 2, RULE_programStatement);
+	public Program_statementContext program_statement() {
+		Program_statementContext _localctx = new Program_statementContext(Context, State);
+		EnterRule(_localctx, 2, RULE_program_statement);
 		try {
 			State = 83;
 			ErrorHandler.Sync(this);
@@ -203,7 +205,7 @@ public partial class ShellParser : Parser {
 			case KW_NAMESPACE:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 79; @namespace();
+				State = 79; namespace_declaration();
 				State = 80; Match(EOL);
 				}
 				break;
@@ -247,11 +249,11 @@ public partial class ShellParser : Parser {
 
 	public partial class StatementContext : ParserRuleContext {
 		public ITerminalNode EOL() { return GetToken(ShellParser.EOL, 0); }
-		public NamespaceLoadContext namespaceLoad() {
-			return GetRuleContext<NamespaceLoadContext>(0);
+		public Load_namespaceContext load_namespace() {
+			return GetRuleContext<Load_namespaceContext>(0);
 		}
-		public ProgramExecContext programExec() {
-			return GetRuleContext<ProgramExecContext>(0);
+		public Program_shorthandContext program_shorthand() {
+			return GetRuleContext<Program_shorthandContext>(0);
 		}
 		public DeclarationContext declaration() {
 			return GetRuleContext<DeclarationContext>(0);
@@ -291,14 +293,14 @@ public partial class ShellParser : Parser {
 			case KW_USING:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 86; namespaceLoad();
+				State = 86; load_namespace();
 				State = 87; Match(EOL);
 				}
 				break;
 			case SYM_DOLLAR:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 89; programExec();
+				State = 89; program_shorthand();
 				State = 90; Match(EOL);
 				}
 				break;
@@ -349,27 +351,27 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class NamespaceLoadContext : ParserRuleContext {
+	public partial class Load_namespaceContext : ParserRuleContext {
 		public ITerminalNode KW_USING() { return GetToken(ShellParser.KW_USING, 0); }
 		public ITerminalNode STRING() { return GetToken(ShellParser.STRING, 0); }
 		public ITerminalNode KW_AS() { return GetToken(ShellParser.KW_AS, 0); }
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
-		public NamespaceLoadContext(ParserRuleContext parent, int invokingState)
+		public Load_namespaceContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_namespaceLoad; } }
+		public override int RuleIndex { get { return RULE_load_namespace; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNamespaceLoad(this);
+			if (typedVisitor != null) return typedVisitor.VisitLoad_namespace(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public NamespaceLoadContext namespaceLoad() {
-		NamespaceLoadContext _localctx = new NamespaceLoadContext(Context, State);
-		EnterRule(_localctx, 6, RULE_namespaceLoad);
+	public Load_namespaceContext load_namespace() {
+		Load_namespaceContext _localctx = new Load_namespaceContext(Context, State);
+		EnterRule(_localctx, 6, RULE_load_namespace);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -399,34 +401,34 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class NamespaceContext : ParserRuleContext {
+	public partial class Namespace_declarationContext : ParserRuleContext {
 		public ITerminalNode KW_NAMESPACE() { return GetToken(ShellParser.KW_NAMESPACE, 0); }
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
 		public ITerminalNode LCURL() { return GetToken(ShellParser.LCURL, 0); }
 		public ITerminalNode RCURL() { return GetToken(ShellParser.RCURL, 0); }
 		public ITerminalNode EOL() { return GetToken(ShellParser.EOL, 0); }
-		public NamespaceStmtContext[] namespaceStmt() {
-			return GetRuleContexts<NamespaceStmtContext>();
+		public Namespaced_statementContext[] namespaced_statement() {
+			return GetRuleContexts<Namespaced_statementContext>();
 		}
-		public NamespaceStmtContext namespaceStmt(int i) {
-			return GetRuleContext<NamespaceStmtContext>(i);
+		public Namespaced_statementContext namespaced_statement(int i) {
+			return GetRuleContext<Namespaced_statementContext>(i);
 		}
-		public NamespaceContext(ParserRuleContext parent, int invokingState)
+		public Namespace_declarationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_namespace; } }
+		public override int RuleIndex { get { return RULE_namespace_declaration; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNamespace(this);
+			if (typedVisitor != null) return typedVisitor.VisitNamespace_declaration(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public NamespaceContext @namespace() {
-		NamespaceContext _localctx = new NamespaceContext(Context, State);
-		EnterRule(_localctx, 8, RULE_namespace);
+	public Namespace_declarationContext namespace_declaration() {
+		Namespace_declarationContext _localctx = new Namespace_declarationContext(Context, State);
+		EnterRule(_localctx, 8, RULE_namespace_declaration);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -449,7 +451,7 @@ public partial class ShellParser : Parser {
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << EOL) | (1L << KW_NAMESPACE) | (1L << KW_USING) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
-				State = 113; namespaceStmt();
+				State = 113; namespaced_statement();
 				}
 				}
 				State = 118;
@@ -470,33 +472,33 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class NamespaceStmtContext : ParserRuleContext {
+	public partial class Namespaced_statementContext : ParserRuleContext {
 		public ITerminalNode EOL() { return GetToken(ShellParser.EOL, 0); }
-		public NamespaceDeclContext namespaceDecl() {
-			return GetRuleContext<NamespaceDeclContext>(0);
+		public Namespaced_declarationContext namespaced_declaration() {
+			return GetRuleContext<Namespaced_declarationContext>(0);
 		}
-		public NamespaceContext @namespace() {
-			return GetRuleContext<NamespaceContext>(0);
+		public Namespace_declarationContext namespace_declaration() {
+			return GetRuleContext<Namespace_declarationContext>(0);
 		}
-		public NamespaceLoadContext namespaceLoad() {
-			return GetRuleContext<NamespaceLoadContext>(0);
+		public Load_namespaceContext load_namespace() {
+			return GetRuleContext<Load_namespaceContext>(0);
 		}
-		public NamespaceStmtContext(ParserRuleContext parent, int invokingState)
+		public Namespaced_statementContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_namespaceStmt; } }
+		public override int RuleIndex { get { return RULE_namespaced_statement; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNamespaceStmt(this);
+			if (typedVisitor != null) return typedVisitor.VisitNamespaced_statement(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public NamespaceStmtContext namespaceStmt() {
-		NamespaceStmtContext _localctx = new NamespaceStmtContext(Context, State);
-		EnterRule(_localctx, 10, RULE_namespaceStmt);
+	public Namespaced_statementContext namespaced_statement() {
+		Namespaced_statementContext _localctx = new Namespaced_statementContext(Context, State);
+		EnterRule(_localctx, 10, RULE_namespaced_statement);
 		try {
 			State = 131;
 			ErrorHandler.Sync(this);
@@ -510,21 +512,21 @@ public partial class ShellParser : Parser {
 			case IDENTIFIER:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 122; namespaceDecl();
+				State = 122; namespaced_declaration();
 				State = 123; Match(EOL);
 				}
 				break;
 			case KW_NAMESPACE:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 125; @namespace();
+				State = 125; namespace_declaration();
 				State = 126; Match(EOL);
 				}
 				break;
 			case KW_USING:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 128; namespaceLoad();
+				State = 128; load_namespace();
 				State = 129; Match(EOL);
 				}
 				break;
@@ -543,7 +545,7 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class NamespaceDeclContext : ParserRuleContext {
+	public partial class Namespaced_declarationContext : ParserRuleContext {
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
 		public ITerminalNode OP_ASSGN() { return GetToken(ShellParser.OP_ASSGN, 0); }
 		public ExpressionContext expression() {
@@ -552,22 +554,22 @@ public partial class ShellParser : Parser {
 		public FunctionContext function() {
 			return GetRuleContext<FunctionContext>(0);
 		}
-		public NamespaceDeclContext(ParserRuleContext parent, int invokingState)
+		public Namespaced_declarationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_namespaceDecl; } }
+		public override int RuleIndex { get { return RULE_namespaced_declaration; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNamespaceDecl(this);
+			if (typedVisitor != null) return typedVisitor.VisitNamespaced_declaration(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public NamespaceDeclContext namespaceDecl() {
-		NamespaceDeclContext _localctx = new NamespaceDeclContext(Context, State);
-		EnterRule(_localctx, 12, RULE_namespaceDecl);
+	public Namespaced_declarationContext namespaced_declaration() {
+		Namespaced_declarationContext _localctx = new Namespaced_declarationContext(Context, State);
+		EnterRule(_localctx, 12, RULE_namespaced_declaration);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
@@ -612,28 +614,28 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ProgramExecContext : ParserRuleContext {
+	public partial class Program_shorthandContext : ParserRuleContext {
 		public ITerminalNode SYM_DOLLAR() { return GetToken(ShellParser.SYM_DOLLAR, 0); }
 		public ITerminalNode[] EOL() { return GetTokens(ShellParser.EOL); }
 		public ITerminalNode EOL(int i) {
 			return GetToken(ShellParser.EOL, i);
 		}
-		public ProgramExecContext(ParserRuleContext parent, int invokingState)
+		public Program_shorthandContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_programExec; } }
+		public override int RuleIndex { get { return RULE_program_shorthand; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitProgramExec(this);
+			if (typedVisitor != null) return typedVisitor.VisitProgram_shorthand(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public ProgramExecContext programExec() {
-		ProgramExecContext _localctx = new ProgramExecContext(Context, State);
-		EnterRule(_localctx, 14, RULE_programExec);
+	public Program_shorthandContext program_shorthand() {
+		Program_shorthandContext _localctx = new Program_shorthandContext(Context, State);
+		EnterRule(_localctx, 14, RULE_program_shorthand);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -673,7 +675,7 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class StatementBlockContext : ParserRuleContext {
+	public partial class Statement_blockContext : ParserRuleContext {
 		public ITerminalNode LCURL() { return GetToken(ShellParser.LCURL, 0); }
 		public ITerminalNode RCURL() { return GetToken(ShellParser.RCURL, 0); }
 		public StatementContext[] statement() {
@@ -682,22 +684,22 @@ public partial class ShellParser : Parser {
 		public StatementContext statement(int i) {
 			return GetRuleContext<StatementContext>(i);
 		}
-		public StatementBlockContext(ParserRuleContext parent, int invokingState)
+		public Statement_blockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_statementBlock; } }
+		public override int RuleIndex { get { return RULE_statement_block; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitStatementBlock(this);
+			if (typedVisitor != null) return typedVisitor.VisitStatement_block(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public StatementBlockContext statementBlock() {
-		StatementBlockContext _localctx = new StatementBlockContext(Context, State);
-		EnterRule(_localctx, 16, RULE_statementBlock);
+	public Statement_blockContext statement_block() {
+		Statement_blockContext _localctx = new Statement_blockContext(Context, State);
+		EnterRule(_localctx, 16, RULE_statement_block);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -832,14 +834,14 @@ public partial class ShellParser : Parser {
 		public ITerminalNode KW_FUN() { return GetToken(ShellParser.KW_FUN, 0); }
 		public ITerminalNode LPAREN() { return GetToken(ShellParser.LPAREN, 0); }
 		public ITerminalNode RPAREN() { return GetToken(ShellParser.RPAREN, 0); }
-		public StatementBlockContext statementBlock() {
-			return GetRuleContext<StatementBlockContext>(0);
+		public Statement_blockContext statement_block() {
+			return GetRuleContext<Statement_blockContext>(0);
 		}
-		public FunctionArgContext[] functionArg() {
-			return GetRuleContexts<FunctionArgContext>();
+		public Function_argumentContext[] function_argument() {
+			return GetRuleContexts<Function_argumentContext>();
 		}
-		public FunctionArgContext functionArg(int i) {
-			return GetRuleContext<FunctionArgContext>(i);
+		public Function_argumentContext function_argument(int i) {
+			return GetRuleContext<Function_argumentContext>(i);
 		}
 		public ITerminalNode[] SYM_COMMA() { return GetTokens(ShellParser.SYM_COMMA); }
 		public ITerminalNode SYM_COMMA(int i) {
@@ -872,7 +874,7 @@ public partial class ShellParser : Parser {
 			_la = TokenStream.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TYPE_OBJECT) | (1L << TYPE_ARRAY) | (1L << TYPE_NUMBER) | (1L << TYPE_STRING) | (1L << TYPE_BOOL) | (1L << TYPE_ANY))) != 0)) {
 				{
-				State = 173; functionArg();
+				State = 173; function_argument();
 				State = 178;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
@@ -880,7 +882,7 @@ public partial class ShellParser : Parser {
 					{
 					{
 					State = 174; Match(SYM_COMMA);
-					State = 175; functionArg();
+					State = 175; function_argument();
 					}
 					}
 					State = 180;
@@ -891,7 +893,7 @@ public partial class ShellParser : Parser {
 			}
 
 			State = 183; Match(RPAREN);
-			State = 184; statementBlock();
+			State = 184; statement_block();
 			}
 		}
 		catch (RecognitionException re) {
@@ -905,31 +907,31 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FunctionArgContext : ParserRuleContext {
-		public TypeSpecifierContext typeSpecifier() {
-			return GetRuleContext<TypeSpecifierContext>(0);
+	public partial class Function_argumentContext : ParserRuleContext {
+		public Type_specifierContext type_specifier() {
+			return GetRuleContext<Type_specifierContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
-		public FunctionArgContext(ParserRuleContext parent, int invokingState)
+		public Function_argumentContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_functionArg; } }
+		public override int RuleIndex { get { return RULE_function_argument; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitFunctionArg(this);
+			if (typedVisitor != null) return typedVisitor.VisitFunction_argument(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public FunctionArgContext functionArg() {
-		FunctionArgContext _localctx = new FunctionArgContext(Context, State);
-		EnterRule(_localctx, 22, RULE_functionArg);
+	public Function_argumentContext function_argument() {
+		Function_argumentContext _localctx = new Function_argumentContext(Context, State);
+		EnterRule(_localctx, 22, RULE_function_argument);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 186; typeSpecifier();
+			State = 186; type_specifier();
 			State = 187; Match(IDENTIFIER);
 			}
 		}
@@ -945,14 +947,14 @@ public partial class ShellParser : Parser {
 	}
 
 	public partial class ControlContext : ParserRuleContext {
-		public IfControlContext ifControl() {
-			return GetRuleContext<IfControlContext>(0);
+		public Control_ifContext control_if() {
+			return GetRuleContext<Control_ifContext>(0);
 		}
-		public ForControlContext forControl() {
-			return GetRuleContext<ForControlContext>(0);
+		public Control_forContext control_for() {
+			return GetRuleContext<Control_forContext>(0);
 		}
-		public ReturnControlContext returnControl() {
-			return GetRuleContext<ReturnControlContext>(0);
+		public Control_returnContext control_return() {
+			return GetRuleContext<Control_returnContext>(0);
 		}
 		public ControlContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -977,19 +979,19 @@ public partial class ShellParser : Parser {
 			case KW_IF:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 189; ifControl();
+				State = 189; control_if();
 				}
 				break;
 			case KW_FOR:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 190; forControl();
+				State = 190; control_for();
 				}
 				break;
 			case KW_RETURN:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 191; returnControl();
+				State = 191; control_return();
 				}
 				break;
 			default:
@@ -1007,29 +1009,29 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class IfControlContext : ParserRuleContext {
-		public IfThenControlContext ifThenControl() {
-			return GetRuleContext<IfThenControlContext>(0);
+	public partial class Control_ifContext : ParserRuleContext {
+		public If_thenContext if_then() {
+			return GetRuleContext<If_thenContext>(0);
 		}
-		public IfThenElseControlContext ifThenElseControl() {
-			return GetRuleContext<IfThenElseControlContext>(0);
+		public If_then_elseContext if_then_else() {
+			return GetRuleContext<If_then_elseContext>(0);
 		}
-		public IfControlContext(ParserRuleContext parent, int invokingState)
+		public Control_ifContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_ifControl; } }
+		public override int RuleIndex { get { return RULE_control_if; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIfControl(this);
+			if (typedVisitor != null) return typedVisitor.VisitControl_if(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public IfControlContext ifControl() {
-		IfControlContext _localctx = new IfControlContext(Context, State);
-		EnterRule(_localctx, 26, RULE_ifControl);
+	public Control_ifContext control_if() {
+		Control_ifContext _localctx = new Control_ifContext(Context, State);
+		EnterRule(_localctx, 26, RULE_control_if);
 		try {
 			State = 196;
 			ErrorHandler.Sync(this);
@@ -1037,13 +1039,13 @@ public partial class ShellParser : Parser {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 194; ifThenControl();
+				State = 194; if_then();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 195; ifThenElseControl();
+				State = 195; if_then_else();
 				}
 				break;
 			}
@@ -1059,36 +1061,36 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class IfThenControlContext : ParserRuleContext {
+	public partial class If_thenContext : ParserRuleContext {
 		public ITerminalNode KW_IF() { return GetToken(ShellParser.KW_IF, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
-		public StatementBlockContext statementBlock() {
-			return GetRuleContext<StatementBlockContext>(0);
+		public Statement_blockContext statement_block() {
+			return GetRuleContext<Statement_blockContext>(0);
 		}
-		public IfThenControlContext(ParserRuleContext parent, int invokingState)
+		public If_thenContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_ifThenControl; } }
+		public override int RuleIndex { get { return RULE_if_then; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIfThenControl(this);
+			if (typedVisitor != null) return typedVisitor.VisitIf_then(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public IfThenControlContext ifThenControl() {
-		IfThenControlContext _localctx = new IfThenControlContext(Context, State);
-		EnterRule(_localctx, 28, RULE_ifThenControl);
+	public If_thenContext if_then() {
+		If_thenContext _localctx = new If_thenContext(Context, State);
+		EnterRule(_localctx, 28, RULE_if_then);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 198; Match(KW_IF);
 			State = 199; expression();
-			State = 200; statementBlock();
+			State = 200; statement_block();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1102,49 +1104,49 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class IfThenElseControlContext : ParserRuleContext {
-		public IfThenControlContext ifThenControl() {
-			return GetRuleContext<IfThenControlContext>(0);
+	public partial class If_then_elseContext : ParserRuleContext {
+		public If_thenContext if_then() {
+			return GetRuleContext<If_thenContext>(0);
 		}
 		public ITerminalNode KW_ELSE() { return GetToken(ShellParser.KW_ELSE, 0); }
-		public StatementBlockContext statementBlock() {
-			return GetRuleContext<StatementBlockContext>(0);
+		public Statement_blockContext statement_block() {
+			return GetRuleContext<Statement_blockContext>(0);
 		}
-		public IfControlContext ifControl() {
-			return GetRuleContext<IfControlContext>(0);
+		public Control_ifContext control_if() {
+			return GetRuleContext<Control_ifContext>(0);
 		}
-		public IfThenElseControlContext(ParserRuleContext parent, int invokingState)
+		public If_then_elseContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_ifThenElseControl; } }
+		public override int RuleIndex { get { return RULE_if_then_else; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitIfThenElseControl(this);
+			if (typedVisitor != null) return typedVisitor.VisitIf_then_else(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public IfThenElseControlContext ifThenElseControl() {
-		IfThenElseControlContext _localctx = new IfThenElseControlContext(Context, State);
-		EnterRule(_localctx, 30, RULE_ifThenElseControl);
+	public If_then_elseContext if_then_else() {
+		If_then_elseContext _localctx = new If_then_elseContext(Context, State);
+		EnterRule(_localctx, 30, RULE_if_then_else);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 202; ifThenControl();
+			State = 202; if_then();
 			State = 203; Match(KW_ELSE);
 			State = 206;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case LCURL:
 				{
-				State = 204; statementBlock();
+				State = 204; statement_block();
 				}
 				break;
 			case KW_IF:
 				{
-				State = 205; ifControl();
+				State = 205; control_if();
 				}
 				break;
 			default:
@@ -1163,32 +1165,32 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ForControlContext : ParserRuleContext {
+	public partial class Control_forContext : ParserRuleContext {
 		public ITerminalNode KW_FOR() { return GetToken(ShellParser.KW_FOR, 0); }
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
 		public ITerminalNode KW_IN() { return GetToken(ShellParser.KW_IN, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
-		public StatementBlockContext statementBlock() {
-			return GetRuleContext<StatementBlockContext>(0);
+		public Statement_blockContext statement_block() {
+			return GetRuleContext<Statement_blockContext>(0);
 		}
-		public ForControlContext(ParserRuleContext parent, int invokingState)
+		public Control_forContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_forControl; } }
+		public override int RuleIndex { get { return RULE_control_for; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitForControl(this);
+			if (typedVisitor != null) return typedVisitor.VisitControl_for(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public ForControlContext forControl() {
-		ForControlContext _localctx = new ForControlContext(Context, State);
-		EnterRule(_localctx, 32, RULE_forControl);
+	public Control_forContext control_for() {
+		Control_forContext _localctx = new Control_forContext(Context, State);
+		EnterRule(_localctx, 32, RULE_control_for);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
@@ -1196,7 +1198,7 @@ public partial class ShellParser : Parser {
 			State = 209; Match(IDENTIFIER);
 			State = 210; Match(KW_IN);
 			State = 211; expression();
-			State = 212; statementBlock();
+			State = 212; statement_block();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1210,27 +1212,27 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class ReturnControlContext : ParserRuleContext {
+	public partial class Control_returnContext : ParserRuleContext {
 		public ITerminalNode KW_RETURN() { return GetToken(ShellParser.KW_RETURN, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
-		public ReturnControlContext(ParserRuleContext parent, int invokingState)
+		public Control_returnContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_returnControl; } }
+		public override int RuleIndex { get { return RULE_control_return; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitReturnControl(this);
+			if (typedVisitor != null) return typedVisitor.VisitControl_return(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public ReturnControlContext returnControl() {
-		ReturnControlContext _localctx = new ReturnControlContext(Context, State);
-		EnterRule(_localctx, 34, RULE_returnControl);
+	public Control_returnContext control_return() {
+		Control_returnContext _localctx = new Control_returnContext(Context, State);
+		EnterRule(_localctx, 34, RULE_control_return);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
@@ -1258,15 +1260,15 @@ public partial class ShellParser : Parser {
 	}
 
 	public partial class ExpressionContext : ParserRuleContext {
-		public OrExprContext orExpr() {
-			return GetRuleContext<OrExprContext>(0);
+		public Expression_orContext expression_or() {
+			return GetRuleContext<Expression_orContext>(0);
 		}
 		public ITerminalNode KW_IS() { return GetToken(ShellParser.KW_IS, 0); }
-		public UsableTypeSpecifierContext usableTypeSpecifier() {
-			return GetRuleContext<UsableTypeSpecifierContext>(0);
+		public Type_specifier_valueContext type_specifier_value() {
+			return GetRuleContext<Type_specifier_valueContext>(0);
 		}
-		public FnCallContext fnCall() {
-			return GetRuleContext<FnCallContext>(0);
+		public Function_callContext function_call() {
+			return GetRuleContext<Function_callContext>(0);
 		}
 		public ExpressionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -1292,14 +1294,14 @@ public partial class ShellParser : Parser {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 218; orExpr();
+				State = 218; expression_or();
 				State = 221;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==KW_IS) {
 					{
 					State = 219; Match(KW_IS);
-					State = 220; usableTypeSpecifier();
+					State = 220; type_specifier_value();
 					}
 				}
 
@@ -1308,7 +1310,7 @@ public partial class ShellParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 223; fnCall();
+				State = 223; function_call();
 				}
 				break;
 			}
@@ -1324,38 +1326,38 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class OrExprContext : ParserRuleContext {
-		public AndExprContext[] andExpr() {
-			return GetRuleContexts<AndExprContext>();
+	public partial class Expression_orContext : ParserRuleContext {
+		public Expression_andContext[] expression_and() {
+			return GetRuleContexts<Expression_andContext>();
 		}
-		public AndExprContext andExpr(int i) {
-			return GetRuleContext<AndExprContext>(i);
+		public Expression_andContext expression_and(int i) {
+			return GetRuleContext<Expression_andContext>(i);
 		}
 		public ITerminalNode[] OP_OR() { return GetTokens(ShellParser.OP_OR); }
 		public ITerminalNode OP_OR(int i) {
 			return GetToken(ShellParser.OP_OR, i);
 		}
-		public OrExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_orContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_orExpr; } }
+		public override int RuleIndex { get { return RULE_expression_or; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitOrExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_or(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public OrExprContext orExpr() {
-		OrExprContext _localctx = new OrExprContext(Context, State);
-		EnterRule(_localctx, 38, RULE_orExpr);
+	public Expression_orContext expression_or() {
+		Expression_orContext _localctx = new Expression_orContext(Context, State);
+		EnterRule(_localctx, 38, RULE_expression_or);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 226; andExpr();
+			State = 226; expression_and();
 			State = 231;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1363,7 +1365,7 @@ public partial class ShellParser : Parser {
 				{
 				{
 				State = 227; Match(OP_OR);
-				State = 228; andExpr();
+				State = 228; expression_and();
 				}
 				}
 				State = 233;
@@ -1383,38 +1385,38 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AndExprContext : ParserRuleContext {
-		public EqExprContext[] eqExpr() {
-			return GetRuleContexts<EqExprContext>();
+	public partial class Expression_andContext : ParserRuleContext {
+		public Expression_equalityContext[] expression_equality() {
+			return GetRuleContexts<Expression_equalityContext>();
 		}
-		public EqExprContext eqExpr(int i) {
-			return GetRuleContext<EqExprContext>(i);
+		public Expression_equalityContext expression_equality(int i) {
+			return GetRuleContext<Expression_equalityContext>(i);
 		}
 		public ITerminalNode[] OP_AND() { return GetTokens(ShellParser.OP_AND); }
 		public ITerminalNode OP_AND(int i) {
 			return GetToken(ShellParser.OP_AND, i);
 		}
-		public AndExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_andContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_andExpr; } }
+		public override int RuleIndex { get { return RULE_expression_and; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitAndExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_and(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public AndExprContext andExpr() {
-		AndExprContext _localctx = new AndExprContext(Context, State);
-		EnterRule(_localctx, 40, RULE_andExpr);
+	public Expression_andContext expression_and() {
+		Expression_andContext _localctx = new Expression_andContext(Context, State);
+		EnterRule(_localctx, 40, RULE_expression_and);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 234; eqExpr();
+			State = 234; expression_equality();
 			State = 239;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1422,7 +1424,7 @@ public partial class ShellParser : Parser {
 				{
 				{
 				State = 235; Match(OP_AND);
-				State = 236; eqExpr();
+				State = 236; expression_equality();
 				}
 				}
 				State = 241;
@@ -1442,36 +1444,36 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class EqExprContext : ParserRuleContext {
-		public RelExprContext[] relExpr() {
-			return GetRuleContexts<RelExprContext>();
+	public partial class Expression_equalityContext : ParserRuleContext {
+		public Expression_relationalContext[] expression_relational() {
+			return GetRuleContexts<Expression_relationalContext>();
 		}
-		public RelExprContext relExpr(int i) {
-			return GetRuleContext<RelExprContext>(i);
+		public Expression_relationalContext expression_relational(int i) {
+			return GetRuleContext<Expression_relationalContext>(i);
 		}
 		public ITerminalNode OP_NE() { return GetToken(ShellParser.OP_NE, 0); }
 		public ITerminalNode OP_EQ() { return GetToken(ShellParser.OP_EQ, 0); }
-		public EqExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_equalityContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_eqExpr; } }
+		public override int RuleIndex { get { return RULE_expression_equality; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitEqExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_equality(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public EqExprContext eqExpr() {
-		EqExprContext _localctx = new EqExprContext(Context, State);
-		EnterRule(_localctx, 42, RULE_eqExpr);
+	public Expression_equalityContext expression_equality() {
+		Expression_equalityContext _localctx = new Expression_equalityContext(Context, State);
+		EnterRule(_localctx, 42, RULE_expression_equality);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 242; relExpr();
+			State = 242; expression_relational();
 			State = 245;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1486,7 +1488,7 @@ public partial class ShellParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 244; relExpr();
+				State = 244; expression_relational();
 				}
 			}
 
@@ -1503,38 +1505,38 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class RelExprContext : ParserRuleContext {
-		public AddExprContext[] addExpr() {
-			return GetRuleContexts<AddExprContext>();
+	public partial class Expression_relationalContext : ParserRuleContext {
+		public Expression_additionContext[] expression_addition() {
+			return GetRuleContexts<Expression_additionContext>();
 		}
-		public AddExprContext addExpr(int i) {
-			return GetRuleContext<AddExprContext>(i);
+		public Expression_additionContext expression_addition(int i) {
+			return GetRuleContext<Expression_additionContext>(i);
 		}
 		public ITerminalNode OP_GT() { return GetToken(ShellParser.OP_GT, 0); }
 		public ITerminalNode OP_GE() { return GetToken(ShellParser.OP_GE, 0); }
 		public ITerminalNode OP_LT() { return GetToken(ShellParser.OP_LT, 0); }
 		public ITerminalNode OP_LE() { return GetToken(ShellParser.OP_LE, 0); }
-		public RelExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_relationalContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_relExpr; } }
+		public override int RuleIndex { get { return RULE_expression_relational; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitRelExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_relational(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public RelExprContext relExpr() {
-		RelExprContext _localctx = new RelExprContext(Context, State);
-		EnterRule(_localctx, 44, RULE_relExpr);
+	public Expression_relationalContext expression_relational() {
+		Expression_relationalContext _localctx = new Expression_relationalContext(Context, State);
+		EnterRule(_localctx, 44, RULE_expression_relational);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 247; addExpr();
+			State = 247; expression_addition();
 			State = 250;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1549,7 +1551,7 @@ public partial class ShellParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 249; addExpr();
+				State = 249; expression_addition();
 				}
 			}
 
@@ -1566,12 +1568,12 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AddExprContext : ParserRuleContext {
-		public MulExprContext[] mulExpr() {
-			return GetRuleContexts<MulExprContext>();
+	public partial class Expression_additionContext : ParserRuleContext {
+		public Expression_multiplicationContext[] expression_multiplication() {
+			return GetRuleContexts<Expression_multiplicationContext>();
 		}
-		public MulExprContext mulExpr(int i) {
-			return GetRuleContext<MulExprContext>(i);
+		public Expression_multiplicationContext expression_multiplication(int i) {
+			return GetRuleContext<Expression_multiplicationContext>(i);
 		}
 		public ITerminalNode[] OP_SUB() { return GetTokens(ShellParser.OP_SUB); }
 		public ITerminalNode OP_SUB(int i) {
@@ -1581,28 +1583,28 @@ public partial class ShellParser : Parser {
 		public ITerminalNode OP_ADD(int i) {
 			return GetToken(ShellParser.OP_ADD, i);
 		}
-		public AddExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_additionContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_addExpr; } }
+		public override int RuleIndex { get { return RULE_expression_addition; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitAddExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_addition(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public AddExprContext addExpr() {
-		AddExprContext _localctx = new AddExprContext(Context, State);
-		EnterRule(_localctx, 46, RULE_addExpr);
+	public Expression_additionContext expression_addition() {
+		Expression_additionContext _localctx = new Expression_additionContext(Context, State);
+		EnterRule(_localctx, 46, RULE_expression_addition);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 252; mulExpr();
+			State = 252; expression_multiplication();
 			State = 257;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,24,Context);
@@ -1619,7 +1621,7 @@ public partial class ShellParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 254; mulExpr();
+					State = 254; expression_multiplication();
 					}
 					} 
 				}
@@ -1640,12 +1642,12 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class MulExprContext : ParserRuleContext {
-		public UnaryContext[] unary() {
-			return GetRuleContexts<UnaryContext>();
+	public partial class Expression_multiplicationContext : ParserRuleContext {
+		public Expression_unaryContext[] expression_unary() {
+			return GetRuleContexts<Expression_unaryContext>();
 		}
-		public UnaryContext unary(int i) {
-			return GetRuleContext<UnaryContext>(i);
+		public Expression_unaryContext expression_unary(int i) {
+			return GetRuleContext<Expression_unaryContext>(i);
 		}
 		public ITerminalNode[] OP_DIV() { return GetTokens(ShellParser.OP_DIV); }
 		public ITerminalNode OP_DIV(int i) {
@@ -1659,27 +1661,27 @@ public partial class ShellParser : Parser {
 		public ITerminalNode OP_MOD(int i) {
 			return GetToken(ShellParser.OP_MOD, i);
 		}
-		public MulExprContext(ParserRuleContext parent, int invokingState)
+		public Expression_multiplicationContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_mulExpr; } }
+		public override int RuleIndex { get { return RULE_expression_multiplication; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitMulExpr(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_multiplication(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public MulExprContext mulExpr() {
-		MulExprContext _localctx = new MulExprContext(Context, State);
-		EnterRule(_localctx, 48, RULE_mulExpr);
+	public Expression_multiplicationContext expression_multiplication() {
+		Expression_multiplicationContext _localctx = new Expression_multiplicationContext(Context, State);
+		EnterRule(_localctx, 48, RULE_expression_multiplication);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 260; unary();
+			State = 260; expression_unary();
 			State = 265;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1695,7 +1697,7 @@ public partial class ShellParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 262; unary();
+				State = 262; expression_unary();
 				}
 				}
 				State = 267;
@@ -1715,31 +1717,31 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class UnaryContext : ParserRuleContext {
-		public UnaryContext unary() {
-			return GetRuleContext<UnaryContext>(0);
+	public partial class Expression_unaryContext : ParserRuleContext {
+		public Expression_unaryContext expression_unary() {
+			return GetRuleContext<Expression_unaryContext>(0);
 		}
 		public ITerminalNode OP_NOT() { return GetToken(ShellParser.OP_NOT, 0); }
 		public ITerminalNode OP_SUB() { return GetToken(ShellParser.OP_SUB, 0); }
-		public PrimaryContext primary() {
-			return GetRuleContext<PrimaryContext>(0);
+		public Expression_primaryContext expression_primary() {
+			return GetRuleContext<Expression_primaryContext>(0);
 		}
-		public UnaryContext(ParserRuleContext parent, int invokingState)
+		public Expression_unaryContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_unary; } }
+		public override int RuleIndex { get { return RULE_expression_unary; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitUnary(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_unary(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public UnaryContext unary() {
-		UnaryContext _localctx = new UnaryContext(Context, State);
-		EnterRule(_localctx, 50, RULE_unary);
+	public Expression_unaryContext expression_unary() {
+		Expression_unaryContext _localctx = new Expression_unaryContext(Context, State);
+		EnterRule(_localctx, 50, RULE_expression_unary);
 		int _la;
 		try {
 			State = 271;
@@ -1758,7 +1760,7 @@ public partial class ShellParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 269; unary();
+				State = 269; expression_unary();
 				}
 				break;
 			case KW_TRUE:
@@ -1772,7 +1774,7 @@ public partial class ShellParser : Parser {
 			case NUMBER:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 270; primary();
+				State = 270; expression_primary();
 				}
 				break;
 			default:
@@ -1790,7 +1792,7 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class PrimaryContext : ParserRuleContext {
+	public partial class Expression_primaryContext : ParserRuleContext {
 		public TermContext term() {
 			return GetRuleContext<TermContext>(0);
 		}
@@ -1799,22 +1801,22 @@ public partial class ShellParser : Parser {
 			return GetRuleContext<ExpressionContext>(0);
 		}
 		public ITerminalNode RPAREN() { return GetToken(ShellParser.RPAREN, 0); }
-		public PrimaryContext(ParserRuleContext parent, int invokingState)
+		public Expression_primaryContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_primary; } }
+		public override int RuleIndex { get { return RULE_expression_primary; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitPrimary(this);
+			if (typedVisitor != null) return typedVisitor.VisitExpression_primary(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public PrimaryContext primary() {
-		PrimaryContext _localctx = new PrimaryContext(Context, State);
-		EnterRule(_localctx, 52, RULE_primary);
+	public Expression_primaryContext expression_primary() {
+		Expression_primaryContext _localctx = new Expression_primaryContext(Context, State);
+		EnterRule(_localctx, 52, RULE_expression_primary);
 		try {
 			State = 278;
 			ErrorHandler.Sync(this);
@@ -1855,9 +1857,9 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class FnCallContext : ParserRuleContext {
-		public NamespacedIdentifierContext namespacedIdentifier() {
-			return GetRuleContext<NamespacedIdentifierContext>(0);
+	public partial class Function_callContext : ParserRuleContext {
+		public Identifier_namespacedContext identifier_namespaced() {
+			return GetRuleContext<Identifier_namespacedContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
 		public ExpressionContext[] expression() {
@@ -1866,22 +1868,22 @@ public partial class ShellParser : Parser {
 		public ExpressionContext expression(int i) {
 			return GetRuleContext<ExpressionContext>(i);
 		}
-		public FnCallContext(ParserRuleContext parent, int invokingState)
+		public Function_callContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_fnCall; } }
+		public override int RuleIndex { get { return RULE_function_call; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitFnCall(this);
+			if (typedVisitor != null) return typedVisitor.VisitFunction_call(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public FnCallContext fnCall() {
-		FnCallContext _localctx = new FnCallContext(Context, State);
-		EnterRule(_localctx, 54, RULE_fnCall);
+	public Function_callContext function_call() {
+		Function_callContext _localctx = new Function_callContext(Context, State);
+		EnterRule(_localctx, 54, RULE_function_call);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
@@ -1891,7 +1893,7 @@ public partial class ShellParser : Parser {
 			switch ( Interpreter.AdaptivePredict(TokenStream,28,Context) ) {
 			case 1:
 				{
-				State = 280; namespacedIdentifier();
+				State = 280; identifier_namespaced();
 				}
 				break;
 			case 2:
@@ -1933,8 +1935,8 @@ public partial class ShellParser : Parser {
 			return GetRuleContext<ValueContext>(0);
 		}
 		public ITerminalNode IDENTIFIER() { return GetToken(ShellParser.IDENTIFIER, 0); }
-		public NamespacedIdentifierContext namespacedIdentifier() {
-			return GetRuleContext<NamespacedIdentifierContext>(0);
+		public Identifier_namespacedContext identifier_namespaced() {
+			return GetRuleContext<Identifier_namespacedContext>(0);
 		}
 		public TermContext term() {
 			return GetRuleContext<TermContext>(0);
@@ -1987,7 +1989,7 @@ public partial class ShellParser : Parser {
 				break;
 			case 3:
 				{
-				State = 293; namespacedIdentifier();
+				State = 293; identifier_namespaced();
 				}
 				break;
 			}
@@ -2029,7 +2031,7 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class NamespacedIdentifierContext : ParserRuleContext {
+	public partial class Identifier_namespacedContext : ParserRuleContext {
 		public ITerminalNode[] IDENTIFIER() { return GetTokens(ShellParser.IDENTIFIER); }
 		public ITerminalNode IDENTIFIER(int i) {
 			return GetToken(ShellParser.IDENTIFIER, i);
@@ -2038,22 +2040,22 @@ public partial class ShellParser : Parser {
 		public ITerminalNode SYM_PERIOD(int i) {
 			return GetToken(ShellParser.SYM_PERIOD, i);
 		}
-		public NamespacedIdentifierContext(ParserRuleContext parent, int invokingState)
+		public Identifier_namespacedContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_namespacedIdentifier; } }
+		public override int RuleIndex { get { return RULE_identifier_namespaced; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitNamespacedIdentifier(this);
+			if (typedVisitor != null) return typedVisitor.VisitIdentifier_namespaced(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public NamespacedIdentifierContext namespacedIdentifier() {
-		NamespacedIdentifierContext _localctx = new NamespacedIdentifierContext(Context, State);
-		EnterRule(_localctx, 58, RULE_namespacedIdentifier);
+	public Identifier_namespacedContext identifier_namespaced() {
+		Identifier_namespacedContext _localctx = new Identifier_namespacedContext(Context, State);
+		EnterRule(_localctx, 58, RULE_identifier_namespaced);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
@@ -2449,27 +2451,27 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TypeSpecifierContext : ParserRuleContext {
-		public UsableTypeSpecifierContext usableTypeSpecifier() {
-			return GetRuleContext<UsableTypeSpecifierContext>(0);
+	public partial class Type_specifierContext : ParserRuleContext {
+		public Type_specifier_valueContext type_specifier_value() {
+			return GetRuleContext<Type_specifier_valueContext>(0);
 		}
 		public ITerminalNode TYPE_ANY() { return GetToken(ShellParser.TYPE_ANY, 0); }
-		public TypeSpecifierContext(ParserRuleContext parent, int invokingState)
+		public Type_specifierContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_typeSpecifier; } }
+		public override int RuleIndex { get { return RULE_type_specifier; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitTypeSpecifier(this);
+			if (typedVisitor != null) return typedVisitor.VisitType_specifier(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public TypeSpecifierContext typeSpecifier() {
-		TypeSpecifierContext _localctx = new TypeSpecifierContext(Context, State);
-		EnterRule(_localctx, 70, RULE_typeSpecifier);
+	public Type_specifierContext type_specifier() {
+		Type_specifierContext _localctx = new Type_specifierContext(Context, State);
+		EnterRule(_localctx, 70, RULE_type_specifier);
 		try {
 			State = 368;
 			ErrorHandler.Sync(this);
@@ -2481,7 +2483,7 @@ public partial class ShellParser : Parser {
 			case TYPE_BOOL:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 366; usableTypeSpecifier();
+				State = 366; type_specifier_value();
 				}
 				break;
 			case TYPE_ANY:
@@ -2505,28 +2507,28 @@ public partial class ShellParser : Parser {
 		return _localctx;
 	}
 
-	public partial class UsableTypeSpecifierContext : ParserRuleContext {
+	public partial class Type_specifier_valueContext : ParserRuleContext {
 		public ITerminalNode TYPE_OBJECT() { return GetToken(ShellParser.TYPE_OBJECT, 0); }
 		public ITerminalNode TYPE_ARRAY() { return GetToken(ShellParser.TYPE_ARRAY, 0); }
 		public ITerminalNode TYPE_NUMBER() { return GetToken(ShellParser.TYPE_NUMBER, 0); }
 		public ITerminalNode TYPE_STRING() { return GetToken(ShellParser.TYPE_STRING, 0); }
 		public ITerminalNode TYPE_BOOL() { return GetToken(ShellParser.TYPE_BOOL, 0); }
-		public UsableTypeSpecifierContext(ParserRuleContext parent, int invokingState)
+		public Type_specifier_valueContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_usableTypeSpecifier; } }
+		public override int RuleIndex { get { return RULE_type_specifier_value; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IShellVisitor<TResult> typedVisitor = visitor as IShellVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitUsableTypeSpecifier(this);
+			if (typedVisitor != null) return typedVisitor.VisitType_specifier_value(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public UsableTypeSpecifierContext usableTypeSpecifier() {
-		UsableTypeSpecifierContext _localctx = new UsableTypeSpecifierContext(Context, State);
-		EnterRule(_localctx, 72, RULE_usableTypeSpecifier);
+	public Type_specifier_valueContext type_specifier_value() {
+		Type_specifier_valueContext _localctx = new Type_specifier_valueContext(Context, State);
+		EnterRule(_localctx, 72, RULE_type_specifier_value);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
