@@ -1,0 +1,11 @@
+let sum = 0
+let product = 1
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+for n in numbers {
+    let sum = sum + n
+    let product = product * n
+}
+
+System.PrintLine "The sum of ${numbers} is ${sum}"
+System.PrintLine "The product of ${numbers} is ${product}"

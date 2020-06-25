@@ -1,0 +1,22 @@
+let is_prime = fun (number a) {
+    if a <= 1 {
+        return false
+    }
+    
+    for i in System.Array.Range 2 (a - 1) {
+        if a % i == 0 {
+            return i
+        }
+    }
+    return true
+}
+
+for i in [12, 13, 77, 81] {
+    let result = is_prime i
+    if result is bool {
+        let op = result
+    } else {
+        let op = "divisible by ${result}"
+    }
+    System.PrintLine "${i} is prime: ${op}"
+}
