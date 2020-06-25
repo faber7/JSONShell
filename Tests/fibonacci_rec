@@ -1,0 +1,12 @@
+let fibonacci = fun (number a) {
+    if a == 1 {
+        return a
+    } else if a <= 0 {
+        return 0
+    }
+    return (fibonacci a - 1) + (fibonacci a - 2)
+}
+
+let num = 10
+
+System.PrintLine "The ${num}th fibonacci number is ${fibonacci 10}"

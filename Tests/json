@@ -1,0 +1,18 @@
+let a = null
+let b = 5
+let c = 7.5
+let d = "Hello World"
+let e = [1, 2, 3, 4, 5]
+let f = {
+    "a" : 5,
+    "b" : "hello",
+    "c" : [10, 20],
+    "d" : null
+}
+
+System.PrintLine a
+System.PrintLine b
+System.PrintLine c
+System.PrintLine d
+System.PrintLine e
+System.PrintLine f

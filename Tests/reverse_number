@@ -1,0 +1,20 @@
+let reverse = fun (number num) {
+    let num = num - (num % 1)
+    
+    let numr = 0
+    let arr = [1]
+    for a in arr {
+        let digit = num % 10
+        let numr = numr * 10 + digit
+
+        let num = (num / 10) - ((num / 10) % 1)
+        if num == 0 {
+            return numr
+        }
+        System.Array.Push arr 1
+    }
+}
+
+let n = 12345
+
+System.PrintLine "The reverse of ${n} is ${reverse n}"

@@ -1,2 +1,2 @@
 # Skell
-An Obejct Oriented Shell
+An Object Oriented Shell
