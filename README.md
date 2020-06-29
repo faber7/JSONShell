@@ -1,5 +1,5 @@
-# Skell
-An Object Oriented Shell
+# JSONShell
+A JSON Oriented Shell
 
 # Goal
 To create a shell to work with structured data.
